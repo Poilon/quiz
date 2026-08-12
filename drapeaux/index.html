@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz des Drapeaux</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            max-height: 100vh;
+            max-height: 100dvh;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                margin-bottom: 30px;
+                font-size: 2em;
+            }
+        }
+
+        .question-counter {
+            text-align: center;
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .question-counter {
+                font-size: 1.2em;
+                margin-bottom: 20px;
+            }
+        }
+
+        .flag-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            min-height: 120px;
+        }
+
+        @media (min-width: 768px) {
+            .flag-container {
+                margin: 30px 0;
+                min-height: 200px;
+            }
+        }
+
+        .flag {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @media (min-width: 768px) {
+            .flag {
+                max-width: 400px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideOut {
+            to {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feedback.show {
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .flag.slide-out {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        .flag.slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .input-container {
+            position: relative;
+            margin: 15px 0;
+        }
+
+        @media (min-width: 768px) {
+            .input-container {
+                margin: 30px 0;
+            }
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        @media (min-width: 768px) {
+            input {
+                padding: 15px;
+                font-size: 1.1em;
+            }
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background-color: #667eea;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        @media (min-width: 768px) {
+            button {
+                padding: 15px;
+                font-size: 1.1em;
+                margin-top: 20px;
+            }
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .feedback {
+                margin-top: 20px;
+                font-size: 1.2em;
+                min-height: 30px;
+            }
+        }
+
+        .feedback.correct {
+            color: #28a745;
+        }
+
+        .feedback.incorrect {
+            color: #dc3545;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (min-width: 768px) {
+            .score {
+                font-size: 1.5em;
+                margin-top: 20px;
+            }
+        }
+
+        .final-screen {
+            text-align: center;
+        }
+
+        .final-screen h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        @media (min-width: 768px) {
+            .final-screen h2 {
+                margin-bottom: 20px;
+                font-size: 2em;
+            }
+        }
+
+        .final-score {
+            font-size: 2em;
+            color: #667eea;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        @media (min-width: 768px) {
+            .final-score {
+                font-size: 3em;
+                margin: 30px 0;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .difficulty-screen {
+            text-align: center;
+        }
+
+        .difficulty-screen h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        @media (min-width: 768px) {
+            .difficulty-screen h2 {
+                margin-bottom: 30px;
+                font-size: 1.8em;
+            }
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .difficulty-btn {
+            padding: 15px;
+            font-size: 1em;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        @media (min-width: 768px) {
+            .difficulty-btn {
+                padding: 20px;
+                font-size: 1.2em;
+            }
+        }
+
+        .difficulty-btn.easy {
+            background: #28a745;
+        }
+
+        .difficulty-btn.easy:hover {
+            background: #218838;
+        }
+
+        .difficulty-btn.medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .difficulty-btn.medium:hover {
+            background: #e0a800;
+        }
+
+        .difficulty-btn.hard {
+            background: #dc3545;
+        }
+
+        .difficulty-btn.hard:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Quiz des Drapeaux 🌍</h1>
+        
+        <div id="difficulty-screen" class="difficulty-screen">
+            <h2>Choisissez votre difficulté</h2>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn easy" data-difficulty="easy">Facile - Pays connus</button>
+                <button class="difficulty-btn medium" data-difficulty="medium">Moyen - Tous les continents</button>
+                <button class="difficulty-btn hard" data-difficulty="hard">Difficile - Tous les pays du monde</button>
+            </div>
+        </div>
+        
+        <div id="quiz-screen" class="hidden">
+            <div class="question-counter">
+                Question <span id="current-question">1</span> / 10
+            </div>
+            
+            <div class="flag-container">
+                <img class="flag" id="flag-display" src="" alt="Drapeau">
+            </div>
+            
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="country-input" 
+                    placeholder="Quel est ce pays ?"
+                    autocomplete="off"
+                >
+                <div class="suggestions" id="suggestions"></div>
+            </div>
+            
+            <button id="submit-btn">Valider</button>
+            
+            <div class="feedback" id="feedback"></div>
+            <div class="score">Score : <span id="current-score">0</span> / 10</div>
+        </div>
+        
+        <div id="final-screen" class="final-screen hidden">
+            <h2>Quiz terminé !</h2>
+            <div class="final-score" id="final-score">0 / 10</div>
+            <button id="restart-btn">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const allCountries = [
+            { name: "Afghanistan", code: "af", difficulty: "hard" },
+            { name: "Afrique du Sud", code: "za", difficulty: "medium" },
+            { name: "Albanie", code: "al", difficulty: "hard" },
+            { name: "Algérie", code: "dz", difficulty: "medium" },
+            { name: "Allemagne", code: "de", difficulty: "easy" },
+            { name: "Andorre", code: "ad", difficulty: "hard" },
+            { name: "Angola", code: "ao", difficulty: "hard" },
+            { name: "Arabie Saoudite", code: "sa", difficulty: "medium" },
+            { name: "Argentine", code: "ar", difficulty: "easy" },
+            { name: "Arménie", code: "am", difficulty: "hard" },
+            { name: "Australie", code: "au", difficulty: "easy" },
+            { name: "Autriche", code: "at", difficulty: "medium" },
+            { name: "Azerbaïdjan", code: "az", difficulty: "hard" },
+            { name: "Bahamas", code: "bs", difficulty: "hard" },
+            { name: "Bahreïn", code: "bh", difficulty: "hard" },
+            { name: "Bangladesh", code: "bd", difficulty: "hard" },
+            { name: "Barbade", code: "bb", difficulty: "hard" },
+            { name: "Belgique", code: "be", difficulty: "easy" },
+            { name: "Belize", code: "bz", difficulty: "hard" },
+            { name: "Bénin", code: "bj", difficulty: "hard" },
+            { name: "Bhoutan", code: "bt", difficulty: "hard" },
+            { name: "Biélorussie", code: "by", difficulty: "hard" },
+            { name: "Bolivie", code: "bo", difficulty: "hard" },
+            { name: "Bosnie-Herzégovine", code: "ba", difficulty: "hard" },
+            { name: "Botswana", code: "bw", difficulty: "hard" },
+            { name: "Brésil", code: "br", difficulty: "easy" },
+            { name: "Brunei", code: "bn", difficulty: "hard" },
+            { name: "Bulgarie", code: "bg", difficulty: "medium" },
+            { name: "Burkina Faso", code: "bf", difficulty: "hard" },
+            { name: "Burundi", code: "bi", difficulty: "hard" },
+            { name: "Cambodge", code: "kh", difficulty: "hard" },
+            { name: "Cameroun", code: "cm", difficulty: "hard" },
+            { name: "Canada", code: "ca", difficulty: "easy" },
+            { name: "Cap-Vert", code: "cv", difficulty: "hard" },
+            { name: "Chili", code: "cl", difficulty: "medium" },
+            { name: "Chine", code: "cn", difficulty: "easy" },
+            { name: "Chypre", code: "cy", difficulty: "hard" },
+            { name: "Colombie", code: "co", difficulty: "medium" },
+            { name: "Comores", code: "km", difficulty: "hard" },
+            { name: "Congo", code: "cg", difficulty: "hard" },
+            { name: "Corée du Nord", code: "kp", difficulty: "medium" },
+            { name: "Corée du Sud", code: "kr", difficulty: "medium" },
+            { name: "Costa Rica", code: "cr", difficulty: "hard" },
+            { name: "Côte d'Ivoire", code: "ci", difficulty: "hard" },
+            { name: "Croatie", code: "hr", difficulty: "medium" },
+            { name: "Cuba", code: "cu", difficulty: "medium" },
+            { name: "Danemark", code: "dk", difficulty: "easy" },
+            { name: "Djibouti", code: "dj", difficulty: "hard" },
+            { name: "Dominique", code: "dm", difficulty: "hard" },
+            { name: "Égypte", code: "eg", difficulty: "easy" },
+            { name: "Émirats Arabes Unis", code: "ae", difficulty: "medium" },
+            { name: "Équateur", code: "ec", difficulty: "hard" },
+            { name: "Érythrée", code: "er", difficulty: "hard" },
+            { name: "Espagne", code: "es", difficulty: "easy" },
+            { name: "Estonie", code: "ee", difficulty: "hard" },
+            { name: "Eswatini", code: "sz", difficulty: "hard" },
+            { name: "États-Unis", code: "us", difficulty: "easy" },
+            { name: "Éthiopie", code: "et", difficulty: "hard" },
+            { name: "Fidji", code: "fj", difficulty: "hard" },
+            { name: "Finlande", code: "fi", difficulty: "medium" },
+            { name: "France", code: "fr", difficulty: "easy" },
+            { name: "Gabon", code: "ga", difficulty: "hard" },
+            { name: "Gambie", code: "gm", difficulty: "hard" },
+            { name: "Géorgie", code: "ge", difficulty: "hard" },
+            { name: "Ghana", code: "gh", difficulty: "hard" },
+            { name: "Grèce", code: "gr", difficulty: "easy" },
+            { name: "Grenade", code: "gd", difficulty: "hard" },
+            { name: "Guatemala", code: "gt", difficulty: "hard" },
+            { name: "Guinée", code: "gn", difficulty: "hard" },
+            { name: "Guinée-Bissau", code: "gw", difficulty: "hard" },
+            { name: "Guinée équatoriale", code: "gq", difficulty: "hard" },
+            { name: "Guyana", code: "gy", difficulty: "hard" },
+            { name: "Haïti", code: "ht", difficulty: "hard" },
+            { name: "Honduras", code: "hn", difficulty: "hard" },
+            { name: "Hongrie", code: "hu", difficulty: "medium" },
+            { name: "Îles Marshall", code: "mh", difficulty: "hard" },
+            { name: "Îles Salomon", code: "sb", difficulty: "hard" },
+            { name: "Inde", code: "in", difficulty: "easy" },
+            { name: "Indonésie", code: "id", difficulty: "medium" },
+            { name: "Irak", code: "iq", difficulty: "medium" },
+            { name: "Iran", code: "ir", difficulty: "medium" },
+            { name: "Irlande", code: "ie", difficulty: "easy" },
+            { name: "Islande", code: "is", difficulty: "medium" },
+            { name: "Israël", code: "il", difficulty: "medium" },
+            { name: "Italie", code: "it", difficulty: "easy" },
+            { name: "Jamaïque", code: "jm", difficulty: "medium" },
+            { name: "Japon", code: "jp", difficulty: "easy" },
+            { name: "Jordanie", code: "jo", difficulty: "hard" },
+            { name: "Kazakhstan", code: "kz", difficulty: "hard" },
+            { name: "Kenya", code: "ke", difficulty: "medium" },
+            { name: "Kirghizistan", code: "kg", difficulty: "hard" },
+            { name: "Kiribati", code: "ki", difficulty: "hard" },
+            { name: "Koweït", code: "kw", difficulty: "hard" },
+            { name: "Laos", code: "la", difficulty: "hard" },
+            { name: "Lesotho", code: "ls", difficulty: "hard" },
+            { name: "Lettonie", code: "lv", difficulty: "hard" },
+            { name: "Liban", code: "lb", difficulty: "medium" },
+            { name: "Liberia", code: "lr", difficulty: "hard" },
+            { name: "Libye", code: "ly", difficulty: "hard" },
+            { name: "Liechtenstein", code: "li", difficulty: "hard" },
+            { name: "Lituanie", code: "lt", difficulty: "hard" },
+            { name: "Luxembourg", code: "lu", difficulty: "medium" },
+            { name: "Macédoine du Nord", code: "mk", difficulty: "hard" },
+            { name: "Madagascar", code: "mg", difficulty: "hard" },
+            { name: "Malaisie", code: "my", difficulty: "medium" },
+            { name: "Malawi", code: "mw", difficulty: "hard" },
+            { name: "Maldives", code: "mv", difficulty: "hard" },
+            { name: "Mali", code: "ml", difficulty: "hard" },
+            { name: "Malte", code: "mt", difficulty: "hard" },
+            { name: "Maroc", code: "ma", difficulty: "medium" },
+            { name: "Maurice", code: "mu", difficulty: "hard" },
+            { name: "Mauritanie", code: "mr", difficulty: "hard" },
+            { name: "Mexique", code: "mx", difficulty: "easy" },
+            { name: "Micronésie", code: "fm", difficulty: "hard" },
+            { name: "Moldavie", code: "md", difficulty: "hard" },
+            { name: "Monaco", code: "mc", difficulty: "hard" },
+            { name: "Mongolie", code: "mn", difficulty: "hard" },
+            { name: "Monténégro", code: "me", difficulty: "hard" },
+            { name: "Mozambique", code: "mz", difficulty: "hard" },
+            { name: "Namibie", code: "na", difficulty: "hard" },
+            { name: "Nauru", code: "nr", difficulty: "hard" },
+            { name: "Népal", code: "np", difficulty: "hard" },
+            { name: "Nicaragua", code: "ni", difficulty: "hard" },
+            { name: "Niger", code: "ne", difficulty: "hard" },
+            { name: "Nigeria", code: "ng", difficulty: "medium" },
+            { name: "Norvège", code: "no", difficulty: "easy" },
+            { name: "Nouvelle-Zélande", code: "nz", difficulty: "medium" },
+            { name: "Oman", code: "om", difficulty: "hard" },
+            { name: "Ouganda", code: "ug", difficulty: "hard" },
+            { name: "Ouzbékistan", code: "uz", difficulty: "hard" },
+            { name: "Pakistan", code: "pk", difficulty: "medium" },
+            { name: "Palaos", code: "pw", difficulty: "hard" },
+            { name: "Palestine", code: "ps", difficulty: "hard" },
+            { name: "Panama", code: "pa", difficulty: "hard" },
+            { name: "Papouasie-Nouvelle-Guinée", code: "pg", difficulty: "hard" },
+            { name: "Paraguay", code: "py", difficulty: "hard" },
+            { name: "Pays-Bas", code: "nl", difficulty: "easy" },
+            { name: "Pérou", code: "pe", difficulty: "medium" },
+            { name: "Philippines", code: "ph", difficulty: "medium" },
+            { name: "Pologne", code: "pl", difficulty: "easy" },
+            { name: "Portugal", code: "pt", difficulty: "easy" },
+            { name: "Qatar", code: "qa", difficulty: "medium" },
+            { name: "République Centrafricaine", code: "cf", difficulty: "hard" },
+            { name: "République Démocratique du Congo", code: "cd", difficulty: "hard" },
+            { name: "République Dominicaine", code: "do", difficulty: "hard" },
+            { name: "République Tchèque", code: "cz", difficulty: "medium" },
+            { name: "Roumanie", code: "ro", difficulty: "medium" },
+            { name: "Royaume-Uni", code: "gb", difficulty: "easy" },
+            { name: "Russie", code: "ru", difficulty: "easy" },
+            { name: "Rwanda", code: "rw", difficulty: "hard" },
+            { name: "Saint-Christophe-et-Niévès", code: "kn", difficulty: "hard" },
+            { name: "Sainte-Lucie", code: "lc", difficulty: "hard" },
+            { name: "Saint-Marin", code: "sm", difficulty: "hard" },
+            { name: "Saint-Vincent-et-les-Grenadines", code: "vc", difficulty: "hard" },
+            { name: "Samoa", code: "ws", difficulty: "hard" },
+            { name: "São Tomé-et-Príncipe", code: "st", difficulty: "hard" },
+            { name: "Sénégal", code: "sn", difficulty: "hard" },
+            { name: "Serbie", code: "rs", difficulty: "medium" },
+            { name: "Seychelles", code: "sc", difficulty: "hard" },
+            { name: "Sierra Leone", code: "sl", difficulty: "hard" },
+            { name: "Singapour", code: "sg", difficulty: "medium" },
+            { name: "Slovaquie", code: "sk", difficulty: "medium" },
+            { name: "Slovénie", code: "si", difficulty: "hard" },
+            { name: "Somalie", code: "so", difficulty: "hard" },
+            { name: "Soudan", code: "sd", difficulty: "hard" },
+            { name: "Soudan du Sud", code: "ss", difficulty: "hard" },
+            { name: "Sri Lanka", code: "lk", difficulty: "hard" },
+            { name: "Suède", code: "se", difficulty: "easy" },
+            { name: "Suisse", code: "ch", difficulty: "easy" },
+            { name: "Suriname", code: "sr", difficulty: "hard" },
+            { name: "Syrie", code: "sy", difficulty: "medium" },
+            { name: "Tadjikistan", code: "tj", difficulty: "hard" },
+            { name: "Tanzanie", code: "tz", difficulty: "hard" },
+            { name: "Tchad", code: "td", difficulty: "hard" },
+            { name: "Thaïlande", code: "th", difficulty: "medium" },
+            { name: "Timor oriental", code: "tl", difficulty: "hard" },
+            { name: "Togo", code: "tg", difficulty: "hard" },
+            { name: "Tonga", code: "to", difficulty: "hard" },
+            { name: "Trinité-et-Tobago", code: "tt", difficulty: "hard" },
+            { name: "Tunisie", code: "tn", difficulty: "medium" },
+            { name: "Turkménistan", code: "tm", difficulty: "hard" },
+            { name: "Turquie", code: "tr", difficulty: "medium" },
+            { name: "Tuvalu", code: "tv", difficulty: "hard" },
+            { name: "Ukraine", code: "ua", difficulty: "medium" },
+            { name: "Uruguay", code: "uy", difficulty: "hard" },
+            { name: "Vanuatu", code: "vu", difficulty: "hard" },
+            { name: "Vatican", code: "va", difficulty: "hard" },
+            { name: "Venezuela", code: "ve", difficulty: "medium" },
+            { name: "Viêt Nam", code: "vn", difficulty: "medium" },
+            { name: "Yémen", code: "ye", difficulty: "hard" },
+            { name: "Zambie", code: "zm", difficulty: "hard" },
+            { name: "Zimbabwe", code: "zw", difficulty: "hard" }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedCountries = [];
+        let currentCountry = null;
+        let selectedSuggestionIndex = -1;
+        let currentDifficulty = null;
+        let countries = [];
+
+        const elements = {
+            flagDisplay: document.getElementById('flag-display'),
+            input: document.getElementById('country-input'),
+            suggestions: document.getElementById('suggestions'),
+            submitBtn: document.getElementById('submit-btn'),
+            feedback: document.getElementById('feedback'),
+            currentQuestionSpan: document.getElementById('current-question'),
+            currentScoreSpan: document.getElementById('current-score'),
+            difficultyScreen: document.getElementById('difficulty-screen'),
+            quizScreen: document.getElementById('quiz-screen'),
+            finalScreen: document.getElementById('final-screen'),
+            finalScore: document.getElementById('final-score'),
+            restartBtn: document.getElementById('restart-btn')
+        };
+
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const difficulty = btn.dataset.difficulty;
+                startQuiz(difficulty);
+            });
+        });
+
+        function startQuiz(difficulty) {
+            currentDifficulty = difficulty;
+            
+            if (difficulty === 'easy') {
+                countries = allCountries.filter(c => c.difficulty === 'easy');
+            } else if (difficulty === 'medium') {
+                countries = allCountries.filter(c => c.difficulty === 'easy' || c.difficulty === 'medium');
+            } else {
+                countries = allCountries;
+            }
+            
+            elements.difficultyScreen.classList.add('hidden');
+            elements.quizScreen.classList.remove('hidden');
+            initQuiz();
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function initQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedCountries = shuffleArray(countries).slice(0, 10);
+            elements.currentScoreSpan.textContent = '0';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= 10) {
+                showFinalScreen();
+                return;
+            }
+
+            currentCountry = selectedCountries[currentQuestion];
+            elements.flagDisplay.classList.remove('slide-out', 'slide-in');
+            void elements.flagDisplay.offsetWidth;
+            elements.flagDisplay.classList.add('slide-in');
+            elements.flagDisplay.src = `https://flagcdn.com/w640/${currentCountry.code}.png`;
+            elements.currentQuestionSpan.textContent = currentQuestion + 1;
+            elements.input.value = '';
+            elements.feedback.textContent = '';
+            elements.feedback.className = 'feedback';
+            elements.input.focus();
+            elements.suggestions.classList.remove('active');
+            selectedSuggestionIndex = -1;
+        }
+
+        function normalizeString(str) {
+            return str.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9\s]/g, "")
+                .trim();
+        }
+
+        function showSuggestions(value) {
+            if (!value) {
+                elements.suggestions.classList.remove('active');
+                return;
+            }
+
+            const normalizedValue = normalizeString(value);
+            const matches = countries.filter(country => 
+                normalizeString(country.name).includes(normalizedValue)
+            ).slice(0, 5);
+
+            if (matches.length === 0) {
+                elements.suggestions.classList.remove('active');
+                return;
+            }
+
+            elements.suggestions.innerHTML = matches.map((country, index) => 
+                `<div class="suggestion-item" data-country="${country.name}" data-index="${index}">${country.name}</div>`
+            ).join('');
+            
+            elements.suggestions.classList.add('active');
+            selectedSuggestionIndex = -1;
+        }
+
+        function selectSuggestion(countryName) {
+            elements.input.value = countryName;
+            elements.suggestions.classList.remove('active');
+            selectedSuggestionIndex = -1;
+        }
+
+        elements.input.addEventListener('input', (e) => {
+            showSuggestions(e.target.value);
+        });
+
+        elements.input.addEventListener('keydown', (e) => {
+            const suggestionItems = elements.suggestions.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (suggestionItems.length > 0) {
+                    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestionItems.length - 1);
+                    updateSuggestionSelection(suggestionItems);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (suggestionItems.length > 0) {
+                    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, 0);
+                    updateSuggestionSelection(suggestionItems);
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && suggestionItems[selectedSuggestionIndex]) {
+                    selectSuggestion(suggestionItems[selectedSuggestionIndex].dataset.country);
+                } else {
+                    submitAnswer();
+                }
+            } else if (e.key === 'Escape') {
+                elements.suggestions.classList.remove('active');
+                selectedSuggestionIndex = -1;
+            }
+        });
+
+        function updateSuggestionSelection(suggestionItems) {
+            suggestionItems.forEach((item, index) => {
+                if (index === selectedSuggestionIndex) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        elements.suggestions.addEventListener('click', (e) => {
+            if (e.target.classList.contains('suggestion-item')) {
+                selectSuggestion(e.target.dataset.country);
+            }
+        });
+
+        elements.submitBtn.addEventListener('click', submitAnswer);
+
+        function submitAnswer() {
+            const answer = elements.input.value.trim();
+            
+            if (!answer) {
+                return;
+            }
+
+            const isCorrect = normalizeString(answer) === normalizeString(currentCountry.name);
+            
+            if (isCorrect) {
+                score++;
+                elements.feedback.textContent = '✓ Correct !';
+                elements.feedback.className = 'feedback correct show';
+            } else {
+                elements.feedback.textContent = `✗ Faux ! C'était ${currentCountry.name}`;
+                elements.feedback.className = 'feedback incorrect show';
+            }
+
+            elements.currentScoreSpan.textContent = score;
+            elements.submitBtn.disabled = true;
+            elements.input.disabled = true;
+
+            elements.flagDisplay.classList.add('slide-out');
+
+            setTimeout(() => {
+                currentQuestion++;
+                elements.submitBtn.disabled = false;
+                elements.input.disabled = false;
+                showQuestion();
+            }, 800);
+        }
+
+        function showFinalScreen() {
+            elements.quizScreen.classList.add('hidden');
+            elements.finalScreen.classList.remove('hidden');
+            elements.finalScore.textContent = `${score} / 10`;
+        }
+
+        elements.restartBtn.addEventListener('click', () => {
+            elements.finalScreen.classList.add('hidden');
+            elements.difficultyScreen.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

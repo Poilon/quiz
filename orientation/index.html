@@ -1,0 +1,2616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz d'Orientation - Lycée Seconde</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .welcome-screen, .class-selection-screen, .quiz-screen, .result-screen {
+            display: none;
+        }
+
+        .welcome-screen.active, .class-selection-screen.active, .quiz-screen.active, .result-screen.active {
+            display: block;
+        }
+
+        .class-options {
+            display: grid;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .class-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 3px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .class-card:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .class-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.03);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .class-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+
+        .class-card p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .class-card.selected h3,
+        .class-card.selected p {
+            color: white;
+        }
+
+        .welcome-content {
+            text-align: center;
+        }
+
+        .welcome-content p {
+            margin: 20px 0;
+            line-height: 1.6;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .question-counter {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            line-height: 1.4;
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+        }
+
+        .answer {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer::before {
+            content: '';
+            width: 22px;
+            height: 22px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .answer:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .answer.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 500;
+        }
+
+        .answer.selected::before {
+            background: white;
+            border-color: white;
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .answer.selected::before {
+            animation: checkmark 0.3s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn-nav {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-nav:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result-screen h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .result-content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .result-content h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .result-content h4 {
+            color: #667eea;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-content p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .result-content ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .result-content li {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .specialties-box {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .schools-box {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .schools-box h5 {
+            color: #764ba2;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .school-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .school-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .school-info {
+            font-size: 0.95em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .pathway-box {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .question h2 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-screen active">
+            <h1>Quiz d'Orientation Lycée</h1>
+            <p class="subtitle">Secondes Générales & Technologiques</p>
+            <div class="welcome-content">
+                <p>Bienvenue sur ce quiz d'orientation personnalisé !</p>
+                <p>Ce test de 30 questions vous aidera à identifier le parcours qui vous correspond : spécialités du bac, filières post-bac et formations accessibles dans la région de Châlons-en-Champagne.</p>
+                <p>Vous pourrez sélectionner plusieurs réponses par question pour plus de précision.</p>
+                <p>Répondez honnêtement, il n'y a pas de bonnes ou mauvaises réponses.</p>
+                <button class="btn" onclick="goToClassSelection()">Commencer le Quiz</button>
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                    <p style="color: #666; margin-bottom: 10px;">Version pour les plus jeunes :</p>
+                    <a href="enfants/" style="color: #ff6b6b; font-size: 1.1em; text-decoration: none; border-bottom: 2px solid #ff6b6b; padding-bottom: 3px;">🌟 Quiz pour Jeunes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="class-selection-screen">
+            <h1>Votre orientation souhaitée</h1>
+            <p class="subtitle">Vous êtes actuellement en Seconde Générale et Technologique.<br>Quelle voie souhaitez-vous explorer pour l'année prochaine ?</p>
+            <div class="class-options">
+                <div class="class-card" onclick="selectClass('generale')">
+                    <h3>🎓 Première Générale</h3>
+                    <p>Bac Général avec choix de 3 spécialités parmi 13 possibles</p>
+                </div>
+                <div class="class-card" onclick="selectClass('techno')">
+                    <h3>⚙️ Première Technologique</h3>
+                    <p>Bac Techno : STI2D, STMG, ST2S, STL, STD2A, STAV, STHR...</p>
+                </div>
+                <div class="class-card" onclick="selectClass('indecis')">
+                    <h3>🤔 Pas encore décidé</h3>
+                    <p>Vous hésitez encore, ce quiz vous aidera à choisir</p>
+                </div>
+            </div>
+            <button class="btn" id="startQuizBtn" onclick="startQuizFromClass()" style="display:none; margin-top: 20px;">Démarrer le Quiz</button>
+        </div>
+
+        <div class="quiz-screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-counter" id="questionCounter"></div>
+            <div class="question" id="questionContainer"></div>
+            <div class="navigation">
+                <button class="btn-nav" id="prevBtn" onclick="previousQuestion()">Précédent</button>
+                <button class="btn-nav" id="nextBtn" onclick="nextQuestion()" disabled>Suivant</button>
+            </div>
+        </div>
+
+        <div class="result-screen">
+            <h2>Votre Parcours Recommandé</h2>
+            <div class="result-content" id="resultContent"></div>
+            <button class="btn" onclick="restartQuiz()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Dans quelles matières vous sentez-vous le plus à l'aise ?",
+                answers: [
+                    { text: "Maths et physique-chimie", profiles: ["science", "tech"] },
+                    { text: "Français, langues, histoire-géo", profiles: ["humanites", "social"] },
+                    { text: "Arts plastiques, musique, théâtre", profiles: ["creative", "culture"] },
+                    { text: "SVT, sports, activités pratiques", profiles: ["sante", "nature"] }
+                ]
+            },
+            {
+                question: "Quel type de projet vous motive le plus au lycée ?",
+                answers: [
+                    { text: "Créer une application ou un site web", profiles: ["tech", "science"] },
+                    { text: "Organiser un événement solidaire", profiles: ["social", "humanites"] },
+                    { text: "Réaliser un court-métrage ou une expo", profiles: ["creative", "culture"] },
+                    { text: "Monter une mini-entreprise", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Comment imaginez-vous vos études après le bac ?",
+                answers: [
+                    { text: "Études longues à l'université (5 ans+)", profiles: ["science", "humanites"] },
+                    { text: "Formation courte et professionnalisante (BTS/BUT)", profiles: ["tech", "commerce"] },
+                    { text: "École spécialisée (art, santé, social)", profiles: ["creative", "sante"] },
+                    { text: "Alternance pour être vite dans l'action", profiles: ["commerce", "nature"] }
+                ]
+            },
+            {
+                question: "Qu'est-ce qui compte le plus pour vous dans votre futur métier ?",
+                answers: [
+                    { text: "Innover et utiliser les nouvelles technologies", profiles: ["tech", "science"] },
+                    { text: "Aider les gens, être utile à la société", profiles: ["social", "sante"] },
+                    { text: "Exprimer ma créativité", profiles: ["creative", "culture"] },
+                    { text: "Avoir un bon salaire et des responsabilités", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Quel environnement de travail vous attire ?",
+                answers: [
+                    { text: "Bureau moderne, startup, laboratoire", profiles: ["tech", "science"] },
+                    { text: "Hôpital, école, associations", profiles: ["sante", "social"] },
+                    { text: "Studio, agence créative, musée", profiles: ["creative", "culture"] },
+                    { text: "Extérieur, chantiers, nature", profiles: ["nature", "commerce"] }
+                ]
+            },
+            {
+                question: "Comment préférez-vous apprendre ?",
+                answers: [
+                    { text: "En résolvant des problèmes complexes", profiles: ["science", "tech"] },
+                    { text: "En échangeant avec les autres", profiles: ["social", "humanites"] },
+                    { text: "En créant et en expérimentant", profiles: ["creative", "tech"] },
+                    { text: "En pratiquant concrètement", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Quel est votre rapport aux écrans et au numérique ?",
+                answers: [
+                    { text: "J'adore coder, bidouiller, comprendre comment ça marche", profiles: ["tech", "science"] },
+                    { text: "J'utilise surtout pour communiquer et m'informer", profiles: ["social", "commerce"] },
+                    { text: "Je crée du contenu (vidéos, design, musique)", profiles: ["creative", "culture"] },
+                    { text: "J'utilise modérément, je préfère le contact réel", profiles: ["sante", "nature"] }
+                ]
+            },
+            {
+                question: "Dans un travail de groupe, quel rôle prenez-vous ?",
+                answers: [
+                    { text: "Celui qui trouve les solutions techniques", profiles: ["tech", "science"] },
+                    { text: "Celui qui coordonne et motive l'équipe", profiles: ["social", "commerce"] },
+                    { text: "Celui qui a les idées créatives", profiles: ["creative", "culture"] },
+                    { text: "Celui qui fait avancer concrètement", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Quelle activité extra-scolaire vous correspond ?",
+                answers: [
+                    { text: "Club robotique, coding, sciences", profiles: ["tech", "science"] },
+                    { text: "Délégué de classe, bénévolat", profiles: ["social", "humanites"] },
+                    { text: "Théâtre, dessin, musique", profiles: ["creative", "culture"] },
+                    { text: "Sport, scouts, jardinage", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Qu'est-ce qui vous stresse le moins dans le travail scolaire ?",
+                answers: [
+                    { text: "Les exercices de maths et de logique", profiles: ["science", "tech"] },
+                    { text: "Les dissertations et exposés oraux", profiles: ["humanites", "social"] },
+                    { text: "Les projets créatifs et artistiques", profiles: ["creative", "culture"] },
+                    { text: "Les TP et travaux pratiques", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Quelle serait votre journée idéale de stage en entreprise ?",
+                answers: [
+                    { text: "Développer un logiciel ou analyser des données", profiles: ["tech", "science"] },
+                    { text: "Accueillir du public, conseiller des clients", profiles: ["commerce", "social"] },
+                    { text: "Créer des visuels, tourner des vidéos", profiles: ["creative", "culture"] },
+                    { text: "Soigner, construire, cultiver", profiles: ["sante", "nature"] }
+                ]
+            },
+            {
+                question: "Si vous deviez choisir un livre, ce serait plutôt :",
+                answers: [
+                    { text: "Science-fiction, vulgarisation scientifique", profiles: ["science", "tech"] },
+                    { text: "Roman, philosophie, histoire", profiles: ["humanites", "culture"] },
+                    { text: "BD, manga, livre d'art", profiles: ["creative", "culture"] },
+                    { text: "Développement personnel, biographies", profiles: ["social", "commerce"] }
+                ]
+            },
+            {
+                question: "Comment gérez-vous les défis difficiles ?",
+                answers: [
+                    { text: "J'analyse logiquement et je cherche la solution", profiles: ["science", "tech"] },
+                    { text: "Je demande conseil autour de moi", profiles: ["social", "humanites"] },
+                    { text: "Je trouve une approche originale", profiles: ["creative", "commerce"] },
+                    { text: "Je fonce et j'apprends en faisant", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Quel aspect de la transition écologique vous intéresse ?",
+                answers: [
+                    { text: "Les innovations technologiques (énergie, transport)", profiles: ["tech", "science"] },
+                    { text: "Sensibiliser et éduquer aux enjeux", profiles: ["social", "humanites"] },
+                    { text: "Créer des campagnes de communication engagées", profiles: ["creative", "culture"] },
+                    { text: "Agriculture bio, construction écologique", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Qu'attendez-vous de vos professeurs ?",
+                answers: [
+                    { text: "De la rigueur et de l'expertise technique", profiles: ["science", "tech"] },
+                    { text: "De l'écoute et de la bienveillance", profiles: ["social", "sante"] },
+                    { text: "De la liberté et de l'inspiration", profiles: ["creative", "culture"] },
+                    { text: "Des conseils pratiques et concrets", profiles: ["commerce", "nature"] }
+                ]
+            },
+            {
+                question: "Quelle série/film vous captive le plus ?",
+                answers: [
+                    { text: "Thrillers scientifiques, Black Mirror", profiles: ["tech", "science"] },
+                    { text: "Drames historiques, documentaires sociaux", profiles: ["humanites", "social"] },
+                    { text: "Films d'auteur, séries créatives", profiles: ["creative", "culture"] },
+                    { text: "Aventure, sport, nature", profiles: ["nature", "commerce"] }
+                ]
+            },
+            {
+                question: "Dans 10 ans, vous vous voyez plutôt :",
+                answers: [
+                    { text: "Expert technique dans un domaine de pointe", profiles: ["tech", "science"] },
+                    { text: "Accompagner des personnes (prof, psychologue...)", profiles: ["social", "sante"] },
+                    { text: "Créer des œuvres ou du contenu", profiles: ["creative", "culture"] },
+                    { text: "Manager une équipe ou mon entreprise", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Qu'est-ce qui vous rend fier dans votre travail ?",
+                answers: [
+                    { text: "La précision et la qualité technique", profiles: ["science", "tech"] },
+                    { text: "L'impact positif sur les autres", profiles: ["social", "sante"] },
+                    { text: "L'originalité du résultat", profiles: ["creative", "culture"] },
+                    { text: "Les résultats visibles et concrets", profiles: ["commerce", "nature"] }
+                ]
+            },
+            {
+                question: "Quelle compétence aimeriez-vous développer en priorité ?",
+                answers: [
+                    { text: "Programmation, data, sciences avancées", profiles: ["tech", "science"] },
+                    { text: "Communication, psychologie, langues", profiles: ["social", "humanites"] },
+                    { text: "Design, vidéo, arts", profiles: ["creative", "culture"] },
+                    { text: "Gestion de projet, entrepreneuriat", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Qu'est-ce qui vous motive à vous lever le matin ?",
+                answers: [
+                    { text: "Résoudre un problème complexe", profiles: ["science", "tech"] },
+                    { text: "Retrouver mes amis et aider les autres", profiles: ["social", "humanites"] },
+                    { text: "Créer quelque chose de nouveau", profiles: ["creative", "culture"] },
+                    { text: "Atteindre mes objectifs", profiles: ["commerce", "nature"] }
+                ]
+            },
+            {
+                question: "Quel type de projet vous stresserait le moins ?",
+                answers: [
+                    { text: "Concevoir une présentation technique avec graphiques", profiles: ["tech", "science"] },
+                    { text: "Mener une enquête et interviewer des gens", profiles: ["social", "humanites"] },
+                    { text: "Réaliser un projet artistique libre", profiles: ["creative", "culture"] },
+                    { text: "Organiser un événement de A à Z", profiles: ["commerce", "social"] }
+                ]
+            },
+            {
+                question: "Comment réagissez-vous face à une nouvelle technologie ?",
+                answers: [
+                    { text: "J'essaie de comprendre comment elle fonctionne", profiles: ["tech", "science"] },
+                    { text: "Je m'intéresse à son impact sur la société", profiles: ["humanites", "social"] },
+                    { text: "Je cherche comment l'utiliser de façon créative", profiles: ["creative", "culture"] },
+                    { text: "Je vois les opportunités commerciales", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Dans votre chambre ou espace personnel, on trouve surtout :",
+                answers: [
+                    { text: "Gadgets tech, livres scientifiques, puzzles", profiles: ["tech", "science"] },
+                    { text: "Livres, posters inspirants, carnets", profiles: ["humanites", "social"] },
+                    { text: "Instruments, matériel artistique, collections", profiles: ["creative", "culture"] },
+                    { text: "Équipement sportif, plantes, objets pratiques", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Quel type de documentaire regarderiez-vous ?",
+                answers: [
+                    { text: "Innovations technologiques, espace, sciences", profiles: ["tech", "science"] },
+                    { text: "Histoire, géopolitique, enjeux sociaux", profiles: ["humanites", "social"] },
+                    { text: "Art, cinéma, musique, culture", profiles: ["creative", "culture"] },
+                    { text: "Nature, animaux, environnement", profiles: ["nature", "sante"] }
+                ]
+            },
+            {
+                question: "Si vous gagnez un prix au lycée, ce serait plutôt pour :",
+                answers: [
+                    { text: "Excellence en maths/sciences", profiles: ["science", "tech"] },
+                    { text: "Engagement citoyen ou associatif", profiles: ["social", "humanites"] },
+                    { text: "Créativité et innovation", profiles: ["creative", "culture"] },
+                    { text: "Esprit d'équipe et leadership", profiles: ["commerce", "social"] }
+                ]
+            },
+            {
+                question: "Votre relation avec les règles et les procédures :",
+                answers: [
+                    { text: "Je les respecte si elles sont logiques", profiles: ["science", "tech"] },
+                    { text: "Je les comprends dans leur contexte social", profiles: ["humanites", "social"] },
+                    { text: "Je préfère la liberté et la flexibilité", profiles: ["creative", "culture"] },
+                    { text: "Je sais les utiliser à mon avantage", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Votre façon préférée de résoudre un conflit :",
+                answers: [
+                    { text: "Analyser objectivement la situation", profiles: ["science", "tech"] },
+                    { text: "Écouter toutes les parties et médier", profiles: ["social", "humanites"] },
+                    { text: "Trouver une solution originale et créative", profiles: ["creative", "culture"] },
+                    { text: "Négocier un compromis gagnant-gagnant", profiles: ["commerce", "social"] }
+                ]
+            },
+            {
+                question: "Ce qui vous fascine le plus dans le monde actuel :",
+                answers: [
+                    { text: "L'intelligence artificielle et les algorithmes", profiles: ["tech", "science"] },
+                    { text: "Les mouvements sociaux et le changement", profiles: ["social", "humanites"] },
+                    { text: "L'évolution de l'art et des médias", profiles: ["creative", "culture"] },
+                    { text: "L'entrepreneuriat et l'innovation business", profiles: ["commerce", "tech"] }
+                ]
+            },
+            {
+                question: "Votre rapport au risque et à l'incertitude :",
+                answers: [
+                    { text: "Je calcule les probabilités avant d'agir", profiles: ["science", "tech"] },
+                    { text: "Je consulte les autres avant de décider", profiles: ["social", "humanites"] },
+                    { text: "J'ose prendre des risques pour créer", profiles: ["creative", "commerce"] },
+                    { text: "Je fonce si je sens que c'est le bon moment", profiles: ["commerce", "nature"] }
+                ]
+            },
+            {
+                question: "Si vous pouviez avoir un mentor, ce serait :",
+                answers: [
+                    { text: "Un ingénieur ou scientifique renommé", profiles: ["tech", "science"] },
+                    { text: "Un enseignant ou travailleur social inspirant", profiles: ["social", "humanites"] },
+                    { text: "Un artiste ou créateur de contenu", profiles: ["creative", "culture"] },
+                    { text: "Un entrepreneur à succès", profiles: ["commerce", "tech"] }
+                ]
+            }
+        ];
+
+        const careers = {
+            tech: {
+                title: "Profil Numérique & Technologies",
+                description: "Vous avez un esprit logique et une passion pour le numérique. Les métiers de la tech et de l'informatique sont faits pour vous !",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "Mathématiques (obligatoire)",
+                        "Numérique et Sciences Informatiques (NSI)",
+                        "Physique-Chimie ou Sciences de l'Ingénieur"
+                    ],
+                    option: "Maths expertes recommandée"
+                },
+                bacTechno: {
+                    voie: "Bac STI2D",
+                    specialite: "Spécialité Systèmes d'Information et Numérique (SIN)"
+                },
+                postbac: [
+                    {
+                        name: "BUT Informatique",
+                        location: "IUT de Reims (50 km)",
+                        info: "3 ans, professionnalisant, parcours cybersécurité ou développement"
+                    },
+                    {
+                        name: "BTS SIO (Services Informatiques aux Organisations)",
+                        location: "Lycée Pierre Bayen, Châlons-en-Champagne",
+                        info: "2 ans, options SLAM (dev) ou SISR (réseaux)"
+                    },
+                    {
+                        name: "Licence Informatique",
+                        location: "Université de Reims Champagne-Ardenne",
+                        info: "Puis Master ou école d'ingénieurs"
+                    },
+                    {
+                        name: "École d'ingénieurs",
+                        location: "ESIREM Reims, UTBM Belfort (prépa intégrée)",
+                        info: "5 ans, formation complète en ingénierie"
+                    }
+                ],
+                careers: ["Développeur web/mobile", "Développeur full-stack", "Data scientist", "Data analyst", "Ingénieur cybersécurité", "Administrateur systèmes et réseaux", "DevOps", "Ingénieur cloud", "Chef de projet tech", "Architecte logiciel", "Ingénieur IA/Machine Learning", "Testeur QA", "Développeur jeux vidéo", "Expert blockchain", "Consultant IT"],
+                outlook: "Secteur en forte croissance. Salaires attractifs dès la sortie d'études. Possibilités de télétravail."
+            },
+            science: {
+                title: "Profil Scientifique & Recherche",
+                description: "Vous êtes curieux, rigoureux et passionné par les sciences. Les métiers de l'ingénierie et de la recherche vous tendent les bras.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "Mathématiques",
+                        "Physique-Chimie",
+                        "SVT ou Sciences de l'Ingénieur"
+                    ],
+                    option: "Maths expertes conseillée"
+                },
+                bacTechno: {
+                    voie: "Bac STL (Sciences et Technologies de Laboratoire)",
+                    specialite: "Biotechnologies ou Sciences Physiques et Chimiques"
+                },
+                postbac: [
+                    {
+                        name: "CPGE Scientifique (Prépa)",
+                        location: "Lycée Pierre Bayen, Châlons / Lycée Clemenceau, Reims",
+                        info: "MPSI, PCSI pour intégrer une grande école d'ingénieurs"
+                    },
+                    {
+                        name: "BUT Mesures Physiques / Chimie",
+                        location: "IUT Reims-Châlons-Charleville",
+                        info: "3 ans, spécialisation matériaux ou techniques d'instrumentation"
+                    },
+                    {
+                        name: "Licence Sciences (Physique, Chimie, Maths)",
+                        location: "URCA Reims",
+                        info: "Puis Master recherche ou école d'ingénieurs"
+                    },
+                    {
+                        name: "École d'ingénieurs Agro/Environnement",
+                        location: "AgroSup Dijon, UniLaSalle (après prépa ou directement)",
+                        info: "Spécialisation agriculture, environnement"
+                    }
+                ],
+                careers: ["Ingénieur R&D", "Chercheur scientifique", "Ingénieur qualité", "Technicien de laboratoire", "Ingénieur environnement", "Ingénieur énergies renouvelables", "Bioinformaticien", "Ingénieur matériaux", "Physicien médical", "Chimiste formulateur", "Ingénieur aéronautique", "Roboticien", "Astrophysicien", "Ingénieur biomédical", "Expert en nanotechnologies"],
+                outlook: "Recherche en transition écologique, biotech, énergies renouvelables : secteurs d'avenir avec de nombreux débouchés."
+            },
+            humanites: {
+                title: "Profil Littéraire & Sciences Humaines",
+                description: "Vous aimez réfléchir, débattre, analyser. Les humanités, l'enseignement et la communication sont vos domaines de prédilection.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "Humanités, Littérature et Philosophie (HLP)",
+                        "Histoire-Géographie, Géopolitique et Sciences Politiques (HGGSP)",
+                        "Langues, Littératures et Cultures Étrangères (LLCE) ou SES"
+                    ],
+                    option: "Latin, grec ou LVC"
+                },
+                postbac: [
+                    {
+                        name: "Licence Lettres / Histoire / Philo",
+                        location: "URCA Reims",
+                        info: "Puis Master enseignement, recherche ou communication"
+                    },
+                    {
+                        name: "CPGE Littéraire (Hypokhâgne/Khâgne)",
+                        location: "Lycée Clemenceau, Reims",
+                        info: "Pour intégrer ENS, IEP ou grandes écoles"
+                    },
+                    {
+                        name: "Licence Sciences de l'Éducation",
+                        location: "URCA Reims",
+                        info: "Métiers de l'enseignement et de la formation"
+                    },
+                    {
+                        name: "BUT Métiers du Multimédia (MMI)",
+                        location: "IUT de Troyes (90 km)",
+                        info: "Communication, création de contenu digital"
+                    }
+                ],
+                careers: ["Professeur", "Journaliste", "Rédacteur web", "Chargé de communication", "Bibliothécaire", "Médiateur culturel", "Documentaliste", "Traducteur", "Interprète", "Éditeur", "Critique littéraire", "Scénariste", "Philosophe", "Historien", "Archéologue", "Diplomate", "Chargé d'études"],
+                outlook: "Concours de la fonction publique, médias, édition : secteurs stables avec de belles opportunités."
+            },
+            social: {
+                title: "Profil Social & Accompagnement",
+                description: "Vous êtes empathique et aimez aider les autres. Les métiers du social, de l'éducation et de la santé vous correspondent.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "Sciences Économiques et Sociales (SES)",
+                        "HLP ou HGGSP",
+                        "SVT (si orientation santé)"
+                    ]
+                },
+                bacTechno: {
+                    voie: "Bac ST2S (Santé et Social)",
+                    specialite: "Idéal pour métiers du soin et du social"
+                },
+                postbac: [
+                    {
+                        name: "BUT Carrières Sociales",
+                        location: "IUT de Troyes",
+                        info: "Animation sociale, éducation spécialisée, assistance sociale"
+                    },
+                    {
+                        name: "Écoles du travail social (ES, EJE, ASS)",
+                        location: "IRTS Champagne-Ardenne, Reims",
+                        info: "3 ans, diplômes d'État (éducateur, assistant social...)"
+                    },
+                    {
+                        name: "Licence Sciences de l'Éducation / Psychologie",
+                        location: "URCA Reims",
+                        info: "Puis Master psychologie ou sciences de l'éducation"
+                    },
+                    {
+                        name: "Écoles d'infirmiers (IFSI)",
+                        location: "IFSI Châlons-en-Champagne / Reims",
+                        info: "3 ans, métiers du soin"
+                    }
+                ],
+                careers: ["Éducateur spécialisé", "Assistant social", "Infirmier", "Conseiller d'insertion professionnelle", "Psychologue", "Éducateur de jeunes enfants", "Animateur socioculturel", "Conseiller en économie sociale", "Médiateur social", "Coach professionnel", "Ergothérapeute social", "Accompagnant éducatif et social", "Conseiller conjugal", "Formateur pour adultes"],
+                outlook: "Métiers en tension avec beaucoup de recrutements. Sens et impact social garantis."
+            },
+            creative: {
+                title: "Profil Créatif & Artistique",
+                description: "Vous débordez d'imagination et aimez créer. Les métiers de l'art, du design et de la culture sont faits pour vous.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "Arts (Arts Plastiques, Cinéma-Audiovisuel, Théâtre...)",
+                        "HLP ou LLCE",
+                        "Une spécialité au choix (Maths pour design graphique)"
+                    ]
+                },
+                bacTechno: {
+                    voie: "Bac STD2A (Design et Arts Appliqués)",
+                    specialite: "Pour écoles d'art et design"
+                },
+                postbac: [
+                    {
+                        name: "DN MADE (Diplôme National des Métiers d'Art et du Design)",
+                        location: "Lycée Libergier, Reims",
+                        info: "3 ans, graphisme, espace, mode"
+                    },
+                    {
+                        name: "BUT Métiers du Multimédia et de l'Internet",
+                        location: "IUT Troyes",
+                        info: "Web design, UX/UI, création de contenu"
+                    },
+                    {
+                        name: "Écoles d'art publiques",
+                        location: "ÉSAD Reims (École Supérieure d'Art et Design)",
+                        info: "5 ans, DNA puis DNSEP"
+                    },
+                    {
+                        name: "BTS Design Graphique / Communication Visuelle",
+                        location: "Lycées à Reims et Troyes",
+                        info: "2 ans, insertion rapide"
+                    }
+                ],
+                careers: ["Graphiste", "UX/UI Designer", "Illustrateur", "Motion designer", "Directeur artistique", "Designer produit", "Webdesigner", "Photographe", "Vidéaste", "Monteur vidéo", "Animateur 3D", "Game designer", "Designer d'espace", "Styliste", "Architecte d'intérieur", "Street artist", "Scénographe"],
+                outlook: "Forte demande en digital et communication visuelle. Nombreux indépendants et freelances."
+            },
+            commerce: {
+                title: "Profil Commerce & Gestion",
+                description: "Vous êtes dynamique, ambitieux et aimez le contact. Les métiers du commerce et du management vous attendent.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "Sciences Économiques et Sociales (SES)",
+                        "Mathématiques",
+                        "HGGSP ou LLCE (langues)"
+                    ]
+                },
+                bacTechno: {
+                    voie: "Bac STMG (Management et Gestion)",
+                    specialite: "Mercatique, Gestion-Finance ou Ressources Humaines"
+                },
+                postbac: [
+                    {
+                        name: "BUT Techniques de Commercialisation (TC)",
+                        location: "IUT Reims-Châlons-Charleville",
+                        info: "3 ans, commerce, marketing, vente"
+                    },
+                    {
+                        name: "BUT Gestion des Entreprises et Administrations (GEA)",
+                        location: "IUT Reims-Châlons-Charleville",
+                        info: "Comptabilité, finance, RH"
+                    },
+                    {
+                        name: "BTS MCO / NDRC",
+                        location: "Lycées Châlons et Reims",
+                        info: "2 ans, Management Commercial ou Négociation Digitale"
+                    },
+                    {
+                        name: "École de Commerce",
+                        location: "NEOMA Reims (post-prépa ou admissions parallèles)",
+                        info: "Grande école de commerce reconnue"
+                    }
+                ],
+                careers: ["Chargé de clientèle", "Responsable marketing", "Chef de produit", "Entrepreneur", "Consultant en stratégie", "Commercial export", "Responsable e-commerce", "Chef des ventes", "Acheteur", "Auditeur financier", "Contrôleur de gestion", "Chargé de développement RH", "Analyste de marché", "Business developer", "Chef de projet CRM"],
+                outlook: "Excellents débouchés, évolutions rapides. Salaires attractifs dans le commercial et le digital."
+            },
+            sante: {
+                title: "Profil Santé & Paramédical",
+                description: "Vous voulez soigner, aider et prendre soin des autres. Les métiers de la santé sont votre vocation.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "SVT (obligatoire)",
+                        "Physique-Chimie",
+                        "Mathématiques (pour médecine/kiné)"
+                    ],
+                    option: "Parcours santé dès la Première"
+                },
+                bacTechno: {
+                    voie: "Bac ST2S (Santé et Social)",
+                    specialite: "Accès paramédical facilité"
+                },
+                postbac: [
+                    {
+                        name: "IFSI (Institut de Formation en Soins Infirmiers)",
+                        location: "IFSI Châlons-en-Champagne / Reims / Troyes",
+                        info: "3 ans, diplôme d'État infirmier"
+                    },
+                    {
+                        name: "PASS / L.AS (Accès Santé)",
+                        location: "URCA Reims",
+                        info: "Pour médecine, pharmacie, dentaire, kiné, maïeutique"
+                    },
+                    {
+                        name: "Écoles paramédicales",
+                        location: "Région Grand Est",
+                        info: "Kiné, orthophoniste, ergothérapeute, psychomotricien"
+                    },
+                    {
+                        name: "BUT Génie Biologique",
+                        location: "IUT Reims",
+                        info: "Diététique, analyses biomédicales"
+                    }
+                ],
+                careers: ["Infirmier", "Médecin généraliste", "Médecin spécialiste", "Kinésithérapeute", "Pharmacien", "Orthophoniste", "Sage-femme", "Manipulateur radio", "Ergothérapeute", "Psychomotricien", "Diététicien", "Podologue", "Opticien-lunetier", "Dentiste", "Ostéopathe", "Aide-soignant", "Ambulancier"],
+                outlook: "Métiers en très forte demande. Sécurité de l'emploi. Secteur porteur avec de nombreuses spécialisations."
+            },
+            nature: {
+                title: "Profil Environnement & Métiers de Terrain",
+                description: "Vous aimez l'action, la nature et le travail concret. Les métiers de l'environnement et de l'artisanat sont pour vous.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "SVT",
+                        "Physique-Chimie ou Biologie-Écologie",
+                        "Mathématiques"
+                    ]
+                },
+                bacTechno: {
+                    voie: "Bac STAV (Agronomie et Vivant)",
+                    specialite: "En lycée agricole"
+                },
+                postbac: [
+                    {
+                        name: "BTSA (BTS Agricole)",
+                        location: "LEGTA Avize (51) - Lycée Viticole / CFPPA Châlons",
+                        info: "Viticulture-œnologie, agroéquipement, gestion forestière"
+                    },
+                    {
+                        name: "BUT Génie Biologique - Environnement",
+                        location: "IUT Reims",
+                        info: "Gestion environnementale, écologie"
+                    },
+                    {
+                        name: "Licence Professionnelle Agroalimentaire",
+                        location: "URCA / IUT",
+                        info: "Industries agroalimentaires de la Champagne"
+                    },
+                    {
+                        name: "École d'ingénieurs agronomes",
+                        location: "UniLaSalle Beauvais, AgroSup Dijon",
+                        info: "Agriculture, environnement, agroalimentaire"
+                    }
+                ],
+                careers: ["Technicien environnement", "Viticulteur", "Paysagiste", "Ingénieur agronome", "Garde forestier", "Chef d'exploitation agricole", "Œnologue", "Technicien agricole", "Ingénieur agroalimentaire", "Responsable qualité agroalimentaire", "Hydrobiologiste", "Écologue", "Chargé d'études environnement", "Garde-chasse", "Arboriste", "Maître de chai"],
+                outlook: "Transition écologique : secteur en plein boom. Champagne = région viticole majeure avec de nombreux débouchés."
+            },
+            culture: {
+                title: "Profil Culture & Communication",
+                description: "Vous êtes passionné par la culture, les médias et la communication. Ces secteurs vous offrent de belles perspectives.",
+                bac: {
+                    voie: "Bac Général",
+                    specialties: [
+                        "HLP (Humanités, Littérature, Philosophie)",
+                        "LLCE ou Arts",
+                        "HGGSP ou SES"
+                    ]
+                },
+                postbac: [
+                    {
+                        name: "BUT Information-Communication",
+                        location: "IUT Reims",
+                        info: "Journalisme, communication, publicité"
+                    },
+                    {
+                        name: "Licence Lettres / Arts / Histoire de l'Art",
+                        location: "URCA Reims",
+                        info: "Puis Master médiation culturelle, patrimoine"
+                    },
+                    {
+                        name: "BTS Communication",
+                        location: "Lycées Reims et Châlons",
+                        info: "2 ans, agences de com et entreprises"
+                    },
+                    {
+                        name: "École de journalisme",
+                        location: "IEP Paris (Science Po), écoles spécialisées",
+                        info: "Après prépa ou licence"
+                    }
+                ],
+                careers: ["Journaliste", "Chargé de communication", "Community manager", "Médiateur culturel", "Attaché de presse", "Responsable événementiel", "Chef de projet digital", "Content manager", "Rédacteur publicitaire", "Responsable relations publiques", "Chargé de mécénat", "Conservateur de musée", "Critique culturel", "Producteur audiovisuel", "Directeur de communication"],
+                outlook: "Transformation digitale des médias. Forte demande en communication digitale et réseaux sociaux."
+            }
+        };
+
+        const jobsDatabase = {
+            "Développeur web/mobile": {
+                description: "Crée des sites internet et applications mobiles",
+                missions: ["Écrire du code (JavaScript, Python, React...)", "Concevoir des interfaces utilisateur", "Debugger et tester les applications", "Collaborer avec designers et chefs de projet"],
+                salaire: "2000-3500€ débutant, jusqu'à 5000€+ senior",
+                formation: "Bac+2 à Bac+5 (BTS SIO, BUT Informatique, École d'ingénieurs)",
+                qualites: ["Logique", "Créativité", "Rigueur", "Curiosité technique"],
+                evolution: "Lead developer, Architecte logiciel, CTO"
+            },
+            "Développeur full-stack": {
+                description: "Maîtrise le développement front-end et back-end",
+                missions: ["Développer côté serveur et client", "Gérer bases de données", "Créer des API", "Assurer la sécurité des applications"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+3 à Bac+5 (Licence/Master Informatique, École)",
+                qualites: ["Polyvalence", "Autonomie", "Résolution de problèmes", "Apprentissage continu"],
+                evolution: "Architecte technique, Tech lead, Entrepreneur tech"
+            },
+            "Data scientist": {
+                description: "Analyse et exploite les données massives",
+                missions: ["Créer des modèles prédictifs", "Analyser des données complexes", "Développer des algorithmes IA", "Présenter insights aux décideurs"],
+                salaire: "3000-4500€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (Master Data Science, École d'ingénieurs)",
+                qualites: ["Mathématiques", "Programmation", "Curiosité", "Communication"],
+                evolution: "Lead Data Scientist, Chief Data Officer, Consultant"
+            },
+            "Data analyst": {
+                description: "Transforme les données en insights stratégiques",
+                missions: ["Collecter et nettoyer les données", "Créer des tableaux de bord", "Analyser tendances et performances", "Formuler recommandations business"],
+                salaire: "2200-3500€ débutant, jusqu'à 5000€+ confirmé",
+                formation: "Bac+3 à Bac+5 (BUT, Licence/Master Data)",
+                qualites: ["Analyse", "Excel/SQL", "Visualisation", "Esprit de synthèse"],
+                evolution: "Data scientist, Business analyst, Manager BI"
+            },
+            "Ingénieur cybersécurité": {
+                description: "Protège systèmes et données des cyberattaques",
+                missions: ["Auditer la sécurité des systèmes", "Détecter et contrer les menaces", "Former les équipes à la sécurité", "Mettre en place des protocoles de protection"],
+                salaire: "3000-4500€ débutant, jusqu'à 8000€+ expert",
+                formation: "Bac+5 (Master Cybersécurité, École d'ingénieurs)",
+                qualites: ["Vigilance", "Technique", "Éthique", "Réactivité"],
+                evolution: "Expert sécurité, RSSI, Consultant en cybersécurité"
+            },
+            "Administrateur systèmes et réseaux": {
+                description: "Gère l'infrastructure informatique d'une entreprise",
+                missions: ["Maintenir serveurs et réseaux opérationnels", "Résoudre incidents techniques", "Sauvegarder les données", "Optimiser les performances"],
+                salaire: "2000-3200€ débutant, jusqu'à 5000€+ senior",
+                formation: "Bac+2 à Bac+5 (BTS SIO, BUT Réseaux)",
+                qualites: ["Méthodologie", "Réactivité", "Organisation", "Patience"],
+                evolution: "Architecte systèmes, Directeur IT, DevOps"
+            },
+            "DevOps": {
+                description: "Facilite collaboration développement et opérations",
+                missions: ["Automatiser déploiements", "Gérer infrastructures cloud", "Mettre en place CI/CD", "Monitorer performances applicatives"],
+                salaire: "2800-4500€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+3 à Bac+5 (Formation DevOps, École)",
+                qualites: ["Automatisation", "Scripting", "Communication", "Agilité"],
+                evolution: "Lead DevOps, Site Reliability Engineer, Architecte cloud"
+            },
+            "Ingénieur cloud": {
+                description: "Conçoit et gère infrastructures cloud (AWS, Azure, GCP)",
+                missions: ["Architecturer solutions cloud", "Optimiser coûts cloud", "Assurer scalabilité", "Sécuriser infrastructures"],
+                salaire: "3000-5000€ débutant, jusqu'à 8000€+ expert",
+                formation: "Bac+5 (Master, École d'ingénieurs + certifications cloud)",
+                qualites: ["Architecture", "Optimisation", "Vision globale", "Certifications"],
+                evolution: "Architecte cloud senior, Cloud consultant, CTO"
+            },
+            "Chef de projet tech": {
+                description: "Pilote projets informatiques de A à Z",
+                missions: ["Définir cahier des charges", "Coordonner équipes techniques", "Gérer budget et délais", "Interface client-développeurs"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+3 à Bac+5 (École, Master Gestion de projet)",
+                qualites: ["Organisation", "Communication", "Leadership", "Gestion"],
+                evolution: "Directeur de projet, Product Owner, COO"
+            },
+            "Architecte logiciel": {
+                description: "Conçoit l'architecture technique des applications",
+                missions: ["Définir choix technologiques", "Concevoir architecture système", "Garantir scalabilité et performance", "Encadrer équipes dev"],
+                salaire: "4000-6000€ confirmé, jusqu'à 9000€+ expert",
+                formation: "Bac+5 + expérience développeur (5-10 ans)",
+                qualites: ["Vision technique", "Expérience", "Leadership", "Anticipation"],
+                evolution: "CTO, Architecte d'entreprise, Consultant expert"
+            },
+            "Ingénieur IA/Machine Learning": {
+                description: "Développe des systèmes d'intelligence artificielle",
+                missions: ["Créer modèles de ML", "Entraîner réseaux de neurones", "Optimiser algorithmes", "Déployer solutions IA en production"],
+                salaire: "3500-5500€ débutant, jusqu'à 9000€+ expert",
+                formation: "Bac+5 (Master IA, Doctorat, École d'ingénieurs)",
+                qualites: ["Maths/stats", "Programmation Python", "Recherche", "Innovation"],
+                evolution: "Lead ML Engineer, Research scientist, AI consultant"
+            },
+            "Testeur QA": {
+                description: "Assure la qualité des logiciels avant livraison",
+                missions: ["Concevoir scénarios de test", "Détecter bugs et anomalies", "Automatiser tests", "Valider fonctionnalités"],
+                salaire: "1800-2800€ débutant, jusqu'à 4000€+ senior",
+                formation: "Bac+2 à Bac+5 (BTS, BUT, Licence Informatique)",
+                qualites: ["Rigueur", "Méthodologie", "Détection d'erreurs", "Communication"],
+                evolution: "Lead QA, Testeur automatisation, Chef de projet qualité"
+            },
+            "Développeur jeux vidéo": {
+                description: "Crée les mécaniques et systèmes de jeux vidéo",
+                missions: ["Programmer gameplay", "Optimiser performances", "Intégrer assets 3D", "Débugger et polir le jeu"],
+                salaire: "2000-3500€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (École spécialisée jeux vidéo)",
+                qualites: ["Passion gaming", "C++/Unity/Unreal", "Créativité", "Travail d'équipe"],
+                evolution: "Lead programmer, Game director, Studio founder"
+            },
+            "Expert blockchain": {
+                description: "Développe applications décentralisées et smart contracts",
+                missions: ["Créer smart contracts", "Auditer sécurité blockchain", "Développer dApps", "Conseiller projets crypto"],
+                salaire: "3500-6000€ débutant, jusqu'à 10000€+ expert",
+                formation: "Bac+5 Informatique + formation blockchain",
+                qualites: ["Cryptographie", "Solidity/Rust", "Sécurité", "Innovation"],
+                evolution: "Architecte blockchain, Consultant crypto, Entrepreneur Web3"
+            },
+            "Consultant IT": {
+                description: "Conseille entreprises sur leurs choix technologiques",
+                missions: ["Analyser besoins clients", "Proposer solutions techniques", "Accompagner transformations digitales", "Former équipes"],
+                salaire: "2500-4000€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (École de commerce/ingénieurs)",
+                qualites: ["Communication", "Expertise technique", "Conseil", "Adaptabilité"],
+                evolution: "Manager, Senior consultant, Directeur associé"
+            },
+            "Ingénieur R&D": {
+                description: "Mène recherches pour innover et développer nouveaux produits",
+                missions: ["Concevoir prototypes", "Tester nouvelles technologies", "Publier résultats de recherche", "Collaborer avec équipes produit"],
+                salaire: "2800-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+5 à Bac+8 (Master, Doctorat)",
+                qualites: ["Curiosité", "Rigueur scientifique", "Innovation", "Persévérance"],
+                evolution: "Chef de projet R&D, Directeur innovation, Chercheur senior"
+            },
+            "Chercheur scientifique": {
+                description: "Effectue recherches fondamentales ou appliquées",
+                missions: ["Mener expériences", "Publier articles scientifiques", "Enseigner", "Obtenir financements recherche"],
+                salaire: "2000-3000€ débutant, jusqu'à 5000€+ directeur",
+                formation: "Bac+8 (Doctorat obligatoire)",
+                qualites: ["Passion science", "Rigueur", "Rédaction", "Patience"],
+                evolution: "Directeur de recherche, Professeur, Expert reconnu"
+            },
+            "Ingénieur qualité": {
+                description: "Garantit qualité et conformité des produits/process",
+                missions: ["Mettre en place normes qualité", "Auditer processus production", "Former équipes aux standards", "Gérer non-conformités"],
+                salaire: "2200-3500€ débutant, jusqu'à 5000€+ confirmé",
+                formation: "Bac+3 à Bac+5 (École d'ingénieurs, Master Qualité)",
+                qualites: ["Rigueur", "Normes", "Organisation", "Communication"],
+                evolution: "Responsable qualité, Directeur QHSE, Consultant"
+            },
+            "Technicien de laboratoire": {
+                description: "Réalise analyses et expériences en laboratoire",
+                missions: ["Préparer échantillons", "Utiliser équipements de mesure", "Analyser résultats", "Rédiger comptes-rendus"],
+                salaire: "1700-2500€ débutant, jusqu'à 3500€+ senior",
+                formation: "Bac+2 à Bac+3 (BTS, BUT, Licence pro)",
+                qualites: ["Précision", "Manipulation", "Protocoles", "Rigueur"],
+                evolution: "Technicien expert, Responsable labo, Ingénieur"
+            },
+            "Ingénieur environnement": {
+                description: "Conçoit solutions pour préserver l'environnement",
+                missions: ["Évaluer impact environnemental", "Gérer traitement déchets/eau", "Conseiller sur normes écologiques", "Développer énergies renouvelables"],
+                salaire: "2500-3800€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+5 (École d'ingénieurs, Master Environnement)",
+                qualites: ["Écologie", "Réglementation", "Projet", "Conviction"],
+                evolution: "Chef de projet environnemental, Consultant, Directeur RSE"
+            },
+            "Ingénieur énergies renouvelables": {
+                description: "Développe projets d'énergie verte (solaire, éolien...)",
+                missions: ["Concevoir installations ENR", "Optimiser rendement énergétique", "Gérer projets de A à Z", "Conseiller collectivités"],
+                salaire: "2800-4200€ débutant, jusqu'à 6000€+ senior",
+                formation: "Bac+5 (École d'ingénieurs spé énergie)",
+                qualites: ["Technique", "Écologie", "Gestion de projet", "Innovation"],
+                evolution: "Chef de projet ENR, Directeur technique, Entrepreneur"
+            },
+            "Bioinformaticien": {
+                description: "Analyse données biologiques avec outils informatiques",
+                missions: ["Analyser séquences ADN/protéines", "Développer algorithmes bio", "Gérer bases de données génomiques", "Collaborer avec biologistes"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+5 (Master Bioinformatique, Double cursus)",
+                qualites: ["Bio + Info", "Programmation", "Statistiques", "Recherche"],
+                evolution: "Lead bioinformaticien, Chef de projet, Chercheur"
+            },
+            "Ingénieur matériaux": {
+                description: "Développe et améliore matériaux pour l'industrie",
+                missions: ["Concevoir nouveaux matériaux", "Tester propriétés mécaniques", "Optimiser procédés fabrication", "Résoudre problèmes techniques"],
+                salaire: "2600-3800€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+5 (École d'ingénieurs matériaux)",
+                qualites: ["Physique-chimie", "Innovation", "Expérimentation", "Industrie"],
+                evolution: "Expert matériaux, Responsable R&D, Consultant"
+            },
+            "Physicien médical": {
+                description: "Applique physique à la médecine (radiothérapie, imagerie)",
+                missions: ["Calibrer équipements médicaux", "Assurer radioprotection", "Optimiser traitements radiothérapie", "Contrôler qualité imagerie"],
+                salaire: "2800-4000€ débutant, jusqu'à 5500€+ senior",
+                formation: "Bac+5 à Bac+8 (Master/Doctorat Physique médicale)",
+                qualites: ["Physique", "Médical", "Précision", "Responsabilité"],
+                evolution: "Physicien médical senior, Chef de service, Chercheur"
+            },
+            "Chimiste formulateur": {
+                description: "Crée formules de produits (cosmétiques, pharma, alimentaire)",
+                missions: ["Développer nouvelles formules", "Tester stabilité produits", "Optimiser textures/efficacité", "Respecter réglementations"],
+                salaire: "2200-3500€ débutant, jusqu'à 5000€+ confirmé",
+                formation: "Bac+3 à Bac+5 (Licence/Master Chimie, École)",
+                qualites: ["Chimie", "Créativité", "Rigueur", "Innovation"],
+                evolution: "Chef de projet formulation, Responsable R&D, Expert"
+            },
+            "Ingénieur aéronautique": {
+                description: "Conçoit avions, hélicoptères et engins spatiaux",
+                missions: ["Concevoir structures aéronautiques", "Tester aérodynamisme", "Optimiser performances", "Assurer sécurité"],
+                salaire: "3000-4500€ débutant, jusqu'à 7000€+ confirmé",
+                formation: "Bac+5 (École d'ingénieurs aéronautique)",
+                qualites: ["Maths-physique", "Précision", "Innovation", "Passion aéro"],
+                evolution: "Ingénieur expert, Chef de projet, Directeur technique"
+            },
+            "Roboticien": {
+                description: "Conçoit et programme robots industriels ou de service",
+                missions: ["Concevoir systèmes robotiques", "Programmer comportements", "Intégrer capteurs et actionneurs", "Tester et optimiser"],
+                salaire: "2800-4200€ débutant, jusqu'à 6500€+ senior",
+                formation: "Bac+5 (École d'ingénieurs robotique)",
+                qualites: ["Mécanique + info", "Électronique", "Innovation", "Créativité"],
+                evolution: "Lead roboticien, Chef de projet, Entrepreneur robotique"
+            },
+            "Astrophysicien": {
+                description: "Étudie l'univers, étoiles, galaxies et phénomènes cosmiques",
+                missions: ["Analyser données télescopes", "Modéliser phénomènes cosmiques", "Publier recherches", "Enseigner"],
+                salaire: "2000-3000€ débutant, jusqu'à 5000€+ senior",
+                formation: "Bac+8 (Doctorat en astrophysique)",
+                qualites: ["Passion cosmos", "Maths avancées", "Patience", "Curiosité"],
+                evolution: "Chercheur confirmé, Directeur observatoire, Professeur"
+            },
+            "Ingénieur biomédical": {
+                description: "Développe équipements et technologies médicales",
+                missions: ["Concevoir dispositifs médicaux", "Assurer maintenance équipements", "Former personnel médical", "Innover en technologies santé"],
+                salaire: "2600-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+5 (École d'ingénieurs biomédical)",
+                qualites: ["Ingénierie + santé", "Innovation", "Réglementation", "Service"],
+                evolution: "Responsable technique, Chef de projet, Consultant"
+            },
+            "Expert en nanotechnologies": {
+                description: "Manipule matière à l'échelle nanométrique",
+                missions: ["Développer nanomatériaux", "Recherche fondamentale/appliquée", "Créer applications innovantes", "Publier travaux"],
+                salaire: "3000-5000€ recherche, variable en industrie",
+                formation: "Bac+8 (Doctorat nanosciences)",
+                qualites: ["Science poussée", "Innovation", "Minutie", "Recherche"],
+                evolution: "Chercheur senior, Directeur R&D, Entrepreneur nanotech"
+            },
+            "Professeur": {
+                description: "Enseigne et transmet savoirs aux élèves",
+                missions: ["Préparer cours", "Enseigner sa discipline", "Évaluer élèves", "Accompagner parcours scolaire"],
+                salaire: "2000-3500€ selon échelon et diplôme",
+                formation: "Bac+5 + Concours (CAPES, Agrégation)",
+                qualites: ["Pédagogie", "Patience", "Communication", "Passion transmission"],
+                evolution: "Certifié, Agrégé, Formateur, Inspecteur"
+            },
+            "Journaliste": {
+                description: "Informe le public via articles, reportages, enquêtes",
+                missions: ["Enquêter sur sujets d'actualité", "Interviewer sources", "Rédiger articles/reportages", "Vérifier informations"],
+                salaire: "1700-2800€ débutant, variable selon média",
+                formation: "Bac+3 à Bac+5 (École de journalisme, IEP)",
+                qualites: ["Curiosité", "Rédaction", "Investigation", "Réactivité"],
+                evolution: "Journaliste confirmé, Chef de rubrique, Rédacteur en chef"
+            },
+            "Rédacteur web": {
+                description: "Crée contenus optimisés pour internet (SEO)",
+                missions: ["Rédiger articles web", "Optimiser SEO", "Gérer ligne éditoriale", "Adapter ton aux cibles"],
+                salaire: "1800-2800€ débutant, jusqu'à 4000€+ senior",
+                formation: "Bac+2 à Bac+5 (Communication, Lettres, Journalisme)",
+                qualites: ["Rédaction", "SEO", "Adaptabilité", "Culture web"],
+                evolution: "Rédacteur en chef web, Content manager, Consultant éditorial"
+            },
+            "Chargé de communication": {
+                description: "Gère communication interne/externe d'une organisation",
+                missions: ["Élaborer stratégie de communication", "Créer supports (CP, newsletter...)", "Gérer réseaux sociaux", "Organiser événements"],
+                salaire: "2000-3000€ débutant, jusqu'à 4500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (BUT, Master Communication)",
+                qualites: ["Communication", "Créativité", "Relationnel", "Polyvalence"],
+                evolution: "Responsable communication, Directeur de la communication"
+            },
+            "Bibliothécaire": {
+                description: "Gère collections et accompagne usagers en bibliothèque",
+                missions: ["Gérer fonds documentaires", "Conseiller lecteurs", "Animer ateliers culturels", "Numériser collections"],
+                salaire: "1700-2500€ fonction publique",
+                formation: "Bac+3 (Licence pro) à Bac+5 + Concours",
+                qualites: ["Culture générale", "Organisation", "Médiation", "Numérique"],
+                evolution: "Conservateur, Directeur de bibliothèque, Responsable réseau"
+            },
+            "Médiateur culturel": {
+                description: "Rend culture accessible à tous les publics",
+                missions: ["Concevoir visites guidées", "Animer ateliers pédagogiques", "Créer parcours culturels", "Développer médiation numérique"],
+                salaire: "1700-2600€ débutant, jusqu'à 3500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (Médiation culturelle, Histoire de l'art)",
+                qualites: ["Pédagogie", "Culture", "Communication", "Créativité"],
+                evolution: "Responsable médiation, Chargé de programmation, Directeur"
+            },
+            "Documentaliste": {
+                description: "Gère information et documentation en entreprise/école",
+                missions: ["Organiser ressources documentaires", "Rechercher et diffuser infos", "Former aux outils de recherche", "Gérer CDI/centre de doc"],
+                salaire: "1900-2800€ selon structure",
+                formation: "Bac+5 (Master Documentation, CAPES Doc)",
+                qualites: ["Organisation", "Recherche", "Pédagogie", "Numérique"],
+                evolution: "Responsable documentation, Veilleur stratégique, KM manager"
+            },
+            "Traducteur": {
+                description: "Traduit textes d'une langue à une autre",
+                missions: ["Traduire documents (littéraires, techniques...)", "Respecter style et sens", "Relire et corriger", "Se spécialiser (juridique, médical...)"],
+                salaire: "Variable (freelance) 1800-3500€ salarié",
+                formation: "Bac+5 (Master LEA, Traduction)",
+                qualites: ["Bilinguisme", "Rédaction", "Culture", "Précision"],
+                evolution: "Traducteur expert, Réviseur, Chef de projet traduction"
+            },
+            "Interprète": {
+                description: "Traduit oralement en direct (conférences, réunions)",
+                missions: ["Interpréter en simultané/consécutif", "Préparer dossiers thématiques", "Missions internationales", "Maintenir niveau langues"],
+                salaire: "2500-4500€ selon missions et langues",
+                formation: "Bac+5 (Master Interprétation, ESIT)",
+                qualites: ["Bilinguisme parfait", "Concentration", "Réactivité", "Aisance orale"],
+                evolution: "Interprète de conférence, Expert ONU/UE, Formateur"
+            },
+            "Éditeur": {
+                description: "Découvre, accompagne et publie auteurs et livres",
+                missions: ["Sélectionner manuscrits", "Accompagner auteurs", "Coordonner fabrication livres", "Élaborer stratégie éditoriale"],
+                salaire: "1900-3200€ débutant, jusqu'à 5000€+ directeur",
+                formation: "Bac+3 à Bac+5 (Édition, Lettres)",
+                qualites: ["Lecture", "Littéraire", "Commercial", "Relationnel"],
+                evolution: "Directeur éditorial, Directeur de collection, Éditeur indépendant"
+            },
+            "Critique littéraire": {
+                description: "Analyse et commente productions littéraires",
+                missions: ["Lire et analyser œuvres", "Rédiger critiques", "Participer débats culturels", "Contribuer à revues"],
+                salaire: "Variable (piges) à 2500€+ si poste fixe",
+                formation: "Bac+5 (Master Lettres, Critique)",
+                qualites: ["Culture littéraire", "Analyse", "Rédaction", "Esprit critique"],
+                evolution: "Critique reconnu, Essayiste, Éditeur, Enseignant"
+            },
+            "Scénariste": {
+                description: "Écrit scénarios pour films, séries, jeux vidéo",
+                missions: ["Développer histoires", "Écrire dialogues", "Structurer récits", "Collaborer avec réalisateurs"],
+                salaire: "Variable (droits d'auteur) 2000-5000€+ selon succès",
+                formation: "Bac+3 à Bac+5 (École de cinéma, Master Scénario)",
+                qualites: ["Imagination", "Écriture", "Structure narrative", "Collaboration"],
+                evolution: "Scénariste reconnu, Show runner, Réalisateur, Auteur"
+            },
+            "Philosophe": {
+                description: "Réfléchit questions fondamentales, enseigne philosophie",
+                missions: ["Enseigner philosophie", "Publier essais", "Participer débats publics", "Recherche en philosophie"],
+                salaire: "2000-3500€ enseignant, variable auteur",
+                formation: "Bac+5 à Bac+8 (Agrégation, Doctorat)",
+                qualites: ["Réflexion", "Culture", "Rédaction", "Esprit critique"],
+                evolution: "Professeur, Chercheur, Essayiste reconnu, Conférencier"
+            },
+            "Historien": {
+                description: "Étudie et analyse le passé",
+                missions: ["Recherches en archives", "Publier travaux historiques", "Enseigner histoire", "Expertiser patrimoine"],
+                salaire: "2000-3500€ enseignant-chercheur",
+                formation: "Bac+5 à Bac+8 (Master, Doctorat Histoire)",
+                qualites: ["Recherche", "Analyse", "Rédaction", "Curiosité"],
+                evolution: "Maître de conférences, Professeur, Conservateur, Expert"
+            },
+            "Archéologue": {
+                description: "Étudie civilisations passées via vestiges matériels",
+                missions: ["Diriger fouilles", "Analyser objets anciens", "Dater et interpréter découvertes", "Publier résultats"],
+                salaire: "1800-2800€ débutant, jusqu'à 4000€+ confirmé",
+                formation: "Bac+5 à Bac+8 (Master, Doctorat Archéologie)",
+                qualites: ["Patience", "Minutie", "Recherche", "Terrain"],
+                evolution: "Responsable fouilles, Conservateur, Chercheur CNRS, Professeur"
+            },
+            "Diplomate": {
+                description: "Représente son pays à l'étranger",
+                missions: ["Négocier accords internationaux", "Défendre intérêts nationaux", "Analyser situation politique", "Gérer crises diplomatiques"],
+                salaire: "3000-6000€+ selon poste et ancienneté",
+                formation: "Bac+5 (IEP, ENA, Concours Affaires étrangères)",
+                qualites: ["Langues", "Négociation", "Culture générale", "Diplomatie"],
+                evolution: "Ambassadeur, Consul général, Conseiller ministériel"
+            },
+            "Chargé d'études": {
+                description: "Analyse données et produit études pour décideurs",
+                missions: ["Collecter données", "Réaliser études qualitatives/quantitatives", "Analyser tendances", "Rédiger rapports"],
+                salaire: "2000-3200€ débutant, jusqu'à 4500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (Sciences sociales, Économie)",
+                qualites: ["Analyse", "Méthodologie", "Synthèse", "Rigueur"],
+                evolution: "Chargé d'études senior, Responsable études, Consultant"
+            },
+            "Éducateur spécialisé": {
+                description: "Accompagne personnes en difficulté sociale",
+                missions: ["Accompagner publics fragilisés", "Élaborer projets éducatifs", "Travailler en équipe pluridisciplinaire", "Favoriser insertion sociale"],
+                salaire: "1800-2600€ selon structure et ancienneté",
+                formation: "Bac+3 (DEES - Diplôme d'État)",
+                qualites: ["Empathie", "Patience", "Communication", "Engagement"],
+                evolution: "Éducateur chef, Responsable de service, Directeur établissement"
+            },
+            "Assistant social": {
+                description: "Aide personnes en difficulté à résoudre leurs problèmes",
+                missions: ["Évaluer situations sociales", "Orienter vers dispositifs d'aide", "Constituer dossiers administratifs", "Soutenir familles en difficulté"],
+                salaire: "1900-2800€ fonction publique/associatif",
+                formation: "Bac+3 (DEASS - Diplôme d'État)",
+                qualites: ["Écoute", "Empathie", "Connaissances sociales", "Réseau"],
+                evolution: "Assistant social chef, Cadre socio-éducatif, Responsable"
+            },
+            "Infirmier": {
+                description: "Dispense soins et accompagne patients",
+                missions: ["Prodiguer soins", "Administrer traitements", "Surveiller état de santé", "Accompagner patients et familles"],
+                salaire: "2000-2800€ débutant, jusqu'à 3500€+ cadre",
+                formation: "Bac+3 (Diplôme d'État Infirmier)",
+                qualites: ["Empathie", "Résistance stress", "Technique", "Disponibilité"],
+                evolution: "Infirmier spécialisé, Cadre de santé, Directeur de soins"
+            },
+            "Conseiller d'insertion professionnelle": {
+                description: "Accompagne demandeurs d'emploi vers insertion pro",
+                missions: ["Réaliser bilans de compétences", "Élaborer projets professionnels", "Mettre en relation avec employeurs", "Former à recherche d'emploi"],
+                salaire: "1800-2600€ selon structure",
+                formation: "Bac+2 à Bac+3 (BTS, Licence pro Insertion)",
+                qualites: ["Écoute", "Relationnel", "Connaissance marché emploi", "Accompagnement"],
+                evolution: "Conseiller senior, Responsable agence, Formateur"
+            },
+            "Psychologue": {
+                description: "Écoute, évalue et accompagne personnes en souffrance psychique",
+                missions: ["Mener entretiens thérapeutiques", "Réaliser bilans psychologiques", "Accompagner patients", "Travailler en équipe médicale"],
+                salaire: "2000-3200€ débutant, jusqu'à 4500€+ libéral",
+                formation: "Bac+5 (Master Psychologie + stage)",
+                qualites: ["Écoute", "Empathie", "Analyse", "Discrétion"],
+                evolution: "Psychologue spécialisé, Psychothérapeute, Chercheur, Formateur"
+            },
+            "Éducateur de jeunes enfants": {
+                description: "Accompagne développement enfants 0-7 ans",
+                missions: ["Concevoir activités d'éveil", "Accompagner développement", "Soutenir parentalité", "Travailler en crèche/halte-garderie"],
+                salaire: "1800-2500€ selon structure",
+                formation: "Bac+3 (DEEJE - Diplôme d'État)",
+                qualites: ["Patience", "Créativité", "Pédagogie", "Bienveillance"],
+                evolution: "EJE coordinateur, Directeur de crèche, Formateur"
+            },
+            "Animateur socioculturel": {
+                description: "Anime activités pour différents publics (jeunes, seniors...)",
+                missions: ["Concevoir programmes d'animation", "Animer ateliers et sorties", "Gérer groupes", "Développer projets culturels"],
+                salaire: "1600-2300€ selon structure",
+                formation: "Bac à Bac+3 (BPJEPS, Licence Animation)",
+                qualites: ["Dynamisme", "Créativité", "Relationnel", "Polyvalence"],
+                evolution: "Coordinateur, Directeur centre social, Responsable animation"
+            },
+            "Conseiller en économie sociale": {
+                description: "Conseille familles sur gestion budget et droits sociaux",
+                missions: ["Accompagner gestion budgétaire", "Informer sur droits sociaux", "Prévenir surendettement", "Éduquer à consommation responsable"],
+                salaire: "1900-2700€",
+                formation: "Bac+2 à Bac+3 (BTS ESF, Licence)",
+                qualites: ["Pédagogie", "Écoute", "Gestion", "Connaissances sociales"],
+                evolution: "Conseiller senior, Responsable service, Formateur"
+            },
+            "Médiateur social": {
+                description: "Facilite dialogue et résout conflits dans espaces publics",
+                missions: ["Prévenir conflits de voisinage", "Médier entre habitants", "Faciliter accès aux droits", "Apaiser tensions"],
+                salaire: "1700-2400€",
+                formation: "Bac à Bac+3 (Titre professionnel, Licence Médiation)",
+                qualites: ["Neutralité", "Écoute", "Communication", "Sang-froid"],
+                evolution: "Médiateur référent, Coordinateur médiation, Formateur"
+            },
+            "Coach professionnel": {
+                description: "Accompagne développement professionnel et personnel",
+                missions: ["Mener séances de coaching", "Fixer objectifs avec coaché", "Développer compétences", "Accompagner transitions"],
+                salaire: "Variable freelance, 2500-5000€+ expérimenté",
+                formation: "Bac+5 + Certification coaching",
+                qualites: ["Écoute", "Questionnement", "Empathie", "Inspiration"],
+                evolution: "Coach expert, Formateur coachs, Consultant RH, Auteur"
+            },
+            "Ergothérapeute social": {
+                description: "Aide personnes handicapées à retrouver autonomie quotidienne",
+                missions: ["Évaluer capacités fonctionnelles", "Adapter environnement", "Rééduquer gestes quotidiens", "Conseiller aides techniques"],
+                salaire: "2000-2800€ débutant, jusqu'à 3500€+ confirmé",
+                formation: "Bac+3 (Diplôme d'État Ergothérapeute)",
+                qualites: ["Patience", "Créativité", "Technique", "Empathie"],
+                evolution: "Ergothérapeute cadre, Formateur, Consultant accessibilité"
+            },
+            "Accompagnant éducatif et social": {
+                description: "Accompagne au quotidien personnes dépendantes",
+                missions: ["Aider aux actes de la vie quotidienne", "Stimuler capacités", "Accompagner sorties", "Soutien moral"],
+                salaire: "1600-2000€",
+                formation: "Bac (DEAES - Diplôme d'État)",
+                qualites: ["Patience", "Bienveillance", "Disponibilité", "Empathie"],
+                evolution: "AES référent, Moniteur-éducateur, Éducateur spécialisé"
+            },
+            "Conseiller conjugal": {
+                description: "Accompagne couples et familles en difficulté relationnelle",
+                missions: ["Mener entretiens de couple", "Accompagner crises familiales", "Informer sur vie affective", "Animer ateliers"],
+                salaire: "1800-2800€ selon mode exercice",
+                formation: "Bac+3 + Formation conseiller conjugal (400h)",
+                qualites: ["Écoute", "Neutralité", "Empathie", "Communication"],
+                evolution: "Conseiller senior, Formateur, Thérapeute familial, Superviseur"
+            },
+            "Formateur pour adultes": {
+                description: "Forme adultes à nouvelles compétences professionnelles",
+                missions: ["Concevoir programmes pédagogiques", "Animer formations", "Évaluer acquisitions", "Accompagner reconversions"],
+                salaire: "2000-3200€ salarié, variable freelance",
+                formation: "Bac+3 à Bac+5 + Titre professionnel Formateur",
+                qualites: ["Pédagogie", "Expertise métier", "Adaptabilité", "Communication"],
+                evolution: "Formateur expert, Responsable formation, Consultant, Ingénieur pédagogique"
+            },
+            "Graphiste": {
+                description: "Crée l'identité visuelle de marques, produits et supports",
+                missions: ["Concevoir logos et chartes graphiques", "Créer supports print et web", "Proposer concepts créatifs", "Collaborer avec clients et équipes"],
+                salaire: "1800-2800€ débutant, jusqu'à 4500€+ senior/freelance",
+                formation: "Bac+2 à Bac+5 (BTS Design, DN MADE, École d'art)",
+                qualites: ["Créativité", "Maîtrise logiciels (Photoshop, Illustrator)", "Sens esthétique", "Écoute client"],
+                evolution: "Directeur artistique, DA senior, Freelance reconnu, Studio owner"
+            },
+            "UX/UI Designer": {
+                description: "Conçoit expériences utilisateur et interfaces digitales",
+                missions: ["Créer wireframes et prototypes", "Tester ergonomie interfaces", "Designer parcours utilisateur", "Collaborer avec développeurs"],
+                salaire: "2500-3800€ débutant, jusqu'à 6000€+ senior",
+                formation: "Bac+3 à Bac+5 (Licence Design, Master UX, École)",
+                qualites: ["Empathie utilisateur", "Design thinking", "Outils (Figma, Sketch)", "Logique"],
+                evolution: "Lead UX, Product designer, Design manager, Consultant UX"
+            },
+            "Illustrateur": {
+                description: "Crée illustrations pour livres, presse, publicité, digital",
+                missions: ["Dessiner personnages et univers", "Illustrer articles et livres", "Créer visuels pour marques", "Développer style personnel"],
+                salaire: "Variable freelance 1500-3500€, 2000-3000€ salarié",
+                formation: "Bac+2 à Bac+5 (École d'art, DN MADE Illustration)",
+                qualites: ["Dessin", "Créativité", "Polyvalence styles", "Autonomie"],
+                evolution: "Illustrateur reconnu, Auteur BD, Directeur artistique, Formateur"
+            },
+            "Motion designer": {
+                description: "Anime graphismes pour vidéos, publicités, sites web",
+                missions: ["Créer animations 2D/3D", "Designer génériques et habillages", "Animer logos et éléments graphiques", "Synchroniser avec son"],
+                salaire: "2200-3500€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (DN MADE, École motion design)",
+                qualites: ["Créativité", "After Effects", "Sens du rythme", "Rigueur"],
+                evolution: "Senior motion designer, Réalisateur, Directeur créatif, Freelance"
+            },
+            "Directeur artistique": {
+                description: "Pilote création visuelle de projets et campagnes",
+                missions: ["Définir direction créative", "Manager équipe créative", "Présenter concepts aux clients", "Superviser production"],
+                salaire: "3000-5000€ confirmé, jusqu'à 8000€+ senior",
+                formation: "Bac+5 (École d'art, publicité) + expérience",
+                qualites: ["Vision créative", "Leadership", "Culture visuelle", "Stratégie"],
+                evolution: "Directeur de création, Creative director, Entrepreneur, Consultant"
+            },
+            "Designer produit": {
+                description: "Conçoit design d'objets et produits industriels",
+                missions: ["Créer formes et ergonomie produits", "Réaliser prototypes", "Collaborer avec ingénieurs", "Suivre fabrication"],
+                salaire: "2500-3800€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+5 (DN MADE Objet, École design produit)",
+                qualites: ["Créativité", "Dessin technique", "Matériaux", "3D"],
+                evolution: "Designer senior, Chef de projet design, Consultant, Studio owner"
+            },
+            "Webdesigner": {
+                description: "Crée design et ergonomie de sites internet",
+                missions: ["Designer interfaces web", "Créer maquettes responsive", "Définir identité visuelle web", "Intégrer HTML/CSS basique"],
+                salaire: "2000-3200€ débutant, jusqu'à 4500€+ senior",
+                formation: "Bac+2 à Bac+5 (BUT MMI, Licence web design)",
+                qualites: ["Design web", "UX", "Outils web", "Responsive"],
+                evolution: "Lead webdesigner, UI/UX designer, Directeur créatif web, Freelance"
+            },
+            "Photographe": {
+                description: "Capture images pour presse, mode, pub, événementiel",
+                missions: ["Réaliser shootings photo", "Retoucher images", "Gérer matériel et lumière", "Développer portfolio"],
+                salaire: "Variable freelance 1800-4000€+, 2000-3000€ salarié",
+                formation: "Bac+2 à Bac+5 (BTS Photo, École photographie)",
+                qualites: ["Œil artistique", "Technique photo", "Retouche (Lightroom)", "Relationnel"],
+                evolution: "Photographe reconnu, Directeur photo, Formateur, Galeriste"
+            },
+            "Vidéaste": {
+                description: "Filme et réalise contenus vidéo variés",
+                missions: ["Tourner vidéos (événements, clips, reportages)", "Cadrer et gérer lumière/son", "Réaliser montage", "Livrer contenus finalisés"],
+                salaire: "1800-3200€ débutant, jusqu'à 5000€+ confirmé",
+                formation: "Bac+2 à Bac+5 (BTS Audiovisuel, École cinéma)",
+                qualites: ["Cadrage", "Sens du récit", "Technique", "Créativité"],
+                evolution: "Réalisateur, Chef opérateur, Directeur de production, Freelance"
+            },
+            "Monteur vidéo": {
+                description: "Assemble et monte contenus vidéo",
+                missions: ["Monter rushes vidéo", "Créer rythme et narration", "Étalonner couleurs", "Mixer son"],
+                salaire: "2000-3200€ débutant, jusqu'à 4500€+ senior",
+                formation: "Bac+2 à Bac+5 (BTS Audiovisuel option montage)",
+                qualites: ["Sens du rythme", "Logiciels (Premiere, DaVinci)", "Patience", "Créativité"],
+                evolution: "Monteur senior, Réalisateur, Chef monteur, Formateur"
+            },
+            "Animateur 3D": {
+                description: "Crée animations 3D pour films, jeux, publicités",
+                missions: ["Modéliser personnages et objets 3D", "Animer mouvements", "Texturer et éclairer scènes", "Collaborer avec équipe production"],
+                salaire: "2200-3500€ débutant, jusqu'à 5500€+ senior",
+                formation: "Bac+3 à Bac+5 (École 3D/animation, Master)",
+                qualites: ["Maîtrise 3D (Maya, Blender)", "Créativité", "Rigueur", "Travail d'équipe"],
+                evolution: "Lead animator, Superviseur 3D, Réalisateur 3D, Freelance"
+            },
+            "Game designer": {
+                description: "Conçoit gameplay et mécaniques de jeux vidéo",
+                missions: ["Créer concept et règles de jeu", "Designer niveaux et progression", "Équilibrer difficulté", "Documenter game design"],
+                salaire: "2200-3800€ débutant, jusqu'à 6000€+ senior",
+                formation: "Bac+3 à Bac+5 (École jeux vidéo, Master game design)",
+                qualites: ["Passion gaming", "Créativité", "Game feel", "Communication"],
+                evolution: "Lead game designer, Creative director, Studio founder, Consultant"
+            },
+            "Designer d'espace": {
+                description: "Aménage espaces commerciaux, expo, scénographie",
+                missions: ["Concevoir aménagements spatiaux", "Créer plans et 3D", "Choisir matériaux et mobilier", "Suivre chantiers"],
+                salaire: "2200-3500€ débutant, jusqu'à 5000€+ confirmé",
+                formation: "Bac+5 (DN MADE Espace, École architecture intérieure)",
+                qualites: ["Vision spatiale", "Dessin technique", "Matériaux", "Gestion projet"],
+                evolution: "Designer senior, Scénographe, Architecte d'intérieur, Agence propre"
+            },
+            "Styliste": {
+                description: "Crée collections de vêtements et accessoires mode",
+                missions: ["Dessiner modèles et collections", "Choisir tissus et matières", "Suivre prototypage", "Présenter défilés"],
+                salaire: "1800-3000€ débutant, très variable selon renommée",
+                formation: "Bac+3 à Bac+5 (DN MADE Mode, École de mode)",
+                qualites: ["Créativité mode", "Dessin", "Couture", "Tendances"],
+                evolution: "Styliste confirmé, Créateur de marque, Directeur de collection, Consultant"
+            },
+            "Architecte d'intérieur": {
+                description: "Réaménage espaces intérieurs (logements, bureaux, commerces)",
+                missions: ["Concevoir projets d'aménagement", "Créer plans et 3D", "Choisir matériaux, couleurs, mobilier", "Coordonner travaux"],
+                salaire: "2200-3500€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+4 à Bac+5 (DN MADE, École reconnue CFAI)",
+                qualites: ["Vision spatiale", "Dessin", "Relationnel client", "Technique"],
+                evolution: "Architecte d'intérieur confirmé, Agence propre, Enseignant, Scénographe"
+            },
+            "Street artist": {
+                description: "Crée œuvres d'art urbain (fresques, graffitis, installations)",
+                missions: ["Réaliser fresques murales", "Créer œuvres urbaines", "Répondre à commandes publiques/privées", "Développer univers artistique"],
+                salaire: "Variable selon commandes et renommée",
+                formation: "Autodidacte ou Bac+3 à Bac+5 (École d'art)",
+                qualites: ["Talent artistique", "Technique bombe/pinceau", "Audace", "Réseau"],
+                evolution: "Artiste reconnu, Galeriste, Formateur, Entrepreneur artistique"
+            },
+            "Scénographe": {
+                description: "Conçoit décors et espaces pour théâtre, expo, événements",
+                missions: ["Créer univers scéniques", "Designer décors et lumières", "Réaliser maquettes", "Superviser réalisation"],
+                salaire: "2000-3500€ selon projets et renommée",
+                formation: "Bac+5 (École d'art, Scénographie)",
+                qualites: ["Vision artistique", "Espace 3D", "Technique", "Collaboration"],
+                evolution: "Scénographe renommé, Directeur artistique, Enseignant, Curateur"
+            },
+            "Chargé de clientèle": {
+                description: "Gère portefeuille clients et développe relation commerciale",
+                missions: ["Conseiller et fidéliser clients", "Développer ventes", "Résoudre réclamations", "Atteindre objectifs commerciaux"],
+                salaire: "2000-3000€ fixe + primes variables",
+                formation: "Bac+2 à Bac+5 (BTS, BUT TC, Licence/Master Commerce)",
+                qualites: ["Relationnel", "Écoute", "Persuasion", "Résilience"],
+                evolution: "Responsable clientèle, Manager commercial, Directeur d'agence"
+            },
+            "Responsable marketing": {
+                description: "Élabore et pilote stratégie marketing de l'entreprise",
+                missions: ["Définir stratégie marketing", "Piloter campagnes publicitaires", "Analyser marché et concurrence", "Manager équipe marketing"],
+                salaire: "3000-5000€ confirmé, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (École de commerce, Master Marketing)",
+                qualites: ["Stratégie", "Créativité", "Analyse", "Leadership"],
+                evolution: "Directeur marketing, CMO, Consultant, Entrepreneur"
+            },
+            "Chef de produit": {
+                description: "Pilote développement et commercialisation d'un produit",
+                missions: ["Définir positionnement produit", "Coordonner développement", "Lancer campagnes marketing", "Analyser performances"],
+                salaire: "2800-4500€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (École de commerce, Master Marketing/Gestion)",
+                qualites: ["Vision produit", "Gestion projet", "Analyse", "Communication"],
+                evolution: "Senior product manager, Directeur produit, Directeur marketing"
+            },
+            "Entrepreneur": {
+                description: "Crée et développe sa propre entreprise",
+                missions: ["Identifier opportunités business", "Créer entreprise et lever fonds", "Piloter croissance", "Manager équipes"],
+                salaire: "Variable selon succès de l'entreprise",
+                formation: "Tous parcours possibles, souvent Bac+5 commerce/ingé",
+                qualites: ["Vision", "Prise de risque", "Leadership", "Résilience"],
+                evolution: "CEO reconnu, Serial entrepreneur, Investisseur, Business angel"
+            },
+            "Consultant en stratégie": {
+                description: "Conseille entreprises sur stratégie et transformation",
+                missions: ["Analyser problématiques clients", "Proposer recommandations stratégiques", "Accompagner mise en œuvre", "Mener missions de conseil"],
+                salaire: "3000-5000€ junior, jusqu'à 10000€+ senior/partner",
+                formation: "Bac+5 (Grande école commerce/ingé, Master)",
+                qualites: ["Analyse", "Synthèse", "Communication", "Excel/PowerPoint"],
+                evolution: "Senior consultant, Manager, Partner, Directeur cabinet"
+            },
+            "Commercial export": {
+                description: "Développe ventes à l'international",
+                missions: ["Prospecter marchés étrangers", "Négocier contrats internationaux", "Gérer logistique export", "Suivre réglementation douanière"],
+                salaire: "2500-4000€ + primes export importantes",
+                formation: "Bac+3 à Bac+5 (Licence/Master Commerce international)",
+                qualites: ["Langues étrangères", "Négociation", "Culture internationale", "Mobilité"],
+                evolution: "Responsable zone export, Directeur export, Directeur commercial"
+            },
+            "Responsable e-commerce": {
+                description: "Pilote stratégie et ventes en ligne",
+                missions: ["Gérer site e-commerce", "Optimiser tunnel de conversion", "Piloter campagnes digitales", "Analyser KPIs et CA"],
+                salaire: "2800-4500€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+3 à Bac+5 (Master E-commerce, Digital marketing)",
+                qualites: ["Digital", "Marketing", "Analyse data", "Webmarketing"],
+                evolution: "Directeur e-commerce, Head of digital, CMO, Entrepreneur"
+            },
+            "Chef des ventes": {
+                description: "Manage équipe commerciale et pilote performance ventes",
+                missions: ["Manager commerciaux", "Définir objectifs de vente", "Former et coacher équipe", "Piloter performance"],
+                salaire: "3000-5000€ + primes selon résultats",
+                formation: "Bac+3 à Bac+5 (Commerce) + expérience commerciale",
+                qualites: ["Leadership", "Commercial", "Management", "Motivation"],
+                evolution: "Directeur commercial, Directeur régional, DG"
+            },
+            "Acheteur": {
+                description: "Négocie achats de produits/services pour l'entreprise",
+                missions: ["Sélectionner fournisseurs", "Négocier prix et conditions", "Gérer approvisionnements", "Optimiser coûts"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ senior",
+                formation: "Bac+3 à Bac+5 (Master Achats, École de commerce)",
+                qualites: ["Négociation", "Analyse", "Relationnel", "Rigueur"],
+                evolution: "Acheteur senior, Responsable achats, Directeur achats"
+            },
+            "Auditeur financier": {
+                description: "Vérifie et certifie comptes d'entreprises",
+                missions: ["Auditer états financiers", "Vérifier conformité comptable", "Rédiger rapports d'audit", "Conseiller améliorations"],
+                salaire: "2800-4000€ junior, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (Master CCA, DSCG, École de commerce)",
+                qualites: ["Rigueur", "Comptabilité", "Analyse", "Éthique"],
+                evolution: "Senior auditor, Manager audit, Expert-comptable, DAF"
+            },
+            "Contrôleur de gestion": {
+                description: "Pilote performance financière de l'entreprise",
+                missions: ["Élaborer budgets et prévisionnels", "Analyser écarts budget/réalisé", "Produire reporting financier", "Conseiller direction"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+5 (Master Contrôle de gestion, École)",
+                qualites: ["Chiffres", "Excel avancé", "Analyse", "Synthèse"],
+                evolution: "Contrôleur de gestion senior, Directeur contrôle, DAF"
+            },
+            "Chargé de développement RH": {
+                description: "Développe compétences et carrières des collaborateurs",
+                missions: ["Gérer formation et développement", "Piloter mobilité interne", "Accompagner carrières", "Mettre en place GPEC"],
+                salaire: "2500-3800€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+5 (Master RH, École)",
+                qualites: ["Écoute", "RH", "Pédagogie", "Gestion projet"],
+                evolution: "Responsable développement RH, DRH, Consultant RH"
+            },
+            "Analyste de marché": {
+                description: "Analyse marchés et comportements consommateurs",
+                missions: ["Réaliser études de marché", "Analyser données consommateurs", "Identifier tendances", "Produire recommandations"],
+                salaire: "2500-3800€ débutant, jusqu'à 5500€+ senior",
+                formation: "Bac+5 (Master Marketing, Études, Stats)",
+                qualites: ["Analyse", "Statistiques", "Synthèse", "Curiosité"],
+                evolution: "Senior analyst, Responsable études, Directeur marketing"
+            },
+            "Business developer": {
+                description: "Développe nouveaux marchés et partenariats",
+                missions: ["Identifier opportunités business", "Développer partenariats stratégiques", "Prospecter nouveaux clients", "Négocier accords"],
+                salaire: "3000-5000€ + primes selon deals",
+                formation: "Bac+5 (École de commerce, Master)",
+                qualites: ["Vision stratégique", "Négociation", "Réseau", "Entrepreneuriat"],
+                evolution: "Senior BD, Directeur développement, Directeur commercial, Entrepreneur"
+            },
+            "Chef de projet CRM": {
+                description: "Pilote stratégie et outils de relation client",
+                missions: ["Gérer plateforme CRM", "Segmenter base clients", "Piloter campagnes CRM", "Analyser satisfaction client"],
+                salaire: "2800-4500€ débutant, jusqu'à 6500€+ senior",
+                formation: "Bac+5 (Master Marketing digital, CRM)",
+                qualites: ["Outils CRM", "Marketing", "Data", "Gestion projet"],
+                evolution: "Responsable CRM, Directeur relation client, CDO"
+            },
+            "Médecin généraliste": {
+                description: "Diagnostique et soigne patients en médecine de premier recours",
+                missions: ["Consulter et diagnostiquer", "Prescrire traitements", "Orienter vers spécialistes", "Suivre patients au long cours"],
+                salaire: "3500-7000€+ libéral selon activité, 3000-5000€ salarié",
+                formation: "Bac+9 minimum (6 ans études + 3 ans internat)",
+                qualites: ["Écoute", "Diagnostic", "Humanité", "Résistance"],
+                evolution: "Médecin installé, Enseignant, Chef de service si hospitalier"
+            },
+            "Médecin spécialiste": {
+                description: "Médecin expert dans une spécialité (cardio, dermato, pédiatrie...)",
+                missions: ["Diagnostiquer et traiter pathologies spécialisées", "Réaliser actes techniques", "Collaborer avec généralistes", "Se former continuellement"],
+                salaire: "4000-12000€+ selon spécialité et mode exercice",
+                formation: "Bac+10 à Bac+12 (6 ans études + 4-6 ans internat)",
+                qualites: ["Expertise", "Précision", "Écoute", "Rigueur scientifique"],
+                evolution: "PU-PH (enseignant-chercheur), Chef de service, Expert reconnu"
+            },
+            "Kinésithérapeute": {
+                description: "Rééduque patients par mouvements et massages",
+                missions: ["Établir bilans kiné", "Rééduquer suite traumatismes/opérations", "Soulager douleurs", "Prévenir troubles posturaux"],
+                salaire: "2000-3000€ salarié, 3000-6000€+ libéral",
+                formation: "Bac+5 (Diplôme d'État de masseur-kinésithérapeute)",
+                qualites: ["Contact", "Anatomie", "Patience", "Pédagogie"],
+                evolution: "Kiné expert, Ostéopathe, Formateur, Cadre de santé"
+            },
+            "Pharmacien": {
+                description: "Dispense médicaments et conseille patients",
+                missions: ["Délivrer médicaments sur ordonnance", "Conseiller patients", "Gérer stock officine", "Vigilance interactions médicamenteuses"],
+                salaire: "2500-4000€ salarié, 4000-8000€+ titulaire",
+                formation: "Bac+6 (Diplôme d'État de Docteur en Pharmacie)",
+                qualites: ["Rigueur", "Conseil", "Connaissances médicales", "Gestion"],
+                evolution: "Pharmacien titulaire, Pharmacien hospitalier, Biologiste, Industrie pharma"
+            },
+            "Orthophoniste": {
+                description: "Rééduque troubles du langage et de la communication",
+                missions: ["Diagnostiquer troubles du langage", "Rééduquer parole et déglutition", "Accompagner handicaps", "Travailler avec familles"],
+                salaire: "2000-2800€ salarié, 2500-4000€+ libéral",
+                formation: "Bac+5 (Certificat de Capacité d'Orthophoniste)",
+                qualites: ["Patience", "Écoute", "Pédagogie", "Empathie"],
+                evolution: "Orthophoniste expert, Formateur, Chercheur, Cadre"
+            },
+            "Sage-femme": {
+                description: "Accompagne femmes enceintes et accouche",
+                missions: ["Suivre grossesses", "Pratiquer accouchements", "Assurer suivi post-natal", "Prévention santé femme"],
+                salaire: "2200-3200€ hospitalier, 2500-4500€+ libéral",
+                formation: "Bac+5 (Diplôme d'État de Sage-femme)",
+                qualites: ["Calme", "Technique médicale", "Empathie", "Réactivité"],
+                evolution: "Sage-femme coordinatrice, Enseignante, Cadre supérieur"
+            },
+            "Manipulateur radio": {
+                description: "Réalise examens d'imagerie médicale (radio, scanner, IRM)",
+                missions: ["Réaliser examens radiologiques", "Positionner patients", "Gérer équipements imagerie", "Assurer radioprotection"],
+                salaire: "2000-3000€ selon établissement et grade",
+                formation: "Bac+3 (DE Manipulateur radio ou BUT Imagerie)",
+                qualites: ["Rigueur", "Technique", "Relationnel", "Prudence"],
+                evolution: "Manip expert, Cadre de santé, Formateur, Application specialist"
+            },
+            "Ergothérapeute": {
+                description: "Aide personnes à retrouver autonomie dans actes quotidiens",
+                missions: ["Évaluer capacités fonctionnelles", "Rééduquer gestes quotidiens", "Adapter environnement", "Préconiser aides techniques"],
+                salaire: "2000-2800€ salarié, jusqu'à 3500€+ libéral",
+                formation: "Bac+3 (Diplôme d'État Ergothérapeute)",
+                qualites: ["Empathie", "Créativité", "Technique", "Patience"],
+                evolution: "Ergothérapeute cadre, Formateur, Consultant accessibilité"
+            },
+            "Psychomotricien": {
+                description: "Rééduque troubles psychomoteurs par médiation corporelle",
+                missions: ["Évaluer développement psychomoteur", "Rééduquer par le corps et le mouvement", "Accompagner handicaps", "Relaxation thérapeutique"],
+                salaire: "1900-2700€ salarié, 2500-3500€+ libéral",
+                formation: "Bac+3 (Diplôme d'État Psychomotricien)",
+                qualites: ["Observation", "Corporalité", "Empathie", "Créativité"],
+                evolution: "Psychomotricien expert, Cadre, Formateur, Chercheur"
+            },
+            "Diététicien": {
+                description: "Conseille nutrition pour santé et pathologies",
+                missions: ["Établir bilans nutritionnels", "Élaborer régimes thérapeutiques", "Éduquer à l'alimentation", "Prévenir troubles nutritionnels"],
+                salaire: "1800-2600€ salarié, 2200-3500€+ libéral",
+                formation: "Bac+2 à Bac+3 (BTS Diététique, BUT Génie bio diététique)",
+                qualites: ["Nutrition", "Pédagogie", "Écoute", "Sciences"],
+                evolution: "Diététicien expert, Nutritionniste (si médecin), Consultant, Formateur"
+            },
+            "Podologue": {
+                description: "Soigne affections du pied",
+                missions: ["Traiter pathologies du pied", "Réaliser semelles orthopédiques", "Soins des ongles et cors", "Prévention diabète"],
+                salaire: "2000-3000€ salarié, 3000-5000€+ libéral",
+                formation: "Bac+3 (Diplôme d'État Pédicure-podologue)",
+                qualites: ["Précision", "Manuel", "Relationnel", "Hygiène"],
+                evolution: "Podologue installé, Formateur, Podologue du sport"
+            },
+            "Opticien-lunetier": {
+                description: "Vend lunettes et lentilles, conseille clients",
+                missions: ["Analyser prescriptions", "Conseiller montures et verres", "Ajuster lunettes", "Gérer magasin"],
+                salaire: "1800-2800€ salarié, variable gérant",
+                formation: "Bac+2 à Bac+3 (BTS OL, Licence pro Optique)",
+                qualites: ["Commercial", "Technique optique", "Conseil", "Esthétique"],
+                evolution: "Responsable magasin, Gérant, Formateur, Opticien spécialisé"
+            },
+            "Dentiste": {
+                description: "Soigne dents et bouche",
+                missions: ["Diagnostiquer pathologies dentaires", "Soigner caries et gencives", "Poser prothèses", "Prévention bucco-dentaire"],
+                salaire: "3000-5000€ salarié, 5000-15000€+ libéral",
+                formation: "Bac+6 à Bac+9 (Diplôme d'État Docteur en Chirurgie Dentaire)",
+                qualites: ["Précision", "Manuel", "Relationnel", "Rigueur"],
+                evolution: "Dentiste expert, Orthodontiste, Chirurgien maxillo-facial, Enseignant"
+            },
+            "Ostéopathe": {
+                description: "Traite troubles fonctionnels par manipulations",
+                missions: ["Diagnostiquer dysfonctionnements", "Manipuler articulations et tissus", "Soulager douleurs", "Prévenir troubles"],
+                salaire: "2000-3500€ débutant, 3000-6000€+ confirmé libéral",
+                formation: "Bac+5 (Diplôme d'ostéopathe, école agréée)",
+                qualites: ["Anatomie", "Toucher", "Écoute", "Douceur et force"],
+                evolution: "Ostéopathe renommé, Formateur, Ostéopathe du sport, Chercheur"
+            },
+            "Aide-soignant": {
+                description: "Assure soins d'hygiène et confort des patients",
+                missions: ["Aide à la toilette et repas", "Surveillance état patients", "Soutien moral", "Collaboration avec infirmiers"],
+                salaire: "1700-2300€ selon grade et ancienneté",
+                formation: "Bac ou équivalent + Diplôme d'État Aide-soignant (1 an)",
+                qualites: ["Empathie", "Résistance physique", "Dévouement", "Travail d'équipe"],
+                evolution: "AS spécialisé, Infirmier (par passerelle), Faisant fonction cadre"
+            },
+            "Ambulancier": {
+                description: "Transporte patients et urgences médicales",
+                missions: ["Transporter malades et blessés", "Premiers secours", "Entretien véhicule sanitaire", "Gestion administrative"],
+                salaire: "1600-2200€",
+                formation: "Diplôme d'État Ambulancier (6 mois)",
+                qualites: ["Conduite", "Secourisme", "Sang-froid", "Disponibilité"],
+                evolution: "Ambulancier régulateur, Formateur, Gérant entreprise ambulances"
+            },
+            "Technicien environnement": {
+                description: "Contrôle et préserve qualité environnementale",
+                missions: ["Prélever et analyser échantillons", "Contrôler pollution", "Suivre réglementation", "Sensibiliser à l'écologie"],
+                salaire: "1900-2800€ débutant, jusqu'à 3800€+ confirmé",
+                formation: "Bac+2 à Bac+3 (BTS Métiers de l'eau, BUT Génie bio environnement)",
+                qualites: ["Écologie", "Analyse", "Rigueur", "Terrain"],
+                evolution: "Technicien expert, Ingénieur environnement, Responsable QHSE"
+            },
+            "Viticulteur": {
+                description: "Cultive vignes et produit vin",
+                missions: ["Cultiver et tailler vignes", "Vendanger", "Vinifier et élever vins", "Commercialiser production"],
+                salaire: "Variable selon exploitation et production",
+                formation: "Bac+2 à Bac+5 (BTSA Viticulture-œnologie, Diplôme d'ingénieur)",
+                qualites: ["Passion vin", "Travail physique", "Patience", "Commerce"],
+                evolution: "Viticulteur propriétaire, Maître de chai, Œnologue, Négociant"
+            },
+            "Paysagiste": {
+                description: "Conçoit et aménage espaces verts",
+                missions: ["Concevoir projets paysagers", "Planter et entretenir végétaux", "Aménager jardins", "Gérer chantiers"],
+                salaire: "1800-2800€ salarié, variable entrepreneur",
+                formation: "Bac+2 à Bac+5 (BTSA Aménagements paysagers, Ingénieur paysage)",
+                qualites: ["Créativité", "Botanique", "Technique", "Extérieur"],
+                evolution: "Paysagiste concepteur, Chef d'entreprise, Ingénieur, Formateur"
+            },
+            "Ingénieur agronome": {
+                description: "Optimise production agricole et développement durable",
+                missions: ["Conseiller agriculteurs", "Développer nouvelles cultures", "Recherche agronomique", "Gérer exploitations"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+5 (École d'ingénieurs agronomes)",
+                qualites: ["Sciences", "Agriculture", "Innovation", "Conseil"],
+                evolution: "Ingénieur expert, Responsable R&D, Directeur exploitation, Consultant"
+            },
+            "Garde forestier": {
+                description: "Protège et gère espaces forestiers",
+                missions: ["Surveiller forêts", "Préserver biodiversité", "Gérer coupes de bois", "Sensibiliser public"],
+                salaire: "1800-2600€ fonction publique",
+                formation: "Bac à Bac+2 (BTSA Gestion forestière) + Concours ONF",
+                qualites: ["Nature", "Observation", "Physique", "Solitude"],
+                evolution: "Technicien forestier, Responsable secteur, Ingénieur forestier"
+            },
+            "Chef d'exploitation agricole": {
+                description: "Dirige exploitation agricole (céréales, élevage...)",
+                missions: ["Gérer cultures ou élevages", "Piloter matériel et personnel", "Commercialiser production", "Gérer comptabilité"],
+                salaire: "Variable selon taille et résultats exploitation",
+                formation: "Bac+2 à Bac+5 (BTSA, École d'ingénieurs agricoles)",
+                qualites: ["Polyvalence", "Gestion", "Passion agriculture", "Résistance"],
+                evolution: "Propriétaire terrien, Président coopérative, Formateur, Conseiller"
+            },
+            "Œnologue": {
+                description: "Expert du vin, conseille vinification",
+                missions: ["Conseiller vinification", "Analyser vins", "Créer assemblages", "Contrôler qualité"],
+                salaire: "2200-4000€ salarié, variable consultant",
+                formation: "Bac+5 (DN Œnologue, Master)",
+                qualites: ["Palais", "Chimie", "Passion vin", "Conseil"],
+                evolution: "Œnologue conseil, Maître de chai, Directeur technique, Formateur"
+            },
+            "Technicien agricole": {
+                description: "Accompagne agriculteurs sur plan technique",
+                missions: ["Conseiller pratiques culturales", "Suivre cultures et élevages", "Former aux nouvelles techniques", "Expérimenter innovations"],
+                salaire: "1900-2800€",
+                formation: "Bac+2 (BTSA Productions animales/végétales)",
+                qualites: ["Technique agricole", "Conseil", "Terrain", "Pédagogie"],
+                evolution: "Technicien expert, Conseiller agricole, Responsable secteur"
+            },
+            "Ingénieur agroalimentaire": {
+                description: "Conçoit et optimise process de transformation alimentaire",
+                missions: ["Développer nouveaux produits", "Optimiser process fabrication", "Contrôler qualité", "Innover en agroalimentaire"],
+                salaire: "2600-4200€ débutant, jusqu'à 6500€+ senior",
+                formation: "Bac+5 (École d'ingénieurs agroalimentaire)",
+                qualites: ["Technique", "Innovation", "Qualité", "Gestion projet"],
+                evolution: "Responsable production, Directeur R&D, Directeur usine"
+            },
+            "Responsable qualité agroalimentaire": {
+                description: "Garantit sécurité et qualité produits alimentaires",
+                missions: ["Mettre en place normes HACCP", "Auditer process", "Former équipes", "Gérer non-conformités"],
+                salaire: "2400-3800€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (Licence/Master Qualité agroalimentaire)",
+                qualites: ["Rigueur", "Normes", "Pédagogie", "Organisation"],
+                evolution: "Directeur qualité, Responsable QHSE, Consultant, Auditeur"
+            },
+            "Hydrobiologiste": {
+                description: "Étudie organismes aquatiques et qualité de l'eau",
+                missions: ["Analyser écosystèmes aquatiques", "Évaluer qualité eau", "Surveiller pollution", "Proposer mesures protection"],
+                salaire: "2000-3500€ selon structure",
+                formation: "Bac+5 à Bac+8 (Master/Doctorat Hydrobiologie)",
+                qualites: ["Biologie", "Analyse", "Terrain", "Écologie"],
+                evolution: "Chercheur, Ingénieur études, Responsable environnement"
+            },
+            "Écologue": {
+                description: "Étudie et protège écosystèmes",
+                missions: ["Étudier biodiversité", "Réaliser inventaires faune/flore", "Proposer mesures conservation", "Suivre sites protégés"],
+                salaire: "2000-3200€ débutant, jusqu'à 4500€+ confirmé",
+                formation: "Bac+5 à Bac+8 (Master/Doctorat Écologie)",
+                qualites: ["Naturaliste", "Observation", "Analyse", "Passion nature"],
+                evolution: "Écologue expert, Chargé de mission, Chercheur, Responsable réserve"
+            },
+            "Chargé d'études environnement": {
+                description: "Réalise études d'impact et diagnostics environnementaux",
+                missions: ["Réaliser études d'impact", "Diagnostics écologiques", "Proposer mesures compensatoires", "Suivre chantiers"],
+                salaire: "2200-3500€ débutant, jusqu'à 5000€+ confirmé",
+                formation: "Bac+5 (Master Environnement, Écologie)",
+                qualites: ["Écologie", "Rédaction", "Réglementation", "Terrain"],
+                evolution: "Chef de projet, Responsable études, Ingénieur écologue"
+            },
+            "Garde-chasse": {
+                description: "Surveille et gère population gibier",
+                missions: ["Surveiller territoire de chasse", "Gérer populations gibier", "Aménager habitats", "Réguler braconnage"],
+                salaire: "1700-2400€ fonction publique/privé",
+                formation: "Bac pro à Bac+2 (BTSA Gestion et protection de la nature)",
+                qualites: ["Nature", "Observation", "Solitude", "Autorité"],
+                evolution: "Garde-chasse principal, Technicien cynégétique, Responsable territoire"
+            },
+            "Arboriste": {
+                description: "Spécialiste soins et taille arbres",
+                missions: ["Tailler et élaguer arbres", "Diagnostiquer maladies", "Sécuriser arbres dangereux", "Grimper en toute sécurité"],
+                salaire: "1800-3000€ selon expérience",
+                formation: "CAP à Bac+2 (CS Arboriste-élagueur, BTSA)",
+                qualites: ["Escalade", "Botanique", "Force physique", "Sécurité"],
+                evolution: "Arboriste-grimpeur expert, Chef d'équipe, Entrepreneur, Formateur"
+            },
+            "Maître de chai": {
+                description: "Responsable vinification et élevage des vins",
+                missions: ["Superviser vinification", "Gérer cuves et élevage", "Assembler vins", "Manager équipe chai"],
+                salaire: "2500-5000€+ selon domaine",
+                formation: "Bac+2 à Bac+5 (BTSA Viti-œno, DN Œnologue)",
+                qualites: ["Technique", "Palais", "Management", "Rigueur"],
+                evolution: "Maître de chai prestigieux, Directeur technique, Œnologue conseil"
+            },
+            "Responsable événementiel": {
+                description: "Organise et pilote événements professionnels/culturels",
+                missions: ["Concevoir événements", "Gérer budget et prestataires", "Coordonner logistique", "Piloter jour J"],
+                salaire: "2200-3800€ débutant, jusqu'à 6000€+ confirmé",
+                formation: "Bac+3 à Bac+5 (Licence/Master Communication événementiel)",
+                qualites: ["Organisation", "Stress", "Créativité", "Relationnel"],
+                evolution: "Directeur d'agence événementiel, Chef de projet senior, Entrepreneur"
+            },
+            "Chef de projet digital": {
+                description: "Pilote projets web et digital",
+                missions: ["Gérer projets digitaux", "Coordonner équipes (dev, design, marketing)", "Respecter délais et budget", "Interface client"],
+                salaire: "2800-4500€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (Master Digital, Chef de projet web)",
+                qualites: ["Gestion projet", "Digital", "Organisation", "Communication"],
+                evolution: "Directeur de projet, Product Owner, Directeur digital"
+            },
+            "Content manager": {
+                description: "Pilote stratégie de contenu digital",
+                missions: ["Définir ligne éditoriale", "Coordonner production contenu", "Optimiser SEO", "Analyser performances"],
+                salaire: "2500-4000€ débutant, jusqu'à 6000€+ senior",
+                formation: "Bac+3 à Bac+5 (Master Communication digitale)",
+                qualites: ["Rédaction", "SEO", "Stratégie", "Créativité"],
+                evolution: "Responsable éditorial, Directeur contenu, CMO"
+            },
+            "Rédacteur publicitaire": {
+                description: "Crée messages et slogans publicitaires",
+                missions: ["Concevoir concepts créatifs", "Rédiger accroches et messages pub", "Collaborer avec DA", "Pitcher clients"],
+                salaire: "2200-3800€ débutant, jusqu'à 6000€+ senior",
+                formation: "Bac+3 à Bac+5 (École de publicité, Master Communication)",
+                qualites: ["Créativité", "Copywriting", "Culture pub", "Synthèse"],
+                evolution: "Concepteur-rédacteur senior, Directeur de création, Freelance"
+            },
+            "Responsable relations publiques": {
+                description: "Gère image et relations médias de l'organisation",
+                missions: ["Gérer relations presse", "Organiser conférences de presse", "Rédiger communiqués", "Gérer crises médiatiques"],
+                salaire: "2800-4500€ débutant, jusqu'à 7000€+ senior",
+                formation: "Bac+5 (École de communication, IEP, Master RP)",
+                qualites: ["Relationnel", "Communication", "Réseau médias", "Réactivité"],
+                evolution: "Directeur RP, Directeur communication, Consultant, Porte-parole"
+            },
+            "Chargé de mécénat": {
+                description: "Développe partenariats mécénat pour institutions culturelles",
+                missions: ["Identifier mécènes potentiels", "Monter dossiers mécénat", "Fidéliser mécènes", "Organiser événements mécènes"],
+                salaire: "2200-3800€ selon structure",
+                formation: "Bac+5 (Master Mécénat, Communication, Gestion culturelle)",
+                qualites: ["Relationnel", "Fundraising", "Culture", "Négociation"],
+                evolution: "Responsable mécénat, Directeur développement, Directeur partenariats"
+            },
+            "Conservateur de musée": {
+                description: "Gère collections et programmation muséale",
+                missions: ["Conserver et enrichir collections", "Concevoir expositions", "Rechercher sur œuvres", "Valoriser patrimoine"],
+                salaire: "2500-4000€ fonction publique selon grade",
+                formation: "Bac+5 + Concours (INP, Master patrimoine)",
+                qualites: ["Culture", "Recherche", "Gestion", "Pédagogie"],
+                evolution: "Conservateur en chef, Directeur de musée, Conservateur général"
+            },
+            "Critique culturel": {
+                description: "Analyse et critique productions culturelles",
+                missions: ["Assister spectacles/expos/projections", "Rédiger critiques", "Animer débats culturels", "Détecter talents"],
+                salaire: "Variable piges, 2000-3500€ salarié",
+                formation: "Bac+5 (Master Lettres, Arts, Journalisme culturel)",
+                qualites: ["Culture", "Analyse", "Rédaction", "Esprit critique"],
+                evolution: "Critique reconnu, Rédacteur en chef culturel, Programmateur, Essayiste"
+            },
+            "Producteur audiovisuel": {
+                description: "Produit contenus audiovisuels (films, séries, docs)",
+                missions: ["Développer projets audiovisuels", "Lever financements", "Gérer budgets et planning", "Superviser production"],
+                salaire: "Variable selon projets et succès",
+                formation: "Bac+5 (École cinéma, Master Production)",
+                qualites: ["Vision", "Gestion", "Réseau", "Négociation"],
+                evolution: "Producteur reconnu, Producteur exécutif, Directeur production"
+            },
+            "Directeur de communication": {
+                description: "Pilote stratégie communication globale de l'organisation",
+                missions: ["Définir stratégie de communication", "Manager équipe communication", "Gérer budget communication", "Représenter entreprise"],
+                salaire: "4000-8000€+ selon taille entreprise",
+                formation: "Bac+5 (Grande école, Master Communication) + expérience",
+                qualites: ["Stratégie", "Leadership", "Communication", "Vision"],
+                evolution: "DirCom groupe, Consultant senior, DG"
+            },
+            "Community manager": {
+                description: "Anime communautés sur réseaux sociaux",
+                missions: ["Gérer réseaux sociaux", "Créer contenu engageant", "Animer communauté", "Analyser performance social media"],
+                salaire: "1900-3200€ débutant, jusqu'à 4500€+ senior",
+                formation: "Bac+3 à Bac+5 (Licence/Master Communication digitale)",
+                qualites: ["Réseaux sociaux", "Créativité", "Réactivité", "Rédaction"],
+                evolution: "Social media manager, Responsable digital, Consultant réseaux sociaux"
+            },
+            "Attaché de presse": {
+                description: "Gère relations avec journalistes et médias",
+                missions: ["Rédiger et diffuser communiqués", "Organiser conférences de presse", "Gérer interviews", "Suivre retombées presse"],
+                salaire: "2200-3500€ débutant, jusqu'à 5500€+ confirmé",
+                formation: "Bac+3 à Bac+5 (École de journalisme, Communication)",
+                qualites: ["Relationnel médias", "Rédaction", "Réactivité", "Réseau"],
+                evolution: "Responsable RP, Directeur communication, Consultant, Porte-parole"
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = [];
+        let selectedClass = null;
+        let shuffledQuestions = [];
+        let scores = {
+            tech: 0,
+            science: 0,
+            humanites: 0,
+            social: 0,
+            creative: 0,
+            commerce: 0,
+            sante: 0,
+            nature: 0,
+            culture: 0
+        };
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function goToClassSelection() {
+            document.querySelector('.welcome-screen').classList.remove('active');
+            document.querySelector('.class-selection-screen').classList.add('active');
+        }
+
+        function selectClass(classType) {
+            selectedClass = classType;
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.class-card').classList.add('selected');
+            document.getElementById('startQuizBtn').style.display = 'block';
+        }
+
+        function startQuizFromClass() {
+            if (!selectedClass) return;
+            shuffledQuestions = shuffleArray(questions);
+            document.querySelector('.class-selection-screen').classList.remove('active');
+            document.querySelector('.quiz-screen').classList.add('active');
+            showQuestion();
+        }
+
+        function startQuiz() {
+            document.querySelector('.welcome-screen').classList.remove('active');
+            document.querySelector('.quiz-screen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+            const questionCounter = document.getElementById('questionCounter');
+            const questionContainer = document.getElementById('questionContainer');
+            const progressFill = document.getElementById('progressFill');
+
+            questionCounter.textContent = `Question ${currentQuestion + 1} sur ${shuffledQuestions.length}`;
+            progressFill.style.width = `${((currentQuestion + 1) / shuffledQuestions.length) * 100}%`;
+
+            let html = `
+                <h2>${question.question}</h2>
+                <div class="answers">
+            `;
+
+            question.answers.forEach((answer, index) => {
+                const currentAnswers = answers[currentQuestion] || [];
+                const isSelected = currentAnswers.includes(index);
+                html += `
+                    <div class="answer ${isSelected ? 'selected' : ''}" onclick="selectAnswer(${index})">
+                        <span>${answer.text}</span>
+                    </div>
+                `;
+            });
+
+            html += '<p style="text-align: center; color: #666; margin-top: 15px; font-size: 0.9em;">💡 Vous pouvez sélectionner plusieurs réponses</p>';
+
+            html += '</div>';
+            questionContainer.innerHTML = html;
+
+            updateNavButtons();
+        }
+
+        function selectAnswer(answerIndex) {
+            if (!answers[currentQuestion]) {
+                answers[currentQuestion] = [];
+            }
+            
+            const index = answers[currentQuestion].indexOf(answerIndex);
+            if (index > -1) {
+                answers[currentQuestion].splice(index, 1);
+            } else {
+                answers[currentQuestion].push(answerIndex);
+            }
+            
+            showQuestion();
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentQuestion === 0;
+            const currentAnswers = answers[currentQuestion] || [];
+            nextBtn.disabled = currentAnswers.length === 0;
+
+            if (currentQuestion === shuffledQuestions.length - 1 && currentAnswers.length > 0) {
+                nextBtn.textContent = 'Voir les résultats';
+            } else {
+                nextBtn.textContent = 'Suivant';
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                calculateResults();
+            }
+        }
+
+        function calculateResults() {
+            scores = {
+                tech: 0,
+                science: 0,
+                humanites: 0,
+                social: 0,
+                creative: 0,
+                commerce: 0,
+                sante: 0,
+                nature: 0,
+                culture: 0
+            };
+
+            answers.forEach((answerIndexes, questionIndex) => {
+                if (!answerIndexes || answerIndexes.length === 0) return;
+                
+                answerIndexes.forEach(answerIndex => {
+                    const answer = shuffledQuestions[questionIndex].answers[answerIndex];
+                    const weight = 1 / answerIndexes.length;
+                    answer.profiles.forEach(profile => {
+                        scores[profile] += weight;
+                    });
+                });
+            });
+
+            if (selectedClass === 'techno') {
+                scores.tech *= 1.3;
+                scores.commerce *= 1.2;
+            } else if (selectedClass === 'generale') {
+                scores.science *= 1.2;
+                scores.humanites *= 1.2;
+            }
+
+            const sortedProfiles = Object.entries(scores)
+                .sort((a, b) => b[1] - a[1])
+                .filter(([_, score]) => score > 0);
+
+            const topProfiles = sortedProfiles.slice(0, 3);
+
+            showResults(topProfiles);
+        }
+
+        function showResults(topProfiles) {
+            const resultContent = document.getElementById('resultContent');
+            const [primaryProfile] = topProfiles;
+            const career = careers[primaryProfile[0]];
+
+            let html = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-bottom: 15px;">
+                        Profil Principal
+                    </div>
+                </div>
+
+                <h3>${career.title}</h3>
+                <p><strong>${career.description}</strong></p>
+
+                <div class="specialties-box">
+                    <h4>🎓 Spécialités recommandées au Bac</h4>
+                    <p><strong>${career.bac.voie}</strong></p>
+                    <ul>
+                        ${career.bac.specialties.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                    ${career.bac.option ? `<p style="margin-top: 10px;"><em>💡 ${career.bac.option}</em></p>` : ''}
+                    ${career.bacTechno ? `
+                        <p style="margin-top: 15px;"><strong>Ou ${career.bacTechno.voie}</strong></p>
+                        <p>${career.bacTechno.specialite}</p>
+                    ` : ''}
+                </div>
+
+                <h4>📚 Formations Post-Bac dans la région</h4>
+                ${career.postbac.map(school => `
+                    <div class="schools-box">
+                        <div class="school-name">${school.name}</div>
+                        <div class="school-info">📍 ${school.location}</div>
+                        <div class="school-info">${school.info}</div>
+                    </div>
+                `).join('')}
+
+                <div class="pathway-box">
+                    <h4>💼 Exemples de métiers (cliquez pour détails)</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                        ${career.careers.map(job => `
+                            <span onclick="showJobDetails(\`${job}\`)" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                                ${job}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <h4>🚀 Perspectives 2025</h4>
+                <p>${career.outlook}</p>
+            `;
+
+            if (topProfiles.length > 1) {
+                html += `
+                    <div style="margin-top: 40px; padding: 25px; background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%); border-radius: 15px; border-left: 4px solid #ff9800;">
+                        <h4 style="color: #ff9800; margin-bottom: 20px;">🎯 Profils Complémentaires</h4>
+                        <p style="margin-bottom: 15px; color: #666;">Votre profil montre également des affinités avec :</p>
+                `;
+                
+                topProfiles.slice(1).forEach(([profile, score], index) => {
+                    const otherCareer = careers[profile];
+                    const percentage = Math.round((score / primaryProfile[1]) * 100);
+                    html += `
+                        <div onclick="showProfileDetails('${profile}')" style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 3px solid #667eea; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.2)'" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <strong style="color: #667eea;">${otherCareer.title}</strong>
+                                <span style="background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em;">${percentage}% de compatibilité</span>
+                            </div>
+                            <p style="font-size: 0.95em; margin: 8px 0; color: #555;">${otherCareer.description}</p>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 8px;"><strong>Spécialités :</strong> ${otherCareer.bac.specialties.slice(0, 2).join(', ')}</p>
+                            <p style="font-size: 0.85em; color: #667eea; margin-top: 8px; font-weight: 500;">→ Cliquez pour voir les détails</p>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            html += `
+                <p style="margin-top: 25px; padding: 15px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #4caf50;">
+                    <strong>💬 Conseil :</strong> Parlez-en avec votre professeur principal et votre conseiller d'orientation. Participez aux Journées Portes Ouvertes des établissements qui vous intéressent !
+                </p>
+            `;
+
+            resultContent.innerHTML = html;
+            savedResults = html;
+
+            document.querySelector('.quiz-screen').classList.remove('active');
+            document.querySelector('.result-screen').classList.add('active');
+        }
+
+        function showProfileDetails(profileKey) {
+            navigationHistory.push(document.getElementById('resultContent').innerHTML);
+            const career = careers[profileKey];
+            const resultContent = document.getElementById('resultContent');
+
+            let html = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button onclick="showPreviousResults()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9em;">← Retour aux résultats</button>
+                </div>
+
+                <h3>${career.title}</h3>
+                <p><strong>${career.description}</strong></p>
+
+                <div class="specialties-box">
+                    <h4>🎓 Spécialités recommandées au Bac</h4>
+                    <p><strong>${career.bac.voie}</strong></p>
+                    <ul>
+                        ${career.bac.specialties.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                    ${career.bac.option ? `<p style="margin-top: 10px;"><em>💡 ${career.bac.option}</em></p>` : ''}
+                    ${career.bacTechno ? `
+                        <p style="margin-top: 15px;"><strong>Ou ${career.bacTechno.voie}</strong></p>
+                        <p>${career.bacTechno.specialite}</p>
+                    ` : ''}
+                </div>
+
+                <h4>📚 Formations Post-Bac dans la région</h4>
+                ${career.postbac.map(school => `
+                    <div class="schools-box">
+                        <div class="school-name">${school.name}</div>
+                        <div class="school-info">📍 ${school.location}</div>
+                        <div class="school-info">${school.info}</div>
+                    </div>
+                `).join('')}
+
+                <div class="pathway-box">
+                    <h4>💼 Exemples de métiers (cliquez pour détails)</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                        ${career.careers.map(job => `
+                            <span onclick="showJobDetails(\`${job}\`)" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                                ${job}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <h4>🚀 Perspectives 2025</h4>
+                <p>${career.outlook}</p>
+
+                <p style="margin-top: 25px; padding: 15px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #4caf50;">
+                    <strong>💬 Conseil :</strong> Parlez-en avec votre professeur principal et votre conseiller d'orientation. Participez aux Journées Portes Ouvertes des établissements qui vous intéressent !
+                </p>
+            `;
+
+            resultContent.innerHTML = html;
+            savedResults = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let savedResults = null;
+        let navigationHistory = [];
+
+        function showPreviousResults() {
+            if (navigationHistory.length > 0) {
+                const previousPage = navigationHistory.pop();
+                const resultContent = document.getElementById('resultContent');
+                resultContent.innerHTML = previousPage;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (savedResults) {
+                const resultContent = document.getElementById('resultContent');
+                resultContent.innerHTML = savedResults;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function showJobDetails(jobName) {
+            navigationHistory.push(document.getElementById('resultContent').innerHTML);
+            const job = jobsDatabase[jobName];
+            if (!job) {
+                alert(`Désolé, les détails pour "${jobName}" ne sont pas encore disponibles.`);
+                return;
+            }
+
+            const resultContent = document.getElementById('resultContent');
+
+            let html = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button onclick="showPreviousResults()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9em;">← Retour aux résultats</button>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                    <h2 style="color: white; margin-bottom: 15px;">${jobName}</h2>
+                    <p style="font-size: 1.2em; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${job.description}</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin: 20px 0;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">🎯 Missions principales</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        ${job.missions.map(mission => `
+                            <li style="padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #555;">
+                                <span style="color: #667eea; margin-right: 10px;">✓</span>${mission}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0;">
+                    <div style="background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #ff9800;">
+                        <h4 style="color: #ff9800; margin-bottom: 12px;">💰 Salaire</h4>
+                        <p style="color: #555; font-size: 1.05em;">${job.salaire}</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #4caf50;">
+                        <h4 style="color: #4caf50; margin-bottom: 12px;">🎓 Formation</h4>
+                        <p style="color: #555; font-size: 1.05em;">${job.formation}</p>
+                    </div>
+                </div>
+
+                <div style="background: #f0f4ff; padding: 25px; border-radius: 12px; margin: 20px 0;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">⭐ Qualités requises</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        ${job.qualites.map(qualite => `
+                            <span style="background: white; color: #667eea; padding: 8px 16px; border-radius: 20px; border: 2px solid #667eea; font-weight: 500;">
+                                ${qualite}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); padding: 25px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #03a9f4;">
+                    <h4 style="color: #0288d1; margin-bottom: 12px;">🚀 Évolutions possibles</h4>
+                    <p style="color: #555; font-size: 1.05em; line-height: 1.6;">${job.evolution}</p>
+                </div>
+
+                <p style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107; color: #856404;">
+                    <strong>💡 Conseil :</strong> Renseignez-vous sur ce métier en consultant des sites comme l'ONISEP, en participant à des forums de métiers ou en contactant des professionnels sur LinkedIn !
+                </p>
+            `;
+
+            resultContent.innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            selectedClass = null;
+            savedResults = null;
+            navigationHistory = [];
+            scores = {
+                tech: 0,
+                science: 0,
+                humanites: 0,
+                social: 0,
+                creative: 0,
+                commerce: 0,
+                sante: 0,
+                nature: 0,
+                culture: 0
+            };
+
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('startQuizBtn').style.display = 'none';
+
+            document.querySelector('.result-screen').classList.remove('active');
+            document.querySelector('.welcome-screen').classList.add('active');
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const quizScreen = document.querySelector('.quiz-screen');
+                const nextBtn = document.getElementById('nextBtn');
+                
+                if (quizScreen.classList.contains('active') && nextBtn && !nextBtn.disabled) {
+                    nextQuestion();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

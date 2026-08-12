@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Test TDA / TDAH — Inattention et Hyperactivité évaluées séparément</title>
+<meta name="description" content="Auto-évaluation détaillée du TDAH chez l'adulte et l'adolescent : deux axes séparés (déficit d'attention d'un côté, hyperactivité-impulsivité de l'autre), inspirée du DSM-5-TR, de l'ASRS v1.1 (OMS) et des échelles de Barkley. Gratuit, sans inscription, 100 % local." />
+<meta name="theme-color" content="#0f1419" />
+<meta property="og:title" content="Test TDA / TDAH — Inattention et Hyperactivité, évaluées séparément" />
+<meta property="og:description" content="40 questions, deux axes analysés séparément, critères DSM-5 détaillés. Ce n'est pas un diagnostic." />
+<meta property="og:type" content="website" />
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2028;
+    --panel-2: #242b36;
+    --panel-3: #2b3340;
+    --text: #e8edf3;
+    --muted: #8b95a5;
+    --border: #2d3542;
+    --att: #5eb3ff;        /* axe attention */
+    --att-soft: rgba(94,179,255,.12);
+    --hyp: #ffa14a;        /* axe hyperactivité / impulsivité */
+    --hyp-soft: rgba(255,161,74,.12);
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --high: #f87171;
+    --violet: #9d7cff;
+    --radius: 14px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.35);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(1100px 560px at 12% -12%, #16283f 0%, transparent 62%),
+      radial-gradient(900px 480px at 100% 108%, #34240f 0%, transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px 64px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 26px; }
+  h1 {
+    font-size: 1.95rem; margin: 0 0 10px; font-weight: 650; letter-spacing: -0.025em;
+    background: linear-gradient(100deg, var(--att) 5%, #cfa5ff 48%, var(--hyp) 95%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { color: var(--muted); font-size: 0.95rem; max-width: 640px; margin: 0 auto; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px;
+  }
+  .hidden { display: none !important; }
+  h2 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+  h3 { font-size: 1.02rem; font-weight: 600; margin: 0 0 10px; }
+  p { margin: 0 0 14px; }
+  a { color: var(--att); }
+  .muted { color: var(--muted); }
+  .small { font-size: 0.85rem; }
+
+  .disclaimer {
+    background: rgba(251,191,36,0.07); border-left: 3px solid var(--warn);
+    padding: 14px 16px; border-radius: 6px; font-size: 0.88rem; color: #edddb4; margin: 18px 0;
+  }
+  .note {
+    background: rgba(94,179,255,0.06); border-left: 3px solid var(--att);
+    padding: 14px 16px; border-radius: 6px; font-size: 0.88rem; color: #cfe3f7; margin: 16px 0;
+  }
+
+  .axes-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0 6px; }
+  .axis-mini { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: var(--panel-2); }
+  .axis-mini.att { border-top: 3px solid var(--att); }
+  .axis-mini.hyp { border-top: 3px solid var(--hyp); }
+  .axis-mini h3 { margin-bottom: 6px; }
+  .axis-mini.att h3 { color: var(--att); }
+  .axis-mini.hyp h3 { color: var(--hyp); }
+  .axis-mini ul { margin: 8px 0 0; padding-left: 18px; font-size: 0.86rem; color: var(--muted); }
+  .axis-mini li { margin-bottom: 3px; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 4px; }
+  .chip {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 999px;
+    padding: 6px 14px; font-size: 0.82rem; color: var(--muted);
+  }
+
+  /* --- questionnaire --- */
+  .progress-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .progress-bar { flex: 1; height: 8px; background: var(--panel-2); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; border-radius: 4px; transition: width .32s ease, background .4s ease; background: var(--violet); }
+  .progress-text { font-size: 0.82rem; color: var(--muted); min-width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .dimension-tag {
+    display: inline-block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    font-weight: 600; padding: 5px 11px; border-radius: 999px; margin-bottom: 16px;
+  }
+  .question-text { font-size: 1.22rem; line-height: 1.45; margin-bottom: 22px; font-weight: 500; }
+  .question-hint { font-size: 0.86rem; color: var(--muted); margin: -14px 0 20px; }
+
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .option {
+    display: flex; align-items: center; gap: 13px; padding: 13px 16px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: border-color .18s, background .18s, transform .12s;
+    user-select: none; font-size: 0.98rem;
+  }
+  .option:hover { border-color: #46536a; background: var(--panel-3); }
+  .option:active { transform: scale(.995); }
+  .option .key {
+    flex-shrink: 0; width: 24px; height: 24px; border-radius: 6px; background: var(--bg);
+    border: 1px solid var(--border); display: grid; place-items: center;
+    font-size: 0.75rem; color: var(--muted); font-weight: 600;
+  }
+  .option.selected { border-color: var(--accent, var(--violet)); background: color-mix(in srgb, var(--accent, var(--violet)) 12%, var(--panel-2)); }
+  .option.selected .key { background: var(--accent, var(--violet)); color: #0f1419; border-color: transparent; }
+  .option .lbl-sub { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 1px; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 26px; }
+  button {
+    font-family: inherit; font-size: 0.94rem; padding: 11px 20px; border-radius: 9px;
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+    cursor: pointer; transition: all .18s; font-weight: 500;
+  }
+  button:hover:not(:disabled) { background: var(--panel-3); border-color: #46536a; }
+  button:disabled { opacity: .38; cursor: not-allowed; }
+  button.primary {
+    background: linear-gradient(100deg, var(--att), var(--violet)); color: #0b1017;
+    border: none; font-weight: 650;
+  }
+  button.primary:hover:not(:disabled) { filter: brightness(1.08); }
+  button.ghost { background: transparent; }
+  .keyboard-hint { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
+  kbd {
+    background: var(--panel-2); border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 5px; padding: 1px 6px; font-size: 0.78rem; font-family: inherit;
+  }
+
+  /* --- résultats --- */
+  .verdict { text-align: center; padding: 6px 0 4px; }
+  .verdict .kicker { font-size: 0.78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .verdict .title { font-size: 1.55rem; font-weight: 650; margin: 8px 0 6px; letter-spacing: -0.02em; }
+  .verdict .sub { color: var(--muted); font-size: 0.95rem; max-width: 620px; margin: 0 auto; }
+
+  .axis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .axis-card { border: 1px solid var(--border); border-radius: 13px; padding: 20px; background: var(--panel-2); }
+  .axis-card.att { border-top: 3px solid var(--att); }
+  .axis-card.hyp { border-top: 3px solid var(--hyp); }
+  .axis-card .name { font-size: 0.76rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 700; }
+  .axis-card.att .name { color: var(--att); }
+  .axis-card.hyp .name { color: var(--hyp); }
+  .axis-card .pct { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
+  .axis-card .pct span { font-size: 1rem; color: var(--muted); font-weight: 500; }
+  .bar { height: 9px; background: var(--bg); border-radius: 5px; overflow: hidden; margin: 12px 0 10px; }
+  .bar > div { height: 100%; border-radius: 5px; transition: width .8s cubic-bezier(.2,.7,.3,1); }
+  .band { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+  .criteria-line { font-size: 0.86rem; color: var(--muted); }
+  .criteria-line b { color: var(--text); }
+  .met { color: var(--warn); font-weight: 600; }
+  .notmet { color: var(--ok); font-weight: 600; }
+  .top-items { margin: 14px 0 0; padding: 12px 14px; background: var(--bg); border-radius: 9px; font-size: 0.83rem; color: var(--muted); }
+  .top-items ul { margin: 6px 0 0; padding-left: 17px; }
+  .top-items li { margin-bottom: 4px; }
+
+  .radar-wrap { display: flex; justify-content: center; margin: 6px 0 4px; }
+  canvas { max-width: 100%; height: auto; }
+  .legend { display: flex; justify-content: center; gap: 22px; font-size: 0.84rem; color: var(--muted); margin-top: 4px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  .subs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .sub-row { margin-bottom: 13px; }
+  .sub-row .lbl { display: flex; justify-content: space-between; font-size: 0.87rem; margin-bottom: 5px; }
+  .sub-row .lbl b { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  table.dsm { width: 100%; border-collapse: collapse; font-size: 0.89rem; }
+  table.dsm td { padding: 11px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.dsm tr:last-child td { border-bottom: none; }
+  table.dsm td.status { width: 34px; text-align: center; font-size: 1.05rem; }
+  table.dsm td.crit { width: 30px; color: var(--muted); font-weight: 600; }
+  .yes { color: var(--warn); } .no { color: var(--ok); } .unk { color: var(--muted); }
+
+  .steps { counter-reset: s; padding-left: 0; list-style: none; margin: 0; }
+  .steps li { counter-increment: s; position: relative; padding-left: 38px; margin-bottom: 14px; font-size: 0.93rem; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 0; width: 25px; height: 25px;
+    border-radius: 50%; background: var(--panel-2); border: 1px solid var(--border);
+    display: grid; place-items: center; font-size: 0.78rem; font-weight: 700; color: var(--att);
+  }
+
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; background: var(--panel-2); margin-top: 12px; }
+  details summary { cursor: pointer; font-weight: 600; font-size: 0.93rem; }
+  details[open] summary { margin-bottom: 12px; }
+  .ans-list { font-size: 0.85rem; }
+  .ans-list div { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .ans-list div:last-child { border-bottom: none; }
+  .ans-list span { min-width: 0; }
+  .ans-list b { color: var(--muted); font-weight: 500; text-align: right; flex-shrink: 0; max-width: 45%; }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 8px; }
+  footer { text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 28px; }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 720px) {
+    body { padding: 20px 12px 48px; }
+    h1 { font-size: 1.45rem; }
+    .panel { padding: 20px 17px; }
+    .axes-preview, .axis-grid, .subs-grid { grid-template-columns: 1fr; }
+    .subs-grid { gap: 6px; }
+    .question-text { font-size: 1.1rem; }
+    .verdict .title { font-size: 1.28rem; }
+    .nav button { padding: 11px 15px; font-size: 0.9rem; }
+    .ans-list div { flex-direction: column; gap: 2px; }
+    .ans-list b { text-align: left; max-width: 100%; }
+  }
+  @media print {
+    body { background: #fff; color: #000; padding: 0; }
+    .panel { box-shadow: none; border-color: #ccc; background: #fff; break-inside: avoid; }
+    .no-print, #screen-intro, #screen-question { display: none !important; }
+    h1, .axis-card .name { -webkit-text-fill-color: initial; color: #000; }
+    .axis-card, .top-items, details, .sub-row, table.dsm { background: #fff !important; color: #000; }
+    .muted, .criteria-line { color: #444; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Test TDA / TDAH</h1>
+    <div class="subtitle">
+      Auto-évaluation en deux axes distincts : le <strong>déficit d'attention</strong> d'un côté,
+      l'<strong>hyperactivité&nbsp;/&nbsp;impulsivité</strong> de l'autre.
+    </div>
+  </header>
+
+  <!-- ============ INTRO ============ -->
+  <div id="screen-intro" class="panel">
+    <h2 style="margin-top:0">Avant de commencer</h2>
+    <p>
+      Le TDAH n'est pas un bloc unique. Le DSM-5-TR décrit <strong>deux listes de symptômes indépendantes</strong>,
+      et une personne peut remplir les critères de l'une, de l'autre, ou des deux. Ce questionnaire les évalue
+      donc <strong>séparément</strong>, puis en tire une présentation probable.
+    </p>
+
+    <div class="axes-preview">
+      <div class="axis-mini att">
+        <h3>Axe 1 — Inattention (TDA)</h3>
+        <ul>
+          <li>Attention soutenue</li>
+          <li>Distractibilité</li>
+          <li>Organisation &amp; gestion du temps</li>
+          <li>Mémoire de travail &amp; oublis</li>
+          <li>Initiation &amp; procrastination</li>
+        </ul>
+      </div>
+      <div class="axis-mini hyp">
+        <h3>Axe 2 — Hyperactivité / Impulsivité</h3>
+        <ul>
+          <li>Agitation motrice</li>
+          <li>Hyperactivité mentale</li>
+          <li>Impulsivité verbale</li>
+          <li>Impulsivité comportementale</li>
+          <li>Réactivité émotionnelle</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="small muted" style="margin-top:18px">
+      Les items s'appuient sur les critères diagnostiques du <strong>DSM-5-TR</strong>, sur l'<strong>ASRS v1.1</strong>
+      (Adult ADHD Self-Report Scale, OMS), sur les échelles de <strong>Barkley (BAARS-IV)</strong> et sur les dimensions
+      cliniques régulièrement décrites chez l'adulte (hyperactivité interne, dysrégulation émotionnelle, compensation).
+      La dernière partie vérifie les critères de <em>contexte</em> — ancienneté, retentissement, diagnostics
+      différentiels — sans lesquels un score élevé ne veut pas dire grand-chose.
+    </p>
+
+    <div class="meta-row">
+      <span class="chip">41 questions</span>
+      <span class="chip">≈ 7 minutes</span>
+      <span class="chip">Aucune donnée envoyée — tout reste sur votre appareil</span>
+      <span class="chip">Gratuit, sans inscription</span>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠ Ceci n'est pas un test diagnostique.</strong> Aucun questionnaire en ligne, y compris celui-ci,
+      ne peut poser un diagnostic de TDAH. Seul un professionnel de santé (psychiatre, neurologue, pédopsychiatre,
+      médecin formé au neurodéveloppement, souvent avec un bilan neuropsychologique) peut le faire, après un
+      entretien clinique approfondi, un recueil d'informations sur l'enfance et l'élimination d'autres causes
+      possibles. Ce test est un <strong>outil de repérage et de mise en mots</strong> : il vous aide à savoir si
+      la question mérite d'être posée à un professionnel, et à arriver en consultation avec des éléments concrets.
+    </div>
+
+    <div class="nav">
+      <button id="btn-resume" class="ghost hidden" onclick="resumeTest()">Reprendre où j'en étais</button>
+      <span></span>
+      <button class="primary" onclick="startTest(true)">Commencer le test →</button>
+    </div>
+    <div class="keyboard-hint">
+      Astuce : répondez au clavier avec <kbd>1</kbd>–<kbd>5</kbd>, revenez en arrière avec <kbd>←</kbd>.
+    </div>
+  </div>
+
+  <!-- ============ QUESTIONS ============ -->
+  <div id="screen-question" class="panel hidden">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-text" id="progress-text">0 / 0</div>
+    </div>
+    <div class="dimension-tag" id="dimension-tag"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="question-hint hidden" id="question-hint"></div>
+    <div class="options" id="options"></div>
+    <div class="nav">
+      <button id="btn-prev" onclick="prevStep()">← Précédent</button>
+      <button id="btn-next" class="primary" onclick="nextStep()">Suivant →</button>
+    </div>
+    <div class="keyboard-hint" id="kb-hint"></div>
+  </div>
+
+  <!-- ============ RÉSULTATS ============ -->
+  <div id="screen-results" class="hidden">
+
+    <div class="panel">
+      <div class="verdict">
+        <div class="kicker">Profil global</div>
+        <div class="title" id="verdict-title">—</div>
+        <div class="sub" id="verdict-sub">—</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0">Vos deux axes, séparément</h2>
+      <div class="axis-grid" id="axis-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0">Profil détaillé — 10 sous-dimensions</h2>
+      <div class="radar-wrap"><canvas id="radar" width="560" height="470"></canvas></div>
+      <div class="legend">
+        <span><i style="background:#5eb3ff"></i>Inattention</span>
+        <span><i style="background:#ffa14a"></i>Hyperactivité / Impulsivité</span>
+      </div>
+      <div class="subs-grid" style="margin-top:24px" id="subs-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0">Critères DSM-5-TR, point par point</h2>
+      <p class="small muted">
+        Un diagnostic de TDAH suppose que <em>tous</em> les critères ci-dessous soient réunis, pas seulement un score élevé.
+        Voici ce que vos réponses indiquent — à confirmer ou infirmer par un professionnel.
+      </p>
+      <table class="dsm" id="dsm-table"></table>
+      <p class="small muted" style="margin:14px 0 0">
+        <span class="yes">●</span> critère rempli d'après vos réponses ·
+        <span class="unk">◐</span> incertain ou à vérifier ·
+        <span class="no">○</span> critère non rempli
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0">Dépistage ASRS v1.1 (OMS) — partie A</h2>
+      <p class="small muted" style="margin-bottom:14px">
+        Six items de votre questionnaire correspondent à l'outil de dépistage court validé par l'Organisation mondiale
+        de la santé. C'est l'indicateur le plus « standardisé » de cette page.
+      </p>
+      <div id="asrs-box"></div>
+    </div>
+
+    <div class="panel" id="panel-nuances">
+      <h2 style="margin-top:0">Nuances importantes</h2>
+      <div id="nuances"></div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0">Et maintenant ?</h2>
+      <ol class="steps" id="next-steps"></ol>
+      <div class="disclaimer" style="margin-bottom:0">
+        <strong>Rappel :</strong> ce résultat n'est pas un diagnostic et ne doit pas servir à s'auto-diagnostiquer,
+        ni à s'auto-exclure. Un score bas n'écarte pas un TDAH (la compensation, l'intelligence et l'aménagement
+        de vie masquent beaucoup de choses) ; un score élevé n'en démontre pas un (anxiété, dépression, troubles du
+        sommeil, hypothyroïdie, apnées, séquelles de traumatisme, surmenage ou usage de substances produisent des
+        tableaux très proches). La seule conclusion valide d'un test comme celui-ci est : « cela vaut la peine
+        d'en parler » — ou non.
+      </div>
+      <details>
+        <summary>Voir le détail de mes réponses</summary>
+        <div class="ans-list" id="answers-dump"></div>
+      </details>
+      <div class="btn-row no-print" style="margin-top:20px">
+        <button onclick="window.print()">Imprimer / PDF</button>
+        <button onclick="copySummary()" id="btn-copy">Copier le résumé</button>
+        <button onclick="exportJSON()">Exporter (JSON)</button>
+        <button class="ghost" onclick="restart()">↺ Recommencer</button>
+      </div>
+    </div>
+
+    <div class="panel small muted">
+      <h3 style="color:var(--text)">Sources et limites méthodologiques</h3>
+      <p style="margin-bottom:8px">
+        Items construits à partir de : <strong>DSM-5-TR</strong> (critères A à E du TDAH) ;
+        <strong>ASRS v1.1</strong>, Kessler et al., OMS, 2005 ; <strong>ADHD-RS-IV/5</strong>, DuPaul et al. ;
+        <strong>BAARS-IV</strong> et travaux de R. Barkley sur les fonctions exécutives et la dysrégulation
+        émotionnelle ; <strong>WURS</strong> (Wender Utah Rating Scale) pour la dimension rétrospective ;
+        <strong>CAARS</strong>, Conners, pour la structure en sous-échelles.
+      </p>
+      <p style="margin-bottom:0">
+        <strong>Limites :</strong> cet assemblage n'est <em>pas</em> un instrument validé en tant que tel — il n'a
+        ni étalonnage sur population française, ni étude de fidélité ou de validité. Les pourcentages affichés sont
+        des scores dimensionnels bruts (moyenne des réponses de l'axe), pas des percentiles normés. Une
+        auto-évaluation est par nature sensible au biais de désirabilité, à l'humeur du jour et à la difficulté
+        bien documentée qu'ont les personnes TDAH à évaluer leur propre comportement : l'avis d'un proche et,
+        idéalement, les bulletins scolaires de l'enfance apportent souvent plus d'information que le questionnaire lui-même.
+      </p>
+    </div>
+  </div>
+
+  <footer class="no-print">
+    <p>Fait avec soin — <a href="https://poilon.com">poilon.com</a> · Aucune donnée collectée, aucun cookie, aucun tracker.</p>
+  </footer>
+</div>
+
+<script>
+/* ==========================================================================
+   TEST TDA / TDAH — deux axes évalués séparément
+   ax   : "IN" (inattention) | "HY" (hyperactivité-impulsivité) | "CTX" (contexte)
+   dsm  : code du critère DSM-5-TR correspondant (A1a..A1i / A2a..A2i)
+   asrs : { n: numéro de l'item ASRS partie A, thr: seuil de comptage }
+   sub  : sous-dimension pour le radar
+   ========================================================================== */
+
+const FREQ = ["Jamais", "Rarement", "Parfois", "Souvent", "Très souvent"];
+
+const SUBS = {
+  attention:  { ax:"IN", label:"Attention soutenue",           r:["Attention","soutenue"] },
+  distract:   { ax:"IN", label:"Distractibilité",              r:["Distractibilité"] },
+  orga:       { ax:"IN", label:"Organisation & temps",         r:["Organisation","& temps"] },
+  memoire:    { ax:"IN", label:"Mémoire & oublis",             r:["Mémoire","& oublis"] },
+  initiation: { ax:"IN", label:"Initiation & procrastination", r:["Initiation &","procrastination"] },
+  motrice:    { ax:"HY", label:"Agitation motrice",            r:["Agitation","motrice"] },
+  mentale:    { ax:"HY", label:"Hyperactivité mentale",        r:["Hyperactivité","mentale"] },
+  verbale:    { ax:"HY", label:"Impulsivité verbale",          r:["Impulsivité","verbale"] },
+  compo:      { ax:"HY", label:"Impulsivité comportementale",  r:["Impulsivité","comportementale"] },
+  emo:        { ax:"HY", label:"Réactivité émotionnelle",      r:["Réactivité","émotionnelle"] }
+};
+
+const AXES = {
+  IN:  { label:"Inattention", short:"Attention", color:"#5eb3ff", tag:"Axe 1 · Attention" },
+  HY:  { label:"Hyperactivité / Impulsivité", short:"Hyperactivité", color:"#ffa14a", tag:"Axe 2 · Hyperactivité & impulsivité" },
+  CTX: { label:"Contexte & retentissement", short:"Contexte", color:"#9d7cff", tag:"Partie 3 · Contexte & retentissement" }
+};
+
+const STEPS = [
+
+  /* ---------- 0. Vous ---------- */
+  { kind:"sep", ax:"CTX", tag:"Préambule", title:"Quelques repères",
+    body:"Deux questions rapides : l'âge change le seuil diagnostique retenu par le DSM-5, et le genre change la façon dont le TDAH se présente et se repère." },
+
+  { id:"age", ax:"CTX", type:"choice", tag:"Vous",
+    text:"Quel âge avez-vous ?",
+    hint:"Le DSM-5 exige 6 symptômes sur 9 avant 17 ans, et 5 sur 9 à partir de 17 ans.",
+    options:[
+      {v:"<12",   l:"Moins de 12 ans"},
+      {v:"12-16", l:"12 à 16 ans"},
+      {v:"17-25", l:"17 à 25 ans"},
+      {v:"26-39", l:"26 à 39 ans"},
+      {v:"40-59", l:"40 à 59 ans"},
+      {v:"60+",   l:"60 ans ou plus"}
+    ]},
+
+  { id:"genre", ax:"CTX", type:"choice", tag:"Vous",
+    text:"Vous vous identifiez comme :",
+    hint:"Facultatif — utilisé uniquement pour nuancer l'interprétation.",
+    options:[
+      {v:"f",  l:"Une femme"},
+      {v:"m",  l:"Un homme"},
+      {v:"nb", l:"Non-binaire / autre"},
+      {v:"na", l:"Je préfère ne pas répondre"}
+    ]},
+
+  /* ---------- 1. INATTENTION ---------- */
+  { kind:"sep", ax:"IN", title:"Partie 1 — L'attention",
+    body:"16 situations. Répondez en pensant aux <strong>6 derniers mois</strong>, dans votre vie ordinaire (travail, études, maison, administratif), et non à vos meilleurs ou vos pires jours. Comparez-vous à ce que vous attendriez de quelqu'un de votre âge." },
+
+  { id:"IN1", ax:"IN", sub:"attention", dsm:"A1a", type:"freq",
+    text:"Vous faites des fautes d'étourderie ou vous manquez des détails, dans votre travail, vos études ou vos démarches (une case oubliée, un chiffre inversé, une consigne lue trop vite)." },
+
+  { id:"IN2", ax:"IN", sub:"attention", dsm:"A1b", type:"freq",
+    text:"Vous avez du mal à maintenir votre attention dans la durée : un long document, une réunion, un cours, un film, une conversation qui s'étire." },
+
+  { id:"IN3", ax:"IN", sub:"attention", dsm:"A1c", type:"freq",
+    text:"On vous parle directement et votre esprit part ailleurs — vous devez faire répéter, ou vous réalisez que vous n'avez pas suivi." },
+
+  { id:"IN4", ax:"IN", sub:"initiation", dsm:"A1d", type:"freq",
+    text:"Vous commencez des tâches sans les terminer : vous perdez le fil, vous partez sur autre chose, et le projet reste à 80 %." },
+
+  { id:"IN5", ax:"IN", sub:"orga", dsm:"A1e", type:"freq", asrs:{n:2, thr:2},
+    text:"Vous avez du mal à organiser une tâche ou une activité : ordonner les étapes, tenir un espace de travail rangé, gérer votre temps, respecter les délais." },
+
+  { id:"IN6", ax:"IN", sub:"initiation", dsm:"A1f", type:"freq", asrs:{n:4, thr:3},
+    text:"Vous évitez ou repoussez ce qui demande un effort mental soutenu (rapports, paperasse, déclarations, dossiers longs), parce que ça vous coûte anormalement cher." },
+
+  { id:"IN7", ax:"IN", sub:"memoire", dsm:"A1g", type:"freq",
+    text:"Vous perdez ou égarez des objets nécessaires : clés, téléphone, papiers, lunettes, portefeuille, carte, document en cours." },
+
+  { id:"IN8", ax:"IN", sub:"distract", dsm:"A1h", type:"freq",
+    text:"Vous êtes détourné·e par ce qui se passe autour de vous — un bruit, un mouvement, une notification — ou par vos propres pensées sans rapport." },
+
+  { id:"IN9", ax:"IN", sub:"memoire", dsm:"A1i", type:"freq", asrs:{n:3, thr:2},
+    text:"Vous oubliez des choses du quotidien : rendez-vous, rappels, factures, rappeler quelqu'un, un engagement pris." },
+
+  { id:"IN10", ax:"IN", sub:"initiation", type:"freq", asrs:{n:1, thr:2},
+    text:"Vous avez du mal à boucler les <em>derniers</em> détails d'un projet, une fois que le plus difficile est fait." },
+
+  { id:"IN11", ax:"IN", sub:"initiation", type:"freq",
+    text:"Vous repoussez jusqu'à l'urgence : vous n'arrivez à vous y mettre que quand la date limite est là, ou dépassée." },
+
+  { id:"IN12", ax:"IN", sub:"memoire", type:"freq",
+    text:"Vous perdez le fil en pleine phrase, ou vous entrez dans une pièce sans plus savoir pourquoi." },
+
+  { id:"IN13", ax:"IN", sub:"attention", type:"freq",
+    text:"À l'inverse, il vous arrive de vous absorber si complètement dans quelque chose d'intéressant que vous en perdez la notion du temps, oubliez de manger, ou n'entendez plus qu'on vous parle.",
+    hint:"L'hyperfocus fait partie du tableau : ce n'est pas un manque d'attention mais un défaut de régulation de l'attention." },
+
+  { id:"IN14", ax:"IN", sub:"distract", type:"freq",
+    text:"Vous passez d'une tâche à l'autre sans finir : plusieurs chantiers, onglets, projets ou pièces en cours simultanément." },
+
+  { id:"IN15", ax:"IN", sub:"distract", type:"freq",
+    text:"Vous lisez une page entière, puis vous devez la relire parce que rien n'est resté." },
+
+  { id:"IN16", ax:"IN", sub:"orga", type:"freq",
+    text:"Vous évaluez mal le temps que prennent les choses : vous partez trop tard, vous vous engagez sur des délais intenables, vous arrivez en retard sans l'avoir voulu.",
+    hint:"La « cécité temporelle » est l'un des marqueurs les plus constants du TDAH adulte, même sans hyperactivité." },
+
+  /* ---------- 2. HYPERACTIVITÉ / IMPULSIVITÉ ---------- */
+  { kind:"sep", ax:"HY", title:"Partie 2 — L'hyperactivité et l'impulsivité",
+    body:"15 situations, toujours sur les <strong>6 derniers mois</strong>. Chez l'adulte, l'hyperactivité devient souvent <em>intérieure</em> : moins de course dans le couloir, plus de moteur qui tourne en permanence. Répondez sans filtrer ce qui « ne compte pas »." },
+
+  { id:"HY1", ax:"HY", sub:"motrice", dsm:"A2a", type:"freq", asrs:{n:5, thr:3},
+    text:"Vous remuez sans arrêt quand vous devez rester assis·e : jambe qui tressaute, mains qui bougent, position qui change toutes les deux minutes." },
+
+  { id:"HY2", ax:"HY", sub:"motrice", dsm:"A2b", type:"freq",
+    text:"Vous vous levez alors qu'il faudrait rester assis·e : en réunion, à table, au cinéma, en cours, dans une salle d'attente." },
+
+  { id:"HY3", ax:"HY", sub:"motrice", dsm:"A2c", type:"freq",
+    text:"Vous ressentez une agitation intérieure, un besoin physique de bouger ou de sortir, une impatience corporelle difficile à contenir." },
+
+  { id:"HY4", ax:"HY", sub:"motrice", dsm:"A2d", type:"freq",
+    text:"Vous avez du mal à faire quelque chose de calme tranquillement : lire, regarder un film sans téléphone, ne rien faire, rester posé·e sans occuper vos mains." },
+
+  { id:"HY5", ax:"HY", sub:"motrice", dsm:"A2e", type:"freq", asrs:{n:6, thr:3},
+    text:"Vous êtes « sur la brèche », comme monté·e sur ressorts : toujours en train de faire quelque chose, et les autres ont du mal à vous suivre." },
+
+  { id:"HY6", ax:"HY", sub:"verbale", dsm:"A2f", type:"freq",
+    text:"Vous parlez beaucoup, vous partez dans des digressions, on vous l'a déjà fait remarquer." },
+
+  { id:"HY7", ax:"HY", sub:"verbale", dsm:"A2g", type:"freq",
+    text:"Vous répondez avant la fin de la question, ou vous terminez les phrases des autres." },
+
+  { id:"HY8", ax:"HY", sub:"compo", dsm:"A2h", type:"freq",
+    text:"Attendre vous coûte : file d'attente, bouchon, tour de parole, réponse qui tarde, chargement trop lent." },
+
+  { id:"HY9", ax:"HY", sub:"verbale", dsm:"A2i", type:"freq",
+    text:"Vous interrompez ou vous vous immiscez : vous coupez une conversation, vous prenez la suite de ce que quelqu'un faisait, vous utilisez ses affaires sans demander." },
+
+  { id:"HY10", ax:"HY", sub:"mentale", type:"freq",
+    text:"Votre tête ne s'arrête jamais : les pensées s'enchaînent en continu, plusieurs à la fois, sans bouton pause." },
+
+  { id:"HY11", ax:"HY", sub:"mentale", type:"freq",
+    text:"Vous mettez longtemps à vous endormir parce que votre cerveau repart : idées, rediffusions de la journée, projets, conversations rejouées." },
+
+  { id:"HY12", ax:"HY", sub:"compo", type:"freq",
+    text:"Vous prenez des décisions sur un coup de tête que vous regrettez ensuite : achat impulsif, message envoyé trop vite, engagement accepté, démission, rupture, départ." },
+
+  { id:"HY13", ax:"HY", sub:"compo", type:"freq",
+    text:"Vous vous ennuyez très vite et vous cherchez de la stimulation : nouveauté, vitesse, risque, changement de cap, tout plutôt que la routine." },
+
+  { id:"HY14", ax:"HY", sub:"emo", type:"freq",
+    text:"Vos émotions montent très vite et très fort — agacement, colère, enthousiasme, larmes — puis retombent en général aussi vite." },
+
+  { id:"HY15", ax:"HY", sub:"emo", type:"freq",
+    text:"Une contrariété mineure, une critique ou un refus vous font réagir sur le moment de façon disproportionnée à ce que vous auriez voulu." },
+
+  /* ---------- 3. CONTEXTE ---------- */
+  { kind:"sep", ax:"CTX", title:"Partie 3 — Le contexte",
+    body:"Un score de symptômes seul ne veut rien dire : ces dernières questions servent à le replacer dans une histoire. <strong>Elles ne présument pas que quelque chose vous pose problème</strong> — si rien de ce qui précède ne vous concerne, répondez-le franchement, c'est une information aussi utile que l'inverse." },
+
+  { id:"C1", ax:"CTX", type:"choice", tag:"Enfance",
+    text:"Avant vos 12 ans, certains des comportements décrits jusqu'ici étaient-ils déjà présents ?",
+    hint:"Bulletins scolaires (« bavard », « rêveur », « pourrait mieux faire », « étourdi »), souvenirs de vos parents, remarques répétées.",
+    options:[
+      {v:4, l:"Oui, clairement",  s:"C'était visible et commenté à l'époque"},
+      {v:3, l:"Plutôt oui",       s:"Avec le recul, des signes existaient"},
+      {v:2, l:"Je ne sais pas",   s:"Trop peu de souvenirs ou d'informations"},
+      {v:1, l:"Plutôt non",       s:"S'il y a quelque chose, c'est venu plus tard"},
+      {v:0, l:"Non, rien de tel", s:"Ni à l'époque, ni aujourd'hui"}
+    ]},
+
+  { id:"C2", ax:"CTX", type:"multi", tag:"Contexte",
+    text:"Y a-t-il des domaines où ces comportements vous posent concrètement problème ?",
+    hint:"Le DSM-5 exige au moins deux contextes différents. Plusieurs réponses possibles — ou la dernière si aucun.",
+    options:[
+      {v:"travail",  l:"Travail ou études"},
+      {v:"maison",   l:"Maison, tâches domestiques, administratif"},
+      {v:"relations",l:"Relations : couple, famille, amis"},
+      {v:"loisirs",  l:"Loisirs, sport, activités"},
+      {v:"argent",   l:"Argent, santé, conduite, rendez-vous"},
+      {v:"aucun",    l:"Aucun : rien de tout cela ne me gêne vraiment", excl:true}
+    ]},
+
+  { id:"C3", ax:"CTX", type:"scale", tag:"Retentissement",
+    text:"À quel point les comportements décrits vous gênent-ils dans votre travail ou vos études ?",
+    scale:["Pas du tout","Un peu","Moyennement","Beaucoup","Énormément"] },
+
+  { id:"C4", ax:"CTX", type:"scale", tag:"Retentissement",
+    text:"Et dans votre vie personnelle et vos relations ?",
+    scale:["Pas du tout","Un peu","Moyennement","Beaucoup","Énormément"] },
+
+  { id:"C5", ax:"CTX", type:"scale", tag:"Retentissement",
+    text:"Et sur votre estime de vous, votre fatigue mentale ou votre moral ?",
+    hint:"Effort permanent pour « faire comme tout le monde », sentiment de gâchis, honte, épuisement de fin de journée.",
+    scale:["Pas du tout","Un peu","Moyennement","Beaucoup","Énormément"] },
+
+  { id:"C6", ax:"CTX", type:"choice", tag:"Ancienneté",
+    text:"Si ces comportements sont présents chez vous, depuis quand le sont-ils ?",
+    options:[
+      {v:"toujours", l:"Depuis toujours, aussi loin que je me souvienne"},
+      {v:"ado",      l:"Depuis l'adolescence"},
+      {v:"annees",   l:"Depuis plusieurs années"},
+      {v:"recent2",  l:"Depuis moins de 2 ans"},
+      {v:"mois",     l:"Depuis quelques mois seulement"},
+      {v:"aucune",   l:"Ils ne sont pas vraiment présents chez moi"}
+    ]},
+
+  { id:"C7", ax:"CTX", type:"multi", tag:"Diagnostic différentiel",
+    text:"Vivez-vous actuellement l'une de ces situations ?",
+    hint:"Toutes peuvent produire, à elles seules, des difficultés d'attention majeures. Plusieurs réponses possibles.",
+    options:[
+      {v:"sommeil",   l:"Sommeil insuffisant ou de mauvaise qualité depuis des mois"},
+      {v:"thymie",    l:"Période dépressive, ou anxiété importante"},
+      {v:"burnout",   l:"Surmenage, burn-out, charge mentale écrasante"},
+      {v:"substances",l:"Consommation régulière d'alcool, de cannabis ou d'autres substances"},
+      {v:"evenement", l:"Événement de vie difficile récent (deuil, séparation, licenciement, choc)"},
+      {v:"medical",   l:"Problème médical connu : thyroïde, carence, apnées du sommeil, douleurs chroniques, séquelles de traumatisme crânien…"},
+      {v:"aucun",     l:"Aucune de ces situations", excl:true}
+    ]},
+
+  { id:"C8", ax:"CTX", type:"freq", tag:"Compensation",
+    text:"Vous vous appuyez sur des béquilles d'organisation — listes, alarmes, minuteurs, rappels, un proche qui gère — et sans elles les choses vous échappent." }
+];
+
+/* ======================= état & navigation ======================= */
+
+const QUESTIONS = STEPS.filter(s => s.kind !== "sep");
+const STORE_KEY = "tdah-test-v1";
+let idx = 0;
+let answers = {};
+
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ idx, answers, t: Date.now() })); } catch (e) {}
+}
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) { return null; }
+}
+(function checkResume() {
+  const s = loadState();
+  if (s && s.answers && Object.keys(s.answers).length > 0 && s.idx < STEPS.length) {
+    const btn = document.getElementById("btn-resume");
+    btn.classList.remove("hidden");
+    btn.textContent = "Reprendre (" + Object.keys(s.answers).length + " réponses enregistrées)";
+  }
+})();
+
+function show(screen) {
+  ["intro","question","results"].forEach(s =>
+    document.getElementById("screen-" + s).classList.toggle("hidden", s !== screen));
+}
+
+function startTest(reset) {
+  if (reset) { answers = {}; idx = 0; try { localStorage.removeItem(STORE_KEY); } catch(e){} }
+  show("question"); render();
+}
+function resumeTest() {
+  const s = loadState();
+  if (s) { answers = s.answers; idx = Math.min(s.idx, STEPS.length - 1); }
+  show("question"); render();
+}
+function restart() {
+  answers = {}; idx = 0;
+  try { localStorage.removeItem(STORE_KEY); } catch(e){}
+  document.getElementById("btn-resume").classList.add("hidden");
+  show("intro"); window.scrollTo({ top: 0 });
+}
+
+function isAnswered(step) {
+  if (!step || step.kind === "sep") return true;
+  const v = answers[step.id];
+  if (step.type === "multi") return Array.isArray(v) && v.length > 0;
+  return v !== undefined && v !== null;
+}
+
+function questionNumber(i) {
+  let n = 0;
+  for (let k = 0; k <= i && k < STEPS.length; k++) if (STEPS[k].kind !== "sep") n++;
+  return n;
+}
+
+function render() {
+  const step = STEPS[idx];
+  const tagEl  = document.getElementById("dimension-tag");
+  const qText  = document.getElementById("question-text");
+  const hintEl = document.getElementById("question-hint");
+  const optsEl = document.getElementById("options");
+  const nextEl = document.getElementById("btn-next");
+  const axis   = AXES[step.ax] || AXES.CTX;
+
+  document.documentElement.style.setProperty("--accent", axis.color);
+  tagEl.textContent = step.tag || axis.tag;
+  tagEl.style.color = axis.color;
+  tagEl.style.background = axis.color + "1f";
+
+  const done = questionNumber(idx - (step.kind === "sep" ? 0 : 1));
+  const pct = (questionNumber(idx) - (step.kind === "sep" ? 0 : 1)) / QUESTIONS.length * 100;
+  document.getElementById("progress-fill").style.width = Math.max(pct, 1.5) + "%";
+  document.getElementById("progress-fill").style.background = axis.color;
+  document.getElementById("progress-text").textContent =
+    step.kind === "sep" ? done + " / " + QUESTIONS.length : questionNumber(idx) + " / " + QUESTIONS.length;
+
+  optsEl.innerHTML = "";
+  hintEl.classList.add("hidden");
+
+  if (step.kind === "sep") {
+    qText.innerHTML = step.title;
+    hintEl.innerHTML = step.body;
+    hintEl.classList.remove("hidden");
+    hintEl.style.fontSize = "0.95rem";
+    nextEl.textContent = "Continuer →";
+    nextEl.disabled = false;
+    document.getElementById("kb-hint").innerHTML = "<kbd>Entrée</kbd> pour continuer";
+  } else {
+    hintEl.style.fontSize = "";
+    qText.innerHTML = step.text;
+    if (step.hint) { hintEl.innerHTML = step.hint; hintEl.classList.remove("hidden"); }
+
+    const opts = step.type === "freq"  ? FREQ.map((l, i) => ({ v:i, l }))
+               : step.type === "scale" ? step.scale.map((l, i) => ({ v:i, l }))
+               : step.options;
+
+    opts.forEach((o, i) => {
+      const el = document.createElement("div");
+      const cur = answers[step.id];
+      const sel = step.type === "multi" ? Array.isArray(cur) && cur.includes(o.v) : cur === o.v;
+      el.className = "option" + (sel ? " selected" : "");
+      el.innerHTML = '<span class="key">' + (i + 1) + '</span><span>' + o.l +
+                     (o.s ? '<span class="lbl-sub">' + o.s + '</span>' : '') + '</span>';
+      el.onclick = () => choose(o.v);
+      optsEl.appendChild(el);
+    });
+
+    const last = idx === STEPS.length - 1;
+    nextEl.textContent = last ? "Voir mes résultats →" : "Suivant →";
+    nextEl.disabled = !isAnswered(step);
+    document.getElementById("kb-hint").innerHTML =
+      step.type === "multi"
+        ? "Touches <kbd>1</kbd>–<kbd>" + opts.length + "</kbd> pour cocher, <kbd>Entrée</kbd> pour valider"
+        : "Touches <kbd>1</kbd>–<kbd>" + opts.length + "</kbd> · <kbd>←</kbd> retour";
+  }
+
+  document.getElementById("btn-prev").disabled = idx === 0;
+  saveState();
+}
+
+function choose(v) {
+  const step = STEPS[idx];
+  if (step.kind === "sep") return;
+  if (step.type === "multi") {
+    const opt = step.options.find(o => o.v === v);
+    let cur = Array.isArray(answers[step.id]) ? answers[step.id].slice() : [];
+    if (opt.excl) {
+      cur = cur.includes(v) ? [] : [v];
+    } else {
+      cur = cur.filter(x => !(step.options.find(o => o.v === x) || {}).excl);
+      cur = cur.includes(v) ? cur.filter(x => x !== v) : cur.concat([v]);
+    }
+    answers[step.id] = cur;
+    render();
+  } else {
+    answers[step.id] = v;
+    render();
+    setTimeout(() => { if (answers[step.id] === v) nextStep(); }, 190);
+  }
+}
+
+function nextStep() {
+  const step = STEPS[idx];
+  if (!isAnswered(step)) return;
+  if (idx === STEPS.length - 1) return showResults();
+  idx++; render();
+  if (window.scrollY > 40) window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function prevStep() {
+  if (idx === 0) return;
+  idx--; render();
+  if (window.scrollY > 40) window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.addEventListener("keydown", e => {
+  if (document.getElementById("screen-question").classList.contains("hidden")) return;
+  const step = STEPS[idx];
+  if (e.key === "Enter")      { e.preventDefault(); nextStep(); }
+  else if (e.key === "ArrowRight") nextStep();
+  else if (e.key === "ArrowLeft")  prevStep();
+  else if (/^[1-9]$/.test(e.key) && step.kind !== "sep") {
+    const n = parseInt(e.key, 10) - 1;
+    const len = step.type === "freq" ? 5 : step.type === "scale" ? step.scale.length : step.options.length;
+    if (n < len) {
+      const val = step.type === "freq" || step.type === "scale" ? n : step.options[n].v;
+      choose(val);
+    }
+  }
+});
+
+/* ======================= scoring ======================= */
+
+function bandOf(p) {
+  if (p < 25) return { label:"Peu ou pas de signes",  color:"#4ade80" };
+  if (p < 42) return { label:"Signes légers",          color:"#a3e635" };
+  if (p < 58) return { label:"Signes modérés",         color:"#fbbf24" };
+  if (p < 74) return { label:"Signes marqués",         color:"#fb923c" };
+  return       { label:"Signes très marqués",          color:"#f87171" };
+}
+
+function compute() {
+  const axisItems = ax => QUESTIONS.filter(q => q.ax === ax && q.type === "freq");
+  const res = {};
+
+  ["IN","HY"].forEach(ax => {
+    const items = axisItems(ax);
+    const vals = items.map(q => answers[q.id] || 0);
+    const pct = Math.round(vals.reduce((a,b) => a+b, 0) / (items.length * 4) * 100);
+    const dsmItems = items.filter(q => q.dsm);
+    const dsmCount = dsmItems.filter(q => (answers[q.id] || 0) >= 3).length;
+    const near = dsmItems.filter(q => (answers[q.id] || 0) === 2).length;
+    const top = items.slice()
+      .sort((a,b) => (answers[b.id]||0) - (answers[a.id]||0))
+      .filter(q => (answers[q.id]||0) >= 3).slice(0,3);
+    res[ax] = { pct, dsmCount, dsmTotal: dsmItems.length, near, top, band: bandOf(pct) };
+  });
+
+  // sous-dimensions
+  res.subs = {};
+  Object.keys(SUBS).forEach(k => {
+    const items = QUESTIONS.filter(q => q.sub === k);
+    const sum = items.reduce((a,q) => a + (answers[q.id] || 0), 0);
+    res.subs[k] = Math.round(sum / (items.length * 4) * 100);
+  });
+
+  // seuil DSM selon l'âge
+  const young = answers.age === "<12" || answers.age === "12-16";
+  res.threshold = young ? 6 : 5;
+  res.young = young;
+
+  // ASRS partie A
+  const asrsItems = QUESTIONS.filter(q => q.asrs).sort((a,b) => a.asrs.n - b.asrs.n);
+  res.asrs = {
+    items: asrsItems.map(q => ({
+      n: q.asrs.n, text: q.text, val: answers[q.id] || 0,
+      hit: (answers[q.id] || 0) >= q.asrs.thr, thr: q.asrs.thr
+    }))
+  };
+  res.asrs.count = res.asrs.items.filter(i => i.hit).length;
+  res.asrs.positive = res.asrs.count >= 4;
+
+  // contexte
+  res.childhood = answers.C1;              // 0..4
+  res.contexts  = (answers.C2 || []).filter(v => v !== "aucun");
+  res.impair    = Math.round(((answers.C3||0) + (answers.C4||0) + (answers.C5||0)) / 12 * 100);
+  res.impairMax = Math.max(answers.C3||0, answers.C4||0, answers.C5||0);
+  res.onset     = answers.C6;
+  res.confounds = (answers.C7 || []).filter(v => v !== "aucun");
+  res.compens   = answers.C8 || 0;
+
+  res.critA = res.IN.dsmCount >= res.threshold || res.HY.dsmCount >= res.threshold;
+  res.critB = res.childhood >= 3;
+  res.critB_unknown = res.childhood === 2;
+  res.critC = res.contexts.length >= 2;
+  res.critD = res.impairMax >= 2;
+  res.critE_flag = res.confounds.length > 0 || res.onset === "recent2" || res.onset === "mois";
+
+  // présentation
+  const inPos = res.IN.dsmCount >= res.threshold;
+  const hyPos = res.HY.dsmCount >= res.threshold;
+  res.presentation =
+      inPos && hyPos ? "combinee"
+    : inPos          ? "inattentive"
+    : hyPos          ? "hyperactive"
+    : (res.IN.dsmCount >= res.threshold - 1 || res.HY.dsmCount >= res.threshold - 1) ? "sousseuil"
+    : "aucune";
+
+  // niveau de convergence global
+  let pts = 0;
+  if (inPos || hyPos) pts += 3;
+  else if (res.presentation === "sousseuil") pts += 1;
+  if (res.critB) pts += 2; else if (res.critB_unknown) pts += 1;
+  if (res.critC) pts += 1;
+  if (res.impairMax >= 3) pts += 2; else if (res.impairMax >= 2) pts += 1;
+  if (res.onset === "toujours" || res.onset === "ado") pts += 1;
+  res.convergence = pts;   // /9
+
+  // cohérence des réponses
+  const freqVals = QUESTIONS.filter(q => q.type === "freq").map(q => answers[q.id] || 0);
+  res.flatline = new Set(freqVals).size <= 1;
+
+  return res;
+}
+
+/* ======================= rendu des résultats ======================= */
+
+function showResults() {
+  const r = compute();
+  show("results");
+  window.scrollTo({ top: 0 });
+
+  /* --- verdict --- */
+  const V = {
+    combinee: {
+      t: "Présentation combinée — les deux axes sont au-dessus du seuil",
+      s: "Vos réponses atteignent le seuil symptomatique du DSM-5 à la fois sur l'inattention et sur l'hyperactivité-impulsivité. C'est la présentation la plus fréquemment diagnostiquée."
+    },
+    inattentive: {
+      t: "Inattention prédominante — le profil « TDA »",
+      s: "Seul l'axe attentionnel atteint le seuil symptomatique. C'est la présentation la plus discrète, la plus tardivement repérée, et de loin la plus sous-diagnostiquée — en particulier chez les filles et les femmes."
+    },
+    hyperactive: {
+      t: "Hyperactivité / impulsivité prédominante",
+      s: "Seul l'axe hyperactivité-impulsivité atteint le seuil symptomatique. Cette présentation est la plus visible de l'extérieur, et souvent la plus repérée dès l'enfance."
+    },
+    sousseuil: {
+      t: "Profil sous le seuil, mais pas loin",
+      s: "Vous approchez le seuil symptomatique sur au moins un axe sans l'atteindre. Cela peut correspondre à des traits sans trouble, à une forme compensée, ou à une sous-estimation de vos propres difficultés — les trois arrivent."
+    },
+    aucune: {
+      t: "Peu d'arguments en faveur d'un TDAH",
+      s: "Vos réponses restent nettement en dessous des seuils symptomatiques sur les deux axes. Si vous rencontrez malgré tout des difficultés qui vous pèsent, elles méritent d'être explorées — mais probablement d'un autre côté."
+    }
+  }[r.presentation];
+  document.getElementById("verdict-title").textContent = V.t;
+  document.getElementById("verdict-sub").textContent = V.s;
+
+  /* --- cartes par axe --- */
+  const grid = document.getElementById("axis-grid");
+  grid.innerHTML = "";
+  ["IN","HY"].forEach(ax => {
+    const a = r[ax], A = AXES[ax];
+    const met = a.dsmCount >= r.threshold;
+    const card = document.createElement("div");
+    card.className = "axis-card " + (ax === "IN" ? "att" : "hyp");
+    card.innerHTML =
+      '<div class="name">' + (ax === "IN" ? "Axe 1 · Inattention" : "Axe 2 · Hyperactivité / Impulsivité") + '</div>' +
+      '<div class="pct">' + a.pct + '<span> / 100</span></div>' +
+      '<div class="bar"><div style="width:' + a.pct + '%;background:' + A.color + '"></div></div>' +
+      '<div class="band" style="color:' + a.band.color + '">' + a.band.label + '</div>' +
+      '<div class="criteria-line">Critères DSM-5 atteints : <b>' + a.dsmCount + ' / ' + a.dsmTotal + '</b> ' +
+        '(seuil retenu : ' + r.threshold + ') — <span class="' + (met ? "met" : "notmet") + '">' +
+        (met ? "seuil atteint" : "seuil non atteint") + '</span>' +
+        (a.near ? '<br><span class="muted">' + a.near + " item" + (a.near>1?"s":"") + " à « Parfois », juste sous le seuil de comptage.</span>" : "") +
+      '</div>' +
+      (a.top.length
+        ? '<div class="top-items">Ce qui ressort le plus :<ul>' +
+            a.top.map(q => '<li>' + q.text.replace(/<[^>]+>/g, "").split(/[:—(]/)[0].trim() + '</li>').join("") +
+          '</ul></div>'
+        : '<div class="top-items">Aucun item de cet axe n\'est coté « Souvent » ou « Très souvent ».</div>');
+    grid.appendChild(card);
+  });
+
+  /* --- sous-dimensions --- */
+  const sg = document.getElementById("subs-grid");
+  sg.innerHTML = "";
+  ["IN","HY"].forEach(ax => {
+    const col = document.createElement("div");
+    col.innerHTML = '<h3 style="color:' + AXES[ax].color + '">' + AXES[ax].label + '</h3>' +
+      Object.keys(SUBS).filter(k => SUBS[k].ax === ax).map(k => {
+        const v = r.subs[k];
+        return '<div class="sub-row"><div class="lbl"><span>' + SUBS[k].label + '</span><b>' + v + '</b></div>' +
+               '<div class="bar" style="height:7px;margin:0"><div style="width:' + v + '%;background:' + AXES[ax].color + '"></div></div></div>';
+      }).join("");
+    sg.appendChild(col);
+  });
+
+  drawRadar(r);
+
+  /* --- tableau DSM --- */
+  const ic = (state) => state === true ? '<span class="yes">●</span>' : state === "unk" ? '<span class="unk">◐</span>' : '<span class="no">○</span>';
+  const rows = [
+    ["A", r.critA,
+     "<b>Symptômes en nombre suffisant</b> — au moins " + r.threshold + " symptômes sur 9, sur au moins un des deux axes, présents depuis 6 mois.",
+     "Inattention : " + r.IN.dsmCount + "/9 · Hyperactivité-impulsivité : " + r.HY.dsmCount + "/9."],
+    ["B", r.critB_unknown ? "unk" : r.critB,
+     "<b>Apparition avant 12 ans</b> — plusieurs symptômes présents dans l'enfance.",
+     r.critB ? "Vous décrivez des signes déjà présents avant 12 ans."
+     : r.critB_unknown ? "Vous ne savez pas : c'est très fréquent. Un parent, un ancien bulletin scolaire ou un carnet de correspondance sont ici plus fiables que la mémoire."
+     : r.childhood === 0 ? "Vous ne décrivez rien de tel dans l'enfance."
+     : "Vous situez le début plus tard. Le TDAH n'apparaît pas à l'âge adulte : quand les symptômes sont récents, une autre cause est nettement plus probable."],
+    ["C", r.critC,
+     "<b>Présence dans au moins deux contextes</b> — travail/études, maison, relations, loisirs…",
+     r.contexts.length ? "Contextes cochés : " + r.contexts.length + "." : "Vous n'identifiez aucun domaine où cela vous pose problème."],
+    ["D", r.critD,
+     "<b>Retentissement significatif</b> — les symptômes réduisent concrètement la qualité du fonctionnement.",
+     "Score de retentissement global : " + r.impair + "/100" + (r.impairMax >= 3 ? " — élevé." : r.impairMax >= 2 ? " — modéré." : " — faible.")],
+    ["E", r.critE_flag ? "unk" : true,
+     "<b>Pas mieux expliqué par autre chose</b> — trouble du sommeil, dépression, anxiété, substances, cause médicale…",
+     r.critE_flag
+       ? "Vous avez signalé un ou plusieurs éléments (" + [].concat(
+             r.confounds.length ? "facteurs confondants" : [],
+             (r.onset === "recent2" || r.onset === "mois") ? "début récent" : []
+           ).join(", ") + ") qui peuvent produire un tableau identique. À explorer <em>avant</em> de conclure au TDAH — ou en parallèle, les deux coexistant très souvent."
+       : "Aucun facteur confondant majeur signalé. Ce critère reste à valider médicalement (bilan sanguin, sommeil, humeur)."]
+  ];
+  document.getElementById("dsm-table").innerHTML = rows.map(row =>
+    '<tr><td class="crit">' + row[0] + '</td><td class="status">' + ic(row[1]) + '</td>' +
+    '<td>' + row[2] + '<div class="muted small" style="margin-top:4px">' + row[3] + '</div></td></tr>').join("");
+
+  /* --- ASRS --- */
+  document.getElementById("asrs-box").innerHTML =
+    '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px">' +
+      '<div style="font-size:2rem;font-weight:700">' + r.asrs.count + ' / 6</div>' +
+      '<div class="band" style="color:' + (r.asrs.positive ? "#fb923c" : "#4ade80") + '">' +
+        (r.asrs.positive ? "Dépistage positif" : "Dépistage négatif") + '</div>' +
+    '</div>' +
+    '<div class="bar"><div style="width:' + (r.asrs.count/6*100) + '%;background:' + (r.asrs.positive ? "#fb923c" : "#4ade80") + '"></div></div>' +
+    '<p class="small muted" style="margin-top:12px">' +
+      (r.asrs.positive
+        ? "À partir de 4 items sur 6 dans la zone grisée, l'ASRS considère que les symptômes sont <strong>compatibles avec un TDAH de l'adulte</strong> et qu'une évaluation clinique complète est justifiée. Ce n'est pas un diagnostic : la sensibilité de l'outil est bonne, sa spécificité est moyenne — beaucoup de dépistages positifs ne se confirment pas."
+        : "En dessous de 4 items sur 6, le dépistage ASRS n'est pas en faveur d'un TDAH de l'adulte. Un test de dépistage négatif n'exclut cependant pas complètement le trouble, notamment dans les formes inattentives sans hyperactivité, que ces 6 items captent moins bien.") +
+    '</p>' +
+    '<details><summary>Voir les 6 items et vos réponses</summary>' +
+      r.asrs.items.map(i =>
+        '<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.86rem">' +
+        '<span style="color:' + (i.hit ? "#fb923c" : "var(--muted)") + ';font-weight:700">' + (i.hit ? "✓" : "·") + '</span>' +
+        '<span>' + i.text.replace(/<[^>]+>/g, "") +
+        '<span class="muted"> — votre réponse : <b>' + FREQ[i.val] + '</b> (compte à partir de « ' + FREQ[i.thr] + ' »)</span></span></div>').join("") +
+    '</details>';
+
+  /* --- nuances --- */
+  const n = [];
+  if (r.flatline)
+    n.push(["⚠ Réponses uniformes", "Vous avez répondu la même chose à tous les items symptomatiques. Le résultat n'est probablement pas interprétable — refaites le test en prenant chaque situation séparément."]);
+
+  if (r.critE_flag)
+    n.push(["Diagnostic différentiel à lever d'abord",
+      "Vous avez signalé " + (r.confounds.length ? "des facteurs (sommeil, humeur, surmenage, substances ou cause médicale)" : "un début récent des difficultés") +
+      " capables d'expliquer à eux seuls des troubles de l'attention. Une dette de sommeil chronique ou un épisode dépressif reproduisent presque parfaitement le tableau attentionnel d'un TDAH. Cela ne disqualifie rien : cela veut dire qu'un professionnel devra démêler l'ordre des choses — et que ces situations coexistent très souvent avec un vrai TDAH, qu'elles aggravent."]);
+
+  if (r.IN.pct - r.HY.pct >= 20)
+    n.push(["Un profil nettement attentionnel",
+      "Votre axe inattention dépasse l'axe hyperactivité de " + (r.IN.pct - r.HY.pct) + " points. C'est le profil qui passe le plus souvent sous les radars : pas de gêne pour l'entourage, donc pas de signalement à l'école, donc un repérage qui arrive parfois à 30 ou 40 ans, après des années de « tu pourrais faire mieux si tu te concentrais »."]);
+  else if (r.HY.pct - r.IN.pct >= 20)
+    n.push(["Un profil nettement hyperactif-impulsif",
+      "Votre axe hyperactivité-impulsivité dépasse l'axe attention de " + (r.HY.pct - r.IN.pct) + " points. L'impulsivité est la dimension qui a le plus de conséquences concrètes (argent, conduite, relations, décisions professionnelles) : c'est souvent elle, plus que l'attention, qu'il est le plus utile de travailler en premier."]);
+
+  if (r.subs.mentale >= 60 && r.subs.motrice < 45)
+    n.push(["Hyperactivité intérieure",
+      "Votre agitation est surtout mentale (" + r.subs.mentale + "/100) sans agitation motrice marquée (" + r.subs.motrice + "/100). C'est la forme adulte typique : de l'extérieur vous paraissez calme, à l'intérieur rien ne s'arrête. Beaucoup de personnes concernées se croient exclues du diagnostic pour cette raison — à tort."]);
+
+  if (r.subs.emo >= 60)
+    n.push(["Dysrégulation émotionnelle",
+      "Votre score sur la réactivité émotionnelle est élevé (" + r.subs.emo + "/100). Le DSM-5 ne la compte pas dans ses critères, mais elle est présente chez une large majorité des adultes TDAH et constitue souvent la source principale de souffrance et de conflits. Son absence des critères officiels explique beaucoup de diagnostics manqués."]);
+
+  if (r.compens >= 3)
+    n.push(["Compensation active",
+      "Vous décrivez un système de béquilles (listes, alarmes, rappels) sans lequel tout déraille. Cette compensation est efficace — et coûteuse : elle abaisse les scores de tous les questionnaires, y compris celui-ci, tout en laissant intact l'épuisement de fond. Mentionnez-la explicitement en consultation : « je m'en sors, mais voilà ce que ça me demande »."]);
+
+  if (answers.genre === "f")
+    n.push(["Un mot sur le repérage chez les femmes",
+      "Le TDAH est diagnostiqué environ deux à trois fois moins souvent chez les femmes, et bien plus tard — souvent à l'occasion du diagnostic d'un enfant. Trois raisons : une présentation plus fréquemment inattentive, un camouflage social appris tôt, et des symptômes réinterprétés en anxiété, dépression, hypersensibilité ou « caractère ». Les variations hormonales (cycle, post-partum, périménopause) modulent par ailleurs nettement l'intensité des symptômes, ce qu'un questionnaire ponctuel ne capte pas."]);
+
+  if (r.young)
+    n.push(["Seuil adapté à l'âge",
+      "Avant 17 ans, le DSM-5 exige 6 symptômes sur 9 (contre 5 chez l'adulte) : le seuil appliqué ici est donc plus strict. À cet âge, l'avis des parents et des enseignants pèse davantage qu'une auto-évaluation, et le bilan passe utilement par le médecin traitant, le pédiatre ou le centre médico-psychologique."]);
+
+  if (r.presentation === "aucune" && r.impairMax >= 3)
+    n.push(["Scores bas, mais gêne réelle",
+      "Vos symptômes TDAH restent sous les seuils, alors que vous décrivez un retentissement important. Quelque chose vous coûte réellement — anxiété, épisode dépressif, sommeil, épuisement, haut niveau de stress, ou tout autre chose. Le fait que ce ne soit probablement pas un TDAH ne rend pas la difficulté moins légitime : elle mérite d'être explorée."]);
+
+  const nx = document.getElementById("nuances");
+  nx.innerHTML = n.length
+    ? n.map(x => '<div class="note"><strong>' + x[0] + '</strong><br>' + x[1] + '</div>').join("")
+    : '<p class="muted">Aucune nuance particulière à signaler : vos réponses forment un ensemble cohérent, sans facteur confondant déclaré.</p>';
+
+  /* --- étapes suivantes --- */
+  const strong = r.convergence >= 7;
+  const middle = r.convergence >= 4;
+  const steps = [];
+  if (strong || middle) {
+    steps.push("<strong>Imprimez ou exportez cette page.</strong> Le détail item par item, l'ancienneté et le retentissement sont exactement ce qu'un médecin vous demandera, et ce qu'on oublie le jour du rendez-vous.");
+    steps.push("<strong>Rassemblez des traces de l'enfance</strong> : bulletins scolaires (les appréciations valent de l'or), carnets de correspondance, souvenirs d'un parent. Le critère « avant 12 ans » est celui qui bloque le plus de dossiers à l'âge adulte.");
+    steps.push("<strong>Faites remplir la même chose par un proche.</strong> L'écart entre votre perception et la sienne est en soi une donnée clinique.");
+    steps.push("<strong>Commencez par votre médecin traitant</strong> pour éliminer ce qui se traite autrement (bilan thyroïdien, carences martiale et vitaminique, sommeil, humeur) et obtenir une orientation.");
+    steps.push("<strong>Prenez rendez-vous en parallèle</strong> — psychiatre, ou centre spécialisé dans le TDAH adulte. Les délais dépassent fréquemment 6 à 18 mois en France : la file d'attente se prend en même temps que le reste, pas après.");
+    steps.push("<strong>En attendant, ce qui aide sans diagnostic :</strong> sommeil régulier, activité physique, externalisation systématique de la mémoire (une seule liste, des alarmes), découpage des tâches en unités de 15 minutes, et suppression des sources de distraction plutôt que lutte contre elles.");
+  } else {
+    steps.push("<strong>Ne concluez pas trop vite dans un sens ou dans l'autre.</strong> Un score bas obtenu un jour de forme, ou après des années d'adaptation, ne suffit pas à écarter la question.");
+    steps.push("<strong>Si des difficultés vous pèsent malgré tout</strong>, décrivez-les concrètement à votre médecin — pas en termes de diagnostic, mais en termes de situations : « je n'arrive pas à finir X », « je perds Y toutes les semaines ».");
+    steps.push("<strong>Regardez du côté du sommeil, de l'anxiété et de l'humeur</strong> : ce sont les trois causes les plus fréquentes de plaintes attentionnelles chez l'adulte, et les plus accessibles à une prise en charge.");
+    steps.push("<strong>Refaites ce test dans quelques mois</strong> si votre situation change. Les symptômes du TDAH fluctuent avec le stress, le sommeil et les périodes de vie.");
+  }
+  document.getElementById("next-steps").innerHTML = steps.map(s => "<li>" + s + "</li>").join("");
+
+  /* --- dump des réponses --- */
+  document.getElementById("answers-dump").innerHTML = QUESTIONS.map(q => {
+    const v = answers[q.id];
+    let txt;
+    if (q.type === "freq")       txt = FREQ[v] !== undefined ? FREQ[v] : "—";
+    else if (q.type === "scale") txt = q.scale[v] !== undefined ? q.scale[v] : "—";
+    else if (q.type === "multi") txt = (v || []).map(x => (q.options.find(o => o.v === x) || {}).l).join(", ") || "—";
+    else                         txt = ((q.options.find(o => o.v === v) || {}).l) || "—";
+    return '<div><span>' + (q.dsm ? "[" + q.dsm + "] " : "") + q.text.replace(/<[^>]+>/g, "") + '</span><b>' + txt + '</b></div>';
+  }).join("");
+
+  window.__result = r;
+}
+
+/* ======================= radar ======================= */
+
+function drawRadar(r) {
+  const cv = document.getElementById("radar");
+  const dpr = window.devicePixelRatio || 1;
+  const W = 560, H = 470;
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.width = "100%"; cv.style.maxWidth = W + "px";
+  const ctx = cv.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  const keys = ["motrice","mentale","verbale","compo","emo","initiation","memoire","orga","distract","attention"];
+  const cx = W/2, cy = H/2 + 4, R = 140, N = keys.length;
+  const ang = i => -Math.PI/2 + i * 2*Math.PI/N;
+
+  // toile
+  for (let g = 1; g <= 4; g++) {
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const rr = R * g/4, x = cx + Math.cos(ang(i))*rr, y = cy + Math.sin(ang(i))*rr;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = g === 4 ? "#3a4454" : "#2a3240";
+    ctx.lineWidth = 1; ctx.stroke();
+  }
+  for (let i = 0; i < N; i++) {
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(ang(i))*R, cy + Math.sin(ang(i))*R);
+    ctx.strokeStyle = "#2a3240"; ctx.stroke();
+  }
+
+  // polygone
+  const pts = keys.map((k, i) => {
+    const v = Math.max(r.subs[k], 2) / 100;
+    return [cx + Math.cos(ang(i))*R*v, cy + Math.sin(ang(i))*R*v];
+  });
+  const grad = ctx.createLinearGradient(cx + R, cy, cx - R, cy);
+  grad.addColorStop(0, "rgba(255,161,74,.34)");
+  grad.addColorStop(.5, "rgba(157,124,255,.30)");
+  grad.addColorStop(1, "rgba(94,179,255,.34)");
+  ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  const gradS = ctx.createLinearGradient(cx + R, cy, cx - R, cy);
+  gradS.addColorStop(0, "#ffa14a"); gradS.addColorStop(.5, "#b596ff"); gradS.addColorStop(1, "#5eb3ff");
+  ctx.strokeStyle = gradS; ctx.lineWidth = 2; ctx.stroke();
+
+  pts.forEach((p, i) => {
+    ctx.beginPath(); ctx.arc(p[0], p[1], 3.4, 0, Math.PI*2);
+    ctx.fillStyle = SUBS[keys[i]].ax === "IN" ? "#5eb3ff" : "#ffa14a"; ctx.fill();
+  });
+
+  // étiquettes
+  ctx.font = "600 11.5px -apple-system, Segoe UI, system-ui, sans-serif";
+  keys.forEach((k, i) => {
+    const a = ang(i), lr = R + 24;
+    const x = cx + Math.cos(a)*lr, y = cy + Math.sin(a)*lr;
+    ctx.fillStyle = SUBS[k].ax === "IN" ? "#5eb3ff" : "#ffa14a";
+    ctx.textAlign = Math.abs(Math.cos(a)) < 0.25 ? "center" : (Math.cos(a) > 0 ? "left" : "right");
+    ctx.textBaseline = "middle";
+    const lines = SUBS[k].r;
+    lines.forEach((ln, j) => ctx.fillText(ln, x, y + (j - (lines.length-1)/2) * 14));
+    ctx.fillStyle = "#8b95a5";
+    ctx.font = "500 10.5px -apple-system, Segoe UI, system-ui, sans-serif";
+    ctx.fillText(r.subs[k] + "", x, y + ((lines.length-1)/2 + 1) * 14);
+    ctx.font = "600 11.5px -apple-system, Segoe UI, system-ui, sans-serif";
+  });
+}
+
+/* ======================= export ======================= */
+
+function optionLabel(qid, v) {
+  const q = QUESTIONS.find(x => x.id === qid);
+  const o = q && q.options ? q.options.find(x => x.v === v) : null;
+  return o ? o.l : "—";
+}
+
+function summaryText() {
+  const r = window.__result;
+  const L = [];
+  L.push("TEST TDA / TDAH — résultats (auto-évaluation, non diagnostique)");
+  L.push("poilon.com/tdah — " + new Date().toLocaleDateString("fr-FR"));
+  L.push("");
+  L.push("AXE 1 — INATTENTION : " + r.IN.pct + "/100 (" + r.IN.band.label + ")");
+  L.push("  Critères DSM-5 atteints : " + r.IN.dsmCount + "/9 (seuil " + r.threshold + ")");
+  L.push("AXE 2 — HYPERACTIVITÉ / IMPULSIVITÉ : " + r.HY.pct + "/100 (" + r.HY.band.label + ")");
+  L.push("  Critères DSM-5 atteints : " + r.HY.dsmCount + "/9 (seuil " + r.threshold + ")");
+  L.push("");
+  L.push("Dépistage ASRS v1.1 partie A : " + r.asrs.count + "/6 — " + (r.asrs.positive ? "POSITIF" : "négatif"));
+  L.push("");
+  L.push("Sous-dimensions :");
+  Object.keys(SUBS).forEach(k => L.push("  - " + SUBS[k].label + " : " + r.subs[k] + "/100"));
+  L.push("");
+  L.push("Critères de contexte :");
+  L.push("  B. Signes avant 12 ans : " + (r.critB ? "oui" : r.critB_unknown ? "ne sait pas" : "non"));
+  L.push("  C. Au moins 2 contextes : " + (r.critC ? "oui (" + r.contexts.length + ")" : "non"));
+  L.push("  D. Retentissement : " + r.impair + "/100");
+  L.push("  E. Facteurs confondants signalés : " + (r.confounds.length ? r.confounds.join(", ") : "aucun") + " ; ancienneté : " + optionLabel("C6", r.onset));
+  L.push("");
+  L.push("Présentation suggérée : " + document.getElementById("verdict-title").textContent);
+  L.push("");
+  L.push("⚠ Ce document n'est pas un diagnostic. Seul un professionnel de santé peut poser un diagnostic de TDAH.");
+  return L.join("\n");
+}
+
+function copySummary() {
+  const btn = document.getElementById("btn-copy");
+  navigator.clipboard.writeText(summaryText()).then(() => {
+    btn.textContent = "Copié \u2713";
+    setTimeout(() => btn.textContent = "Copier le résumé", 1800);
+  }).catch(() => { btn.textContent = "Copie impossible"; });
+}
+
+function exportJSON() {
+  const data = { test: "tdah-poilon-v1", date: new Date().toISOString(), answers, resultat: window.__result };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "test-tdah-" + new Date().toISOString().slice(0, 10) + ".json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+</script>
+</body>
+</html>

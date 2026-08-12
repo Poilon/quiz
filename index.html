@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les quiz de poilon.com</title>
+<meta name="description" content="Tous les quiz et tests de poilon.com au même endroit : TDAH, traits autistiques, dépendance affective, orientation, drapeaux, Pokémon, vitesse de frappe. Gratuits, sans inscription, rien n'est envoyé nulle part.">
+<meta property="og:title" content="Les quiz de poilon.com">
+<meta property="og:description" content="Des auto-évaluations sérieuses et des quiz pour le plaisir. Gratuits, sans inscription, tout se passe dans votre navigateur.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --ring: rgba(11,11,11,0.10);
+    --accent: #6247c9;
+    --accent-soft: rgba(98,71,201,0.12);
+    --good-text: #006300;
+    --good-soft: rgba(12,163,12,0.13);
+    --warn-soft: rgba(180,120,10,0.12);
+    --warn-text: #8a5d00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --ring: rgba(255,255,255,0.10);
+      --accent: #9b86ff;
+      --accent-soft: rgba(155,134,255,0.16);
+      --good-text: #0ca30c;
+      --warn-soft: rgba(235,170,40,0.14);
+      --warn-text: #e0a94a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --ring: rgba(255,255,255,0.10);
+    --accent: #9b86ff;
+    --accent-soft: rgba(155,134,255,0.16);
+    --good-text: #0ca30c;
+    --warn-soft: rgba(235,170,40,0.14);
+    --warn-text: #e0a94a;
+  }
+
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 32px 20px 80px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+
+  .kicker {
+    font-size: 13px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  h1 { font-size: clamp(32px, 6vw, 46px); line-height: 1.12; margin: 8px 0 10px; }
+  .sub { color: var(--ink-2); max-width: 680px; font-size: 17px; }
+  .sub strong { color: var(--ink); }
+
+  h2 { font-size: 21px; margin: 48px 0 4px; }
+  .h2sub { color: var(--ink-2); font-size: 14.5px; margin-bottom: 20px; max-width: 680px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr)); gap: 14px; }
+  .card {
+    display: flex; flex-direction: column; gap: 8px;
+    background: var(--surface-1); border: 1px solid var(--ring);
+    border-radius: 16px; padding: 20px 22px 22px;
+    text-decoration: none; color: inherit;
+    transition: border-color .2s, transform .2s;
+  }
+  a.card:hover, a.card:focus-visible { border-color: var(--accent); transform: translateY(-2px); }
+  a.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .card .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .card .emoji { font-size: 24px; line-height: 1; }
+  .card h3 { font-size: 17.5px; margin: 0; }
+  .card p { color: var(--ink-2); font-size: 14.5px; }
+  .card .go { font-size: 13.5px; font-weight: 600; color: var(--accent); margin-top: auto; padding-top: 6px; }
+
+  .badge {
+    font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .badge.serieux { background: var(--good-soft); color: var(--good-text); }
+
+  .avert {
+    margin-top: 18px; padding: 14px 16px; border-radius: 12px;
+    background: var(--warn-soft); border-left: 3px solid var(--warn-text);
+    color: var(--ink-2); font-size: 14.5px;
+  }
+  .avert strong { color: var(--ink); }
+
+  footer { margin-top: 52px; padding-top: 20px; border-top: 1px solid var(--grid); font-size: 13px; color: var(--muted); }
+  footer a { color: var(--ink-2); }
+
+  @media (prefers-reduced-motion: reduce) { a.card:hover, a.card:focus-visible { transform: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">poilon.com · quiz</div>
+    <h1>Tous les quiz, au même endroit.</h1>
+    <p class="sub">D'un côté des <strong>auto-évaluations construites sérieusement</strong>, à partir
+    d'échelles cliniques publiées ; de l'autre des quiz pour le plaisir. Tous tournent entièrement
+    dans votre navigateur : pas de compte, pas de pub, aucune réponse envoyée nulle part.</p>
+  </header>
+
+  <h2>Se connaître</h2>
+  <p class="h2sub">Des questionnaires inspirés d'instruments existants. Ce sont des outils de
+  repérage et de mise en mots — en aucun cas des diagnostics.</p>
+
+  <div class="cards">
+
+    <a class="card" href="./tdah/">
+      <div class="top"><span class="emoji">🧠</span><span class="badge serieux">Auto-évaluation</span></div>
+      <h3>Test TDA / TDAH</h3>
+      <p>41 questions, et surtout <strong>deux axes évalués séparément</strong> : l'inattention d'un
+      côté, l'hyperactivité-impulsivité de l'autre. Comptage des critères DSM-5-TR, dépistage ASRS
+      de l'OMS, radar en 10 sous-dimensions et vérification des critères de contexte.</p>
+      <div class="go">poilon.com/quiz/tdah →</div>
+    </a>
+
+    <a class="card" href="./tdsa/">
+      <div class="top"><span class="emoji">🧩</span><span class="badge serieux">Auto-évaluation</span></div>
+      <h3>Traits du spectre autistique</h3>
+      <p>Plus de 70 items sur 8 dimensions — cognition sociale, communication, sensorialité,
+      flexibilité, intérêts, régulation émotionnelle et camouflage. Inspiré de l'AQ-50, du RAADS-R,
+      de l'EQ/SQ et du CAT-Q.</p>
+      <div class="go">poilon.com/quiz/tdsa →</div>
+    </a>
+
+    <a class="card" href="./dependance-affective/">
+      <div class="top"><span class="emoji">💞</span><span class="badge serieux">Auto-évaluation</span></div>
+      <h3>Dépendance affective</h3>
+      <p>12 questions inspirées de l'ECR pour situer votre rapport à la proximité : anxiété
+      d'abandon d'un côté, évitement de l'intimité de l'autre, avec une analyse personnalisée
+      à la fin.</p>
+      <div class="go">poilon.com/quiz/dependance-affective →</div>
+    </a>
+
+    <a class="card" href="./orientation/">
+      <div class="top"><span class="emoji">🎓</span><span class="badge">Orientation</span></div>
+      <h3>Quiz d'orientation — lycée</h3>
+      <p>Pour les lycéens qui doivent choisir : spécialités du bac, filières post-bac, formations
+      et métiers. Le questionnaire s'adapte à la classe.</p>
+      <div class="go">poilon.com/quiz/orientation →</div>
+    </a>
+
+    <a class="card" href="./orientation/enfants/">
+      <div class="top"><span class="emoji">🌟</span><span class="badge">Enfants</span></div>
+      <h3>Mon métier de rêve</h3>
+      <p>La version pour les plus jeunes : 10 questions simples et illustrées pour découvrir
+      quel métier leur ressemble.</p>
+      <div class="go">poilon.com/quiz/orientation/enfants →</div>
+    </a>
+
+  </div>
+
+  <div class="avert">
+    <strong>À lire avant de commencer.</strong> Les trois premiers tests sont des auto-évaluations,
+    pas des outils diagnostiques : aucun questionnaire en ligne ne peut poser un diagnostic. Un
+    score élevé signifie seulement que la question mérite d'être posée à un professionnel de santé ;
+    un score bas ne l'écarte pas. Chaque test détaille ses sources et ses limites sur sa propre page.
+  </div>
+
+  <h2>Jouer &amp; s'entraîner</h2>
+  <p class="h2sub">Pas de sous-texte, juste des points à marquer.</p>
+
+  <div class="cards">
+
+    <a class="card" href="./drapeaux/">
+      <div class="top"><span class="emoji">🌍</span><span class="badge">Culture</span></div>
+      <h3>Quiz des drapeaux</h3>
+      <p>192 pays, trois niveaux de difficulté et un scoring qui insiste sur ceux que vous ratez.
+      Le plus rapide à lancer, le plus dur à finir.</p>
+      <div class="go">poilon.com/quiz/drapeaux →</div>
+    </a>
+
+    <a class="card" href="./pokemon/">
+      <div class="top"><span class="emoji">⚡</span><span class="badge">Fun</span></div>
+      <h3>Quiz Pokémon</h3>
+      <p>Reconnaître les Pokémon, générations 1 à 9 au choix — et un test de personnalité
+      pour savoir lequel vous seriez.</p>
+      <div class="go">poilon.com/quiz/pokemon →</div>
+    </a>
+
+    <a class="card" href="./frappe/">
+      <div class="top"><span class="emoji">⌨️</span><span class="badge">Performance</span></div>
+      <h3>Vitesse de frappe</h3>
+      <p>POP TYPE! — mots par minute et précision mesurés en direct pendant que vous tapez.</p>
+      <div class="go">poilon.com/quiz/frappe →</div>
+    </a>
+
+  </div>
+
+  <footer>
+    Les quiz de <a href="https://poilon.com">poilon.com</a> — pages statiques, aucun compte,
+    aucun cookie, aucune réponse enregistrée ailleurs que dans votre navigateur.
+  </footer>
+
+</div>
+</body>
+</html>

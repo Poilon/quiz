@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz des Métiers pour Enfants</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.8em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.3em;
+        }
+
+        .welcome-screen, .quiz-screen, .result-screen {
+            display: none;
+        }
+
+        .welcome-screen.active, .quiz-screen.active, .result-screen.active {
+            display: block;
+        }
+
+        .start-btn, .next-btn, .restart-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 30px auto;
+            font-family: 'Comic Sans MS', sans-serif;
+            font-weight: bold;
+        }
+
+        .start-btn:hover, .next-btn:hover, .restart-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .question-container {
+            margin: 30px 0;
+        }
+
+        .question {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+        }
+
+        .answer {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 4px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .answer:hover {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+            transform: translateX(10px);
+        }
+
+        .answer.selected {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .progress {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 25px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .result-card h2 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .result-card p {
+            font-size: 1.3em;
+            line-height: 1.6;
+        }
+
+        .job-list {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .job-list h3 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .job-item {
+            display: inline-block;
+            background: white;
+            padding: 12px 20px;
+            margin: 8px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            border: 3px solid #ff6b6b;
+            color: #ff6b6b;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .job-item:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .emoji {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            font-size: 1.2em;
+            text-decoration: none;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .back-link a:hover {
+            color: #764ba2;
+            border-bottom-color: #764ba2;
+        }
+
+        .job-detail-screen {
+            display: none;
+        }
+
+        .job-detail-screen.active {
+            display: block;
+        }
+
+        .job-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 25px;
+            margin: 25px 0;
+        }
+
+        .job-card h2 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .job-card h3 {
+            font-size: 1.6em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #ffd89b;
+        }
+
+        .job-card p, .job-card li {
+            font-size: 1.2em;
+            line-height: 1.7;
+        }
+
+        .job-card ul {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        .job-card li {
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 25px auto;
+            font-family: 'Comic Sans MS', sans-serif;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-screen active">
+            <h1>🌟 Découvre ton Métier de Rêve ! 🌟</h1>
+            <p class="subtitle">Réponds à 10 questions simples pour découvrir quel métier est fait pour toi !</p>
+            <button class="start-btn" onclick="startQuiz()">Commencer le Quiz !</button>
+            <div class="back-link">
+                <a href="../">← Version pour les plus grands</a>
+            </div>
+        </div>
+
+        <div class="quiz-screen">
+            <div class="progress">Question <span id="current">1</span> sur 10</div>
+            <div class="question-container">
+                <div class="question" id="question"></div>
+                <div class="answers" id="answers"></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Question Suivante !</button>
+        </div>
+
+        <div class="result-screen">
+            <h1>🎉 Voici tes résultats ! 🎉</h1>
+            <div id="results"></div>
+            <button class="restart-btn" onclick="location.reload()">Refaire le Quiz !</button>
+            <div class="back-link">
+                <a href="../">← Version pour les plus grands</a>
+            </div>
+        </div>
+
+        <div class="job-detail-screen">
+            <h1>📋 Découvre ce métier !</h1>
+            <div id="job-details"></div>
+            <button class="back-btn" onclick="showPreviousPage()">← Retour</button>
+            <div class="back-link">
+                <a href="../">← Version pour les plus grands</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Qu'est-ce que tu aimes faire le plus ?",
+                answers: [
+                    { text: "Jouer dehors et bouger", scores: { nature: 3, sport: 2 } },
+                    { text: "Dessiner et créer des choses", scores: { creative: 3, art: 2 } },
+                    { text: "Lire des livres et raconter des histoires", scores: { education: 3, culture: 2 } },
+                    { text: "Jouer avec les ordinateurs et tablettes", scores: { tech: 3, science: 1 } }
+                ]
+            },
+            {
+                question: "Quel est ton endroit préféré ?",
+                answers: [
+                    { text: "La forêt ou le parc", scores: { nature: 3, sport: 1 } },
+                    { text: "L'école ou la bibliothèque", scores: { education: 3, science: 1 } },
+                    { text: "Un magasin ou un marché", scores: { commerce: 3, social: 1 } },
+                    { text: "Un musée ou un théâtre", scores: { culture: 3, creative: 1 } }
+                ]
+            },
+            {
+                question: "Qu'est-ce que tu veux faire quand tu es grand ?",
+                answers: [
+                    { text: "Aider les gens", scores: { social: 3, sante: 2, education: 1 } },
+                    { text: "Inventer des choses nouvelles", scores: { tech: 3, science: 2 } },
+                    { text: "Faire rire les gens", scores: { creative: 3, culture: 2 } },
+                    { text: "Protéger les animaux ou la nature", scores: { nature: 3, sante: 1 } }
+                ]
+            },
+            {
+                question: "Quel animal tu préfères ?",
+                answers: [
+                    { text: "Un chien ou un chat", scores: { nature: 2, sante: 1 } },
+                    { text: "Un dauphin ou un cheval", scores: { nature: 3, sport: 1 } },
+                    { text: "Un oiseau ou un papillon", scores: { creative: 2, nature: 1 } },
+                    { text: "Je préfère les robots !", scores: { tech: 3, science: 1 } }
+                ]
+            },
+            {
+                question: "Qu'est-ce que tu aimes regarder à la télé ?",
+                answers: [
+                    { text: "Des documentaires sur les animaux", scores: { nature: 3, science: 1 } },
+                    { text: "Des dessins animés rigolos", scores: { creative: 2, culture: 2 } },
+                    { text: "Des émissions de cuisine", scores: { creative: 2, commerce: 1 } },
+                    { text: "Des films sur les pompiers ou docteurs", scores: { sante: 3, social: 2 } }
+                ]
+            },
+            {
+                question: "Si tu pouvais avoir un super-pouvoir, ce serait ?",
+                answers: [
+                    { text: "Parler avec les animaux", scores: { nature: 3, social: 1 } },
+                    { text: "Guérir les gens malades", scores: { sante: 3, social: 2 } },
+                    { text: "Créer des choses avec ma tête", scores: { creative: 3, tech: 1 } },
+                    { text: "Voler dans le ciel", scores: { sport: 2, nature: 1 } }
+                ]
+            },
+            {
+                question: "Dans ta classe, tu es plutôt ?",
+                answers: [
+                    { text: "Celui qui aide les autres", scores: { social: 3, education: 2 } },
+                    { text: "Celui qui pose beaucoup de questions", scores: { science: 3, education: 1 } },
+                    { text: "Celui qui fait des blagues", scores: { creative: 2, culture: 2 } },
+                    { text: "Celui qui est bon en sport", scores: { sport: 3, nature: 1 } }
+                ]
+            },
+            {
+                question: "Qu'est-ce que tu aimes faire avec tes mains ?",
+                answers: [
+                    { text: "Construire des Lego ou des puzzles", scores: { tech: 2, science: 2 } },
+                    { text: "Faire de la peinture ou du bricolage", scores: { creative: 3, art: 2 } },
+                    { text: "Jardiner ou planter des fleurs", scores: { nature: 3 } },
+                    { text: "Faire du sport ou danser", scores: { sport: 3, creative: 1 } }
+                ]
+            },
+            {
+                question: "Quel est ton rêve pour le monde ?",
+                answers: [
+                    { text: "Que tout le monde soit heureux", scores: { social: 3, education: 1 } },
+                    { text: "Que la nature soit protégée", scores: { nature: 3, science: 1 } },
+                    { text: "Que tout le monde puisse apprendre", scores: { education: 3, culture: 1 } },
+                    { text: "Que personne ne soit malade", scores: { sante: 3, science: 1 } }
+                ]
+            },
+            {
+                question: "Qu'est-ce qui te rend le plus fier ?",
+                answers: [
+                    { text: "Réussir quelque chose de difficile", scores: { science: 2, tech: 2 } },
+                    { text: "Faire plaisir à quelqu'un", scores: { social: 3, education: 1 } },
+                    { text: "Créer quelque chose de beau", scores: { creative: 3, art: 2 } },
+                    { text: "Gagner un match ou une course", scores: { sport: 3, commerce: 1 } }
+                ]
+            }
+        ];
+
+        const careers = {
+            tech: {
+                title: "Métiers de l'Informatique",
+                emoji: "💻",
+                description: "Tu aimes les ordinateurs et créer des choses sur les écrans !",
+                jobs: ["Créateur de jeux vidéo", "Développeur de sites internet", "Réparateur d'ordinateurs", "Créateur d'applications pour téléphone", "YouTubeur", "Streamer"]
+            },
+            science: {
+                title: "Métiers de la Science",
+                emoji: "🔬",
+                description: "Tu es curieux et tu veux découvrir comment les choses fonctionnent !",
+                jobs: ["Scientifique", "Chercheur", "Astronaute", "Inventeur"]
+            },
+            education: {
+                title: "Métiers de l'Enseignement",
+                emoji: "📚",
+                description: "Tu aimes apprendre et expliquer des choses aux autres !",
+                jobs: ["Maîtresse ou Maître d'école", "Professeur", "Bibliothécaire", "Éducateur"]
+            },
+            social: {
+                title: "Métiers pour Aider les Gens",
+                emoji: "🤝",
+                description: "Tu veux aider les autres et les rendre heureux !",
+                jobs: ["Pompier", "Policier", "Animateur pour enfants", "Travailleur social", "Gendarme", "Secouriste"]
+            },
+            creative: {
+                title: "Métiers Créatifs",
+                emoji: "🎨",
+                description: "Tu aimes créer, dessiner et imaginer de nouvelles choses !",
+                jobs: ["Dessinateur", "Artiste peintre", "Créateur de jouets", "Designer", "Cuisinier", "Pâtissier", "Coiffeur", "Maquilleur"]
+            },
+            commerce: {
+                title: "Métiers du Commerce",
+                emoji: "🏪",
+                description: "Tu aimes échanger avec les gens et vendre des choses !",
+                jobs: ["Vendeur", "Boulanger-Pâtissier", "Fleuriste", "Chef d'entreprise", "Glacier", "Chocolatier", "Libraire"]
+            },
+            sante: {
+                title: "Métiers de la Santé",
+                emoji: "⚕️",
+                description: "Tu veux soigner les gens et les animaux !",
+                jobs: ["Docteur", "Infirmière", "Vétérinaire", "Pharmacien", "Dentiste"]
+            },
+            nature: {
+                title: "Métiers de la Nature",
+                emoji: "🌳",
+                description: "Tu adores les animaux et être dehors dans la nature !",
+                jobs: ["Vétérinaire", "Jardinier", "Fermier", "Gardien de zoo", "Paysagiste", "Gérant de centre équestre", "Soigneur animalier", "Dresseur d'animaux"]
+            },
+            sport: {
+                title: "Métiers du Sport",
+                emoji: "⚽",
+                description: "Tu es sportif et tu aimes bouger !",
+                jobs: ["Professeur de sport", "Footballeur professionnel", "Coach sportif", "Danseur", "Moniteur de ski", "Moniteur d'équitation", "Maître-nageur"]
+            },
+            culture: {
+                title: "Métiers de la Culture",
+                emoji: "🎭",
+                description: "Tu aimes les spectacles, la musique et les histoires !",
+                jobs: ["Acteur", "Chanteur", "Musicien", "Écrivain", "Journaliste"]
+            },
+            art: {
+                title: "Métiers de l'Art",
+                emoji: "🖌️",
+                description: "Tu veux créer de belles choses et les montrer au monde !",
+                jobs: ["Artiste", "Sculpteur", "Photographe", "Styliste", "Architecte"]
+            }
+        };
+
+        const jobsDatabase = {
+            "Créateur de jeux vidéo": {
+                description: "Tu crées des jeux vidéo amusants pour que les gens s'amusent !",
+                missions: ["Inventer des histoires de jeux", "Dessiner les personnages", "Créer les niveaux du jeu"],
+                formation: "Il faut apprendre l'informatique et le dessin",
+                qualites: ["Créatif", "Aime les jeux", "Patient"]
+            },
+            "Développeur de sites internet": {
+                description: "Tu construis des sites internet comme un architecte construit des maisons !",
+                missions: ["Créer des pages web", "Faire de beaux designs", "Réparer les bugs"],
+                formation: "Il faut apprendre à coder sur ordinateur",
+                qualites: ["Logique", "Aime les ordinateurs", "Curieux"]
+            },
+            "Réparateur d'ordinateurs": {
+                description: "Tu répares les ordinateurs et tablettes cassés !",
+                missions: ["Trouver ce qui ne marche pas", "Changer les pièces cassées", "Installer les programmes"],
+                formation: "Il faut apprendre comment fonctionnent les ordinateurs",
+                qualites: ["Débrouillard", "Patient", "Aime bricoler"]
+            },
+            "Créateur d'applications pour téléphone": {
+                description: "Tu inventes des applications pour les téléphones et tablettes !",
+                missions: ["Avoir des idées d'applications", "Les programmer", "Les rendre jolies"],
+                formation: "Il faut apprendre la programmation",
+                qualites: ["Créatif", "Aime la technologie", "Imaginatif"]
+            },
+            "YouTubeur": {
+                description: "Tu fais des vidéos amusantes ou intéressantes pour YouTube !",
+                missions: ["Filmer des vidéos", "Les monter sur l'ordinateur", "Parler avec tes fans"],
+                formation: "Il faut apprendre à filmer et monter des vidéos",
+                qualites: ["À l'aise devant la caméra", "Créatif", "Aime partager"]
+            },
+            "Streamer": {
+                description: "Tu joues à des jeux vidéo en direct et les gens te regardent !",
+                missions: ["Jouer aux jeux vidéo", "Discuter avec les spectateurs", "Divertir les gens"],
+                formation: "Il faut bien connaître les jeux vidéo et savoir parler",
+                qualites: ["Aime jouer", "Bavard", "Drôle"]
+            },
+            "Scientifique": {
+                description: "Tu fais des expériences pour découvrir de nouvelles choses !",
+                missions: ["Faire des expériences", "Observer la nature", "Découvrir des secrets"],
+                formation: "Il faut faire beaucoup d'études en sciences",
+                qualites: ["Curieux", "Patient", "Observateur"]
+            },
+            "Chercheur": {
+                description: "Tu cherches des réponses aux grandes questions du monde !",
+                missions: ["Poser des questions", "Faire des recherches", "Trouver des solutions"],
+                formation: "Il faut étudier longtemps à l'université",
+                qualites: ["Curieux", "Réfléchi", "Persévérant"]
+            },
+            "Astronaute": {
+                description: "Tu voyages dans l'espace et explores les étoiles !",
+                missions: ["Aller dans l'espace", "Faire des expériences", "Découvrir de nouvelles planètes"],
+                formation: "Il faut être très fort en sciences et très sportif",
+                qualites: ["Courageux", "Intelligent", "En forme"]
+            },
+            "Inventeur": {
+                description: "Tu inventes des objets qui n'existent pas encore !",
+                missions: ["Avoir des idées nouvelles", "Construire des prototypes", "Tester tes inventions"],
+                formation: "Il faut apprendre les sciences et la technologie",
+                qualites: ["Imaginatif", "Créatif", "Débrouillard"]
+            },
+            "Maîtresse ou Maître d'école": {
+                description: "Tu apprends plein de choses aux enfants à l'école !",
+                missions: ["Faire la classe", "Expliquer les leçons", "Aider les élèves à apprendre"],
+                formation: "Il faut aller à l'université pour apprendre à enseigner",
+                qualites: ["Patient", "Gentil", "Aime expliquer"]
+            },
+            "Professeur": {
+                description: "Tu enseignes une matière que tu adores aux élèves !",
+                missions: ["Préparer tes cours", "Expliquer ta matière", "Corriger les devoirs"],
+                formation: "Il faut faire beaucoup d'études dans ta matière préférée",
+                qualites: ["Passionné", "Pédagogue", "Patient"]
+            },
+            "Bibliothécaire": {
+                description: "Tu t'occupes des livres et tu aides les gens à trouver ce qu'ils cherchent !",
+                missions: ["Ranger les livres", "Conseiller les lecteurs", "Organiser des activités"],
+                formation: "Il faut aimer les livres et apprendre à les classer",
+                qualites: ["Aime lire", "Organisé", "Serviable"]
+            },
+            "Éducateur": {
+                description: "Tu accompagnes les enfants et les aides à grandir !",
+                missions: ["Organiser des activités", "Écouter les enfants", "Les aider à résoudre leurs problèmes"],
+                formation: "Il faut apprendre l'éducation et la psychologie",
+                qualites: ["Bienveillant", "À l'écoute", "Créatif"]
+            },
+            "Pompier": {
+                description: "Tu éteins les feux et tu sauves les gens en danger !",
+                missions: ["Éteindre les incendies", "Secourir les personnes", "Conduire le camion de pompiers"],
+                formation: "Il faut passer un concours et être très sportif",
+                qualites: ["Courageux", "Fort", "Rapide"]
+            },
+            "Policier": {
+                description: "Tu protèges les gens et tu attrapes les méchants !",
+                missions: ["Patrouiller dans la ville", "Aider les gens", "Attraper les voleurs"],
+                formation: "Il faut passer un concours de police",
+                qualites: ["Courageux", "Juste", "Attentif"]
+            },
+            "Gendarme": {
+                description: "Tu veilles sur la sécurité des gens, surtout à la campagne !",
+                missions: ["Protéger les habitants", "Faire respecter les règles", "Aider en cas de problème"],
+                formation: "Il faut entrer à l'école de gendarmerie",
+                qualites: ["Courageux", "Responsable", "Sportif"]
+            },
+            "Secouriste": {
+                description: "Tu arrives le premier quand quelqu'un est blessé pour l'aider !",
+                missions: ["Soigner les blessés", "Conduire l'ambulance", "Rassurer les gens"],
+                formation: "Il faut apprendre les gestes de premiers secours",
+                qualites: ["Rapide", "Calme", "Gentil"]
+            },
+            "Animateur pour enfants": {
+                description: "Tu organises des activités amusantes pour les enfants !",
+                missions: ["Inventer des jeux", "Surveiller les enfants", "Créer des activités"],
+                formation: "Il faut passer le BAFA (diplôme d'animateur)",
+                qualites: ["Dynamique", "Créatif", "Aime les enfants"]
+            },
+            "Travailleur social": {
+                description: "Tu aides les personnes qui ont des difficultés dans leur vie !",
+                missions: ["Écouter les gens", "Les conseiller", "Les aider à trouver des solutions"],
+                formation: "Il faut faire des études d'assistant social",
+                qualites: ["Gentil", "À l'écoute", "Compréhensif"]
+            },
+            "Dessinateur": {
+                description: "Tu dessines de belles images pour les livres, les films ou les BD !",
+                missions: ["Créer des dessins", "Imaginer des personnages", "Illustrer des histoires"],
+                formation: "Il faut aller à l'école d'art",
+                qualites: ["Créatif", "Imaginatif", "Patient"]
+            },
+            "Artiste peintre": {
+                description: "Tu crées des tableaux magnifiques avec de la peinture !",
+                missions: ["Peindre des tableaux", "Exposer tes œuvres", "Inventer ton style"],
+                formation: "Il faut apprendre les techniques de peinture",
+                qualites: ["Créatif", "Artistique", "Original"]
+            },
+            "Créateur de jouets": {
+                description: "Tu inventes de nouveaux jouets pour faire plaisir aux enfants !",
+                missions: ["Imaginer de nouveaux jouets", "Les dessiner", "Les tester"],
+                formation: "Il faut apprendre le design et la création",
+                qualites: ["Imaginatif", "Créatif", "Aime jouer"]
+            },
+            "Designer": {
+                description: "Tu crées le look des objets, des vêtements ou des meubles !",
+                missions: ["Dessiner des modèles", "Choisir les couleurs", "Créer de beaux objets"],
+                formation: "Il faut aller à l'école de design",
+                qualites: ["Créatif", "Bon goût", "Imaginatif"]
+            },
+            "Cuisinier": {
+                description: "Tu prépares de délicieux plats dans un restaurant !",
+                missions: ["Cuisiner les plats", "Inventer des recettes", "Présenter joliment"],
+                formation: "Il faut aller à l'école de cuisine",
+                qualites: ["Créatif", "Aime cuisiner", "Organisé"]
+            },
+            "Pâtissier": {
+                description: "Tu fais des gâteaux et des desserts trop bons !",
+                missions: ["Préparer des pâtisseries", "Décorer les gâteaux", "Inventer de nouveaux desserts"],
+                formation: "Il faut apprendre la pâtisserie",
+                qualites: ["Précis", "Créatif", "Gourmand"]
+            },
+            "Coiffeur": {
+                description: "Tu fais de jolies coiffures et tu coupes les cheveux !",
+                missions: ["Couper les cheveux", "Faire des coiffures", "Conseiller tes clients"],
+                formation: "Il faut faire un CAP coiffure",
+                qualites: ["Créatif", "Adroit", "Sociable"]
+            },
+            "Maquilleur": {
+                description: "Tu maquilles les gens pour qu'ils soient beaux !",
+                missions: ["Maquiller les visages", "Créer des looks", "Transformer les gens"],
+                formation: "Il faut apprendre les techniques de maquillage",
+                qualites: ["Créatif", "Précis", "Artistique"]
+            },
+            "Vendeur": {
+                description: "Tu accueilles les clients et tu les aides à acheter ce qu'ils veulent !",
+                missions: ["Accueillir les clients", "Leur montrer les produits", "Encaisser l'argent"],
+                formation: "Tu peux commencer assez jeune avec un CAP",
+                qualites: ["Souriant", "Aimable", "Serviable"]
+            },
+            "Boulanger-Pâtissier": {
+                description: "Tu fais du bon pain et des viennoiseries tous les matins !",
+                missions: ["Faire le pain", "Préparer les croissants", "Vendre tes produits"],
+                formation: "Il faut faire un CAP boulangerie",
+                qualites: ["Lève-tôt", "Travailleur", "Créatif"]
+            },
+            "Fleuriste": {
+                description: "Tu fais de jolis bouquets avec des fleurs !",
+                missions: ["Composer des bouquets", "S'occuper des fleurs", "Conseiller les clients"],
+                formation: "Il faut apprendre l'art floral",
+                qualites: ["Créatif", "Aime les fleurs", "Délicat"]
+            },
+            "Glacier": {
+                description: "Tu fabriques de délicieuses glaces de tous les parfums !",
+                missions: ["Créer des glaces", "Inventer de nouveaux parfums", "Servir les clients"],
+                formation: "Il faut apprendre la glacerie",
+                qualites: ["Créatif", "Gourmand", "Souriant"]
+            },
+            "Chocolatier": {
+                description: "Tu crées de merveilleux chocolats et bonbons !",
+                missions: ["Fabriquer du chocolat", "Inventer de nouvelles recettes", "Décorer tes créations"],
+                formation: "Il faut apprendre la chocolaterie",
+                qualites: ["Précis", "Créatif", "Patient"]
+            },
+            "Libraire": {
+                description: "Tu vends des livres et tu conseilles les lecteurs !",
+                missions: ["Vendre des livres", "Conseiller les clients", "Organiser ta librairie"],
+                formation: "Il faut aimer les livres et le commerce",
+                qualites: ["Aime lire", "Sociable", "Passionné"]
+            },
+            "Chef d'entreprise": {
+                description: "Tu diriges ta propre entreprise et tu prends les décisions !",
+                missions: ["Gérer ton entreprise", "Diriger ton équipe", "Prendre des décisions"],
+                formation: "Il faut apprendre la gestion et le commerce",
+                qualites: ["Leader", "Courageux", "Organisé"]
+            },
+            "Docteur": {
+                description: "Tu soignes les gens malades et tu les aides à guérir !",
+                missions: ["Examiner les patients", "Trouver ce qui ne va pas", "Donner des médicaments"],
+                formation: "Il faut faire de très longues études de médecine",
+                qualites: ["Intelligent", "Gentil", "Courageux"]
+            },
+            "Infirmière": {
+                description: "Tu t'occupes des malades à l'hôpital et tu les soignes !",
+                missions: ["Soigner les patients", "Faire des piqûres", "Rassurer les gens"],
+                formation: "Il faut aller à l'école d'infirmière",
+                qualites: ["Gentil", "Courageux", "Attentionné"]
+            },
+            "Vétérinaire": {
+                description: "Tu soignes les animaux malades ou blessés !",
+                missions: ["Examiner les animaux", "Les soigner", "Opérer si besoin"],
+                formation: "Il faut faire de longues études de vétérinaire",
+                qualites: ["Aime les animaux", "Doux", "Intelligent"]
+            },
+            "Pharmacien": {
+                description: "Tu prépares et donnes les médicaments aux gens malades !",
+                missions: ["Donner les médicaments", "Conseiller les patients", "Vérifier les ordonnances"],
+                formation: "Il faut faire des études de pharmacie",
+                qualites: ["Précis", "Attentif", "Gentil"]
+            },
+            "Dentiste": {
+                description: "Tu soignes les dents et tu aides à avoir un beau sourire !",
+                missions: ["Soigner les caries", "Nettoyer les dents", "Poser des appareils"],
+                formation: "Il faut faire des études de dentiste",
+                qualites: ["Précis", "Doux", "Patient"]
+            },
+            "Jardinier": {
+                description: "Tu plantes des fleurs et t'occupes des jardins !",
+                missions: ["Planter des fleurs", "Tondre la pelouse", "Tailler les arbres"],
+                formation: "Il faut apprendre le jardinage",
+                qualites: ["Aime la nature", "Patient", "Travailleur"]
+            },
+            "Fermier": {
+                description: "Tu t'occupes des animaux de la ferme et des cultures !",
+                missions: ["Nourrir les animaux", "Cultiver les champs", "Récolter les légumes"],
+                formation: "Il faut apprendre l'agriculture",
+                qualites: ["Travailleur", "Aime les animaux", "Courageux"]
+            },
+            "Gardien de zoo": {
+                description: "Tu t'occupes des animaux sauvages au zoo !",
+                missions: ["Nourrir les animaux", "Nettoyer leurs espaces", "Les observer"],
+                formation: "Il faut apprendre à s'occuper des animaux",
+                qualites: ["Aime les animaux", "Responsable", "Courageux"]
+            },
+            "Paysagiste": {
+                description: "Tu crées de beaux jardins et espaces verts !",
+                missions: ["Dessiner des jardins", "Planter des arbres", "Créer des espaces magnifiques"],
+                formation: "Il faut apprendre le paysagisme",
+                qualites: ["Créatif", "Aime la nature", "Artistique"]
+            },
+            "Gérant de centre équestre": {
+                description: "Tu diriges un centre avec des chevaux et tu apprends aux gens à monter !",
+                missions: ["S'occuper des chevaux", "Diriger les cours d'équitation", "Gérer le centre"],
+                formation: "Il faut adorer les chevaux et apprendre l'équitation et la gestion",
+                qualites: ["Aime les chevaux", "Responsable", "Organisé"]
+            },
+            "Soigneur animalier": {
+                description: "Tu prends soin des animaux dans les parcs et réserves !",
+                missions: ["Nourrir les animaux", "Nettoyer leurs enclos", "Vérifier leur santé"],
+                formation: "Il faut apprendre les soins aux animaux",
+                qualites: ["Aime les animaux", "Doux", "Attentionné"]
+            },
+            "Dresseur d'animaux": {
+                description: "Tu apprends aux animaux à faire des tours et à obéir !",
+                missions: ["Entraîner les animaux", "Leur apprendre des tours", "Créer des spectacles"],
+                formation: "Il faut connaître le comportement des animaux",
+                qualites: ["Patient", "Aime les animaux", "Doux"]
+            },
+            "Professeur de sport": {
+                description: "Tu apprends le sport aux enfants à l'école !",
+                missions: ["Faire faire du sport", "Apprendre les règles des jeux", "Organiser des matchs"],
+                formation: "Il faut faire des études de sport",
+                qualites: ["Sportif", "Dynamique", "Pédagogue"]
+            },
+            "Footballeur professionnel": {
+                description: "Tu joues au football dans une grande équipe !",
+                missions: ["S'entraîner tous les jours", "Jouer les matchs", "Marquer des buts"],
+                formation: "Il faut s'entraîner beaucoup depuis tout petit",
+                qualites: ["Très sportif", "Persévérant", "Esprit d'équipe"]
+            },
+            "Coach sportif": {
+                description: "Tu aides les gens à faire du sport et à être en forme !",
+                missions: ["Créer des programmes d'entraînement", "Motiver les gens", "Leur apprendre les exercices"],
+                formation: "Il faut avoir un diplôme de sport",
+                qualites: ["Sportif", "Motivant", "Énergique"]
+            },
+            "Danseur": {
+                description: "Tu danses sur scène devant plein de gens !",
+                missions: ["Répéter les chorégraphies", "Danser sur scène", "Créer des spectacles"],
+                formation: "Il faut prendre des cours de danse depuis petit",
+                qualites: ["Souple", "Gracieux", "Persévérant"]
+            },
+            "Moniteur de ski": {
+                description: "Tu apprends aux gens à skier à la montagne !",
+                missions: ["Donner des cours de ski", "Guider sur les pistes", "Assurer la sécurité"],
+                formation: "Il faut passer le diplôme de moniteur de ski",
+                qualites: ["Bon skieur", "Patient", "Pédagogue"]
+            },
+            "Moniteur d'équitation": {
+                description: "Tu apprends aux gens à monter à cheval !",
+                missions: ["Donner des cours d'équitation", "S'occuper des chevaux", "Organiser des balades"],
+                formation: "Il faut passer le diplôme de moniteur d'équitation",
+                qualites: ["Aime les chevaux", "Patient", "Bon cavalier"]
+            },
+            "Maître-nageur": {
+                description: "Tu surveilles les piscines et tu apprends à nager !",
+                missions: ["Surveiller les nageurs", "Donner des cours de natation", "Sauver en cas de danger"],
+                formation: "Il faut passer le BNSSA (diplôme de sauveteur)",
+                qualites: ["Excellent nageur", "Vigilant", "Courageux"]
+            },
+            "Acteur": {
+                description: "Tu joues des personnages dans les films et au théâtre !",
+                missions: ["Apprendre ton texte", "Jouer devant les caméras", "Incarner des personnages"],
+                formation: "Il faut aller au cours de théâtre",
+                qualites: ["Expressif", "À l'aise en public", "Créatif"]
+            },
+            "Chanteur": {
+                description: "Tu chantes devant le public et tu fais des concerts !",
+                missions: ["Chanter sur scène", "Enregistrer des chansons", "Répéter"],
+                formation: "Il faut prendre des cours de chant",
+                qualites: ["Belle voix", "À l'aise sur scène", "Passionné"]
+            },
+            "Musicien": {
+                description: "Tu joues d'un instrument de musique et tu fais des concerts !",
+                missions: ["Jouer de ton instrument", "Composer de la musique", "Donner des concerts"],
+                formation: "Il faut apprendre la musique pendant longtemps",
+                qualites: ["Musicien", "Patient", "Passionné"]
+            },
+            "Écrivain": {
+                description: "Tu écris des livres et des histoires pour les autres !",
+                missions: ["Inventer des histoires", "Écrire des livres", "Créer des personnages"],
+                formation: "Il faut beaucoup lire et écrire",
+                qualites: ["Imaginatif", "Aime écrire", "Créatif"]
+            },
+            "Journaliste": {
+                description: "Tu racontes les nouvelles à la télé ou dans les journaux !",
+                missions: ["Chercher des informations", "Interviewer des gens", "Écrire des articles"],
+                formation: "Il faut aller à l'école de journalisme",
+                qualites: ["Curieux", "Aime écrire", "Courageux"]
+            },
+            "Artiste": {
+                description: "Tu crées des œuvres d'art magnifiques !",
+                missions: ["Créer des œuvres", "Exposer ton travail", "Exprimer tes émotions"],
+                formation: "Il faut aller à l'école d'art",
+                qualites: ["Créatif", "Sensible", "Original"]
+            },
+            "Sculpteur": {
+                description: "Tu crées des statues et des sculptures !",
+                missions: ["Sculpter la pierre ou l'argile", "Créer des formes", "Exposer tes sculptures"],
+                formation: "Il faut apprendre les techniques de sculpture",
+                qualites: ["Créatif", "Patient", "Adroit"]
+            },
+            "Photographe": {
+                description: "Tu prends de belles photos pour garder des souvenirs !",
+                missions: ["Prendre des photos", "Les retoucher", "Créer des albums"],
+                formation: "Il faut apprendre la photographie",
+                qualites: ["Bon œil", "Créatif", "Patient"]
+            },
+            "Styliste": {
+                description: "Tu crées de beaux vêtements et des collections de mode !",
+                missions: ["Dessiner des vêtements", "Choisir les tissus", "Créer des défilés"],
+                formation: "Il faut aller à l'école de mode",
+                qualites: ["Créatif", "Bon goût", "Imaginatif"]
+            },
+            "Architecte": {
+                description: "Tu dessines les plans des maisons et des immeubles !",
+                missions: ["Dessiner les plans", "Imaginer des bâtiments", "Construire de belles maisons"],
+                formation: "Il faut faire de longues études d'architecture",
+                qualites: ["Créatif", "Précis", "Imaginatif"]
+            },
+            "Sportif professionnel": {
+                description: "Tu fais du sport à très haut niveau et tu participes à des compétitions !",
+                missions: ["S'entraîner tous les jours", "Participer aux compétitions", "Représenter ton pays"],
+                formation: "Il faut s'entraîner très dur depuis l'enfance",
+                qualites: ["Très sportif", "Déterminé", "Persévérant"]
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = [];
+        let shuffledQuestions = [];
+        let savedResults = '';
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function startQuiz() {
+            shuffledQuestions = shuffleArray(questions);
+            currentQuestion = 0;
+            answers = [];
+            document.querySelector('.welcome-screen').classList.remove('active');
+            document.querySelector('.quiz-screen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+            document.getElementById('current').textContent = currentQuestion + 1;
+            document.getElementById('question').textContent = question.question;
+            
+            const answersHtml = question.answers.map((answer, index) => 
+                `<div class="answer" onclick="selectAnswer(${index})">${answer.text}</div>`
+            ).join('');
+            
+            document.getElementById('answers').innerHTML = answersHtml;
+        }
+
+        function selectAnswer(answerIndex) {
+            const answerElements = document.querySelectorAll('.answer');
+            
+            if (!answers[currentQuestion]) {
+                answers[currentQuestion] = [];
+            }
+            
+            const index = answers[currentQuestion].indexOf(answerIndex);
+            if (index > -1) {
+                answers[currentQuestion].splice(index, 1);
+                answerElements[answerIndex].classList.remove('selected');
+            } else {
+                answers[currentQuestion].push(answerIndex);
+                answerElements[answerIndex].classList.add('selected');
+            }
+        }
+
+        function nextQuestion() {
+            if (!answers[currentQuestion] || answers[currentQuestion].length === 0) {
+                alert("Choisis au moins une réponse !");
+                return;
+            }
+
+            currentQuestion++;
+            if (currentQuestion < shuffledQuestions.length) {
+                showQuestion();
+            } else {
+                calculateResults();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && document.querySelector('.quiz-screen').classList.contains('active')) {
+                nextQuestion();
+            }
+        });
+
+        function calculateResults() {
+            const scores = {};
+            
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const question = shuffledQuestions[i];
+                const answerIndexes = answers[i];
+                const weight = 1 / answerIndexes.length;
+                
+                answerIndexes.forEach(answerIndex => {
+                    const answer = question.answers[answerIndex];
+                    for (let career in answer.scores) {
+                        scores[career] = (scores[career] || 0) + (answer.scores[career] * weight);
+                    }
+                });
+            }
+
+            const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const topProfiles = sortedScores.slice(0, 3);
+            
+            showResults(topProfiles, scores);
+        }
+
+        function showResults(topProfiles, allScores) {
+            document.querySelector('.quiz-screen').classList.remove('active');
+            document.querySelector('.result-screen').classList.add('active');
+
+            const total = topProfiles.reduce((sum, [_, score]) => sum + score, 0);
+            
+            let resultsHtml = '';
+            
+            topProfiles.forEach(([profileKey, score], index) => {
+                const career = careers[profileKey];
+                const percentage = Math.round((score / total) * 100);
+                
+                resultsHtml += `
+                    <div class="result-card">
+                        <span class="emoji">${career.emoji}</span>
+                        <h2>${index === 0 ? '🏆 ' : ''}${career.title}</h2>
+                        <p>${career.description}</p>
+                        <p style="font-size: 1.5em; margin-top: 15px; font-weight: bold;">${percentage}% compatible !</p>
+                    </div>
+                    <div class="job-list">
+                        <h3>Métiers qui pourraient te plaire :</h3>
+                        ${career.jobs.map(job => `<span class="job-item" onclick="showJobDetails(\`${job}\`)">${job}</span>`).join('')}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('results').innerHTML = resultsHtml;
+            savedResults = resultsHtml;
+        }
+
+        function showJobDetails(jobName) {
+            const job = jobsDatabase[jobName];
+            if (!job) {
+                alert("Désolé, les informations sur ce métier ne sont pas disponibles !");
+                return;
+            }
+
+            const jobDetailsHtml = `
+                <div class="job-card">
+                    <h2>${jobName}</h2>
+                    
+                    <h3>📖 C'est quoi ce métier ?</h3>
+                    <p>${job.description}</p>
+                    
+                    <h3>✨ Ce que tu feras :</h3>
+                    <ul>
+                        ${job.missions.map(mission => `<li>${mission}</li>`).join('')}
+                    </ul>
+                    
+                    <h3>📚 Comment devenir ${jobName} ?</h3>
+                    <p>${job.formation}</p>
+                    
+                    <h3>💪 Les qualités qu'il faut avoir :</h3>
+                    <ul>
+                        ${job.qualites.map(qualite => `<li>${qualite}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            document.querySelector('.result-screen').classList.remove('active');
+            document.querySelector('.job-detail-screen').classList.add('active');
+            document.getElementById('job-details').innerHTML = jobDetailsHtml;
+        }
+
+        function showPreviousPage() {
+            document.querySelector('.job-detail-screen').classList.remove('active');
+            document.querySelector('.result-screen').classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz ECR · Dépendance affective</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <p class="eyebrow">Questionnaire ECR</p>
+      <h1>Mesure ta dépendance affective</h1>
+      <p>
+        12 affirmations inspirées de l'ECR pour analyser ton rapport à la proximité, au contrôle, à l'estime et à l'alarme d'abandon. Réponds de 1 à 4, le score se calcule seul et tu obtiens une lecture nuancée, des impacts probables et des actions concrètes.
+      </p>
+    </header>
+
+    <main class="grid">
+      <section class="card intro" id="introCard">
+        <h2>Comment ça marche&nbsp;?</h2>
+        <p>Avance question par question. À la fin&nbsp;: ton score, ta zone de vigilance et deux axes sensibles avec des pistes d'action ciblées.</p>
+        <div class="key">
+          <div class="key-item"><span>1</span> Rarement vrai</div>
+          <div class="key-item"><span>2</span> Parfois vrai</div>
+          <div class="key-item"><span>3</span> Souvent vrai</div>
+          <div class="key-item"><span>4</span> Presque toujours vrai</div>
+        </div>
+        <button class="btn primary" id="startBtn" type="button">Lancer le quiz</button>
+      </section>
+
+      <section class="card question" id="quizCard" hidden>
+        <div class="progress">
+          <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+          <span class="progress-label" id="progressLabel">Question 1/12</span>
+        </div>
+        <p class="eyebrow" id="questionNumber">Question 1</p>
+        <h2 id="questionText"></h2>
+        <p class="micro" id="questionHint"></p>
+        <div class="options" id="options"></div>
+        <div class="actions">
+          <button class="btn ghost" id="prevBtn" type="button">Précédent</button>
+          <button class="btn primary" id="nextBtn" type="button" disabled>Question suivante</button>
+        </div>
+      </section>
+
+      <section class="card results" id="resultCard" hidden>
+        <p class="eyebrow">Résultat</p>
+        <h2>Ton analyse personnalisée</h2>
+        <div class="score-box">
+          <div class="score-main">
+            <span class="label">Score</span>
+            <div class="value"><span id="scoreValue">0</span>/<span id="scoreMax">48</span></div>
+          </div>
+          <div class="badge" id="scoreBadge">Base sécure</div>
+        </div>
+        <p class="micro" id="rangeSummary"></p>
+
+        <div class="pill-row" id="pillRow"></div>
+
+        <h3>Conséquences probables</h3>
+        <ul class="bullets" id="consequenceList"></ul>
+
+        <h3>Actions ciblées</h3>
+        <ul class="bullets" id="tipList"></ul>
+
+        <h3>Ressources pour aller plus loin</h3>
+        <ul class="bullets">
+          <li><a href="https://en.wikipedia.org/wiki/Attachment_theory" target="_blank" rel="noreferrer">Wikipedia · Attachment theory</a> — panorama complet des styles d'attachement.</li>
+          <li><a href="https://www.simplypsychology.org/attachment.html" target="_blank" rel="noreferrer">SimplyPsychology · Attachment</a> — synthèse claire des styles et de leurs effets en adulte.</li>
+          <li><a href="https://en.wikipedia.org/wiki/Codependency" target="_blank" rel="noreferrer">Wikipedia · Codependency</a> — repères sur la dépendance affective et les stratégies de sortie.</li>
+        </ul>
+
+        <h3>Zones sensibles prioritaires</h3>
+        <div class="insights" id="themeInsights"></div>
+
+        <h3>Quand consulter&nbsp;?</h3>
+        <ul class="bullets">
+          <li>Si l'angoisse relationnelle envahit ton quotidien (sommeil, concentration, crises).</li>
+          <li>Si tes stratégies (contrôle, hyper-messages, retrait) créent des conflits répétés.</li>
+          <li>Si tu n'arrives plus à diversifier tes appuis et que tout repose sur une seule personne.</li>
+        </ul>
+
+        <button class="btn primary" id="restartBtn" type="button">Reprendre le quiz</button>
+      </section>
+    </main>
+
+    <footer class="hero">
+      <p>Reprends ce questionnaire dans un mois après avoir testé les astuces et observe l'évolution de ton score.</p>
+    </footer>
+
+    <script>
+      const questions = [
+        {
+          text: "Je me sens en sécurité quand mes proches sont physiquement ou émotionnellement proches de moi.",
+          hint: "Mesure ton besoin de proximité pour te rassurer.",
+          theme: "proximite"
+        },
+        {
+          text: "Je crains souvent qu'on m'abandonne quand quelqu'un ne répond pas rapidement.",
+          hint: "Surévaluation des signes de distance ou de silence.",
+          theme: "anxiete"
+        },
+        {
+          text: "Je reformule mentalement chaque interaction pour vérifier si j'ai blessé l'autre.",
+          hint: "Rumination et peur de blesser: attachement anxieux.",
+          theme: "anxiete"
+        },
+        {
+          text: "Je me sens incomplet·e sans approbation explicite de ceux que j'aime.",
+          hint: "Estime régulée par l'autre.",
+          theme: "estime"
+        },
+        {
+          text: "Quand je sens la distance monter, je multiplie les messages ou les preuves d'amour.",
+          hint: "Stratégies protestataires typiques.",
+          theme: "controle"
+        },
+        {
+          text: "Je me dévalorise vite si l'autre ne remarque pas mes efforts.",
+          hint: "Dépendance narcissique et validation externe.",
+          theme: "estime"
+        },
+        {
+          text: "Je me surprends à surveiller les réseaux sociaux de mes proches pour me rassurer.",
+          hint: "Contrôle numérique comme régulation.",
+          theme: "controle"
+        },
+        {
+          text: "Il m'est difficile de demander de l'aide à d'autres que mon/ma partenaire.",
+          hint: "Soutien centré sur une seule figure.",
+          theme: "fusion"
+        },
+        {
+          text: "Je préfère savoir exactement où et avec qui est l'autre pour me sentir calme.",
+          hint: "Besoin de contrôle de l'agenda.",
+          theme: "controle"
+        },
+        {
+          text: "Quand l'autre prend de la distance, j'imagine rapidement un rejet durable.",
+          hint: "Catastrophisation de la distance.",
+          theme: "anxiete"
+        },
+        {
+          text: "J'ai du mal à poser mes propres limites par peur de déplaire.",
+          hint: "Limites floues, risque de fusion.",
+          theme: "fusion"
+        },
+        {
+          text: "Je peux retarder ou annuler mes projets personnels pour rester disponible.",
+          hint: "Sacrifice personnel pour maintenir le lien.",
+          theme: "proximite"
+        }
+      ];
+
+      const ranges = [
+        {
+          id: "secure",
+          min: 12,
+          max: 20,
+          label: "Base sécure",
+          summary: "Tu tolères la distance, utilises plusieurs appuis et régules ton alarme sans hyperactivation.",
+          consequences: [
+            "Bonne flexibilité relationnelle et autonomie préservée.",
+            "Les silences ou délais ne déclenchent pas de scénarios catastrophes.",
+            "Capacité à demander et recevoir du soutien sans culpabilité."
+          ],
+          tips: [
+            "Continue à diversifier tes appuis et ritualiser des temps de connexion.",
+            "Expose clairement tes besoins pour maintenir la clarté relationnelle.",
+            "Repère ce qui nourrit ta sécurité et protège ces routines."
+          ]
+        },
+        {
+          id: "sensible",
+          min: 21,
+          max: 28,
+          label: "Sensibilité accrue",
+          summary: "Tu oscilles entre confiance et crainte ; l'alarme s'active quand la disponibilité baisse.",
+          consequences: [
+            "Vérifications ponctuelles, besoin de réassurance sur la disponibilité.",
+            "Possibles tensions si l'autre ne rassure pas assez vite.",
+            "Estime qui fluctue selon les retours reçus."
+          ],
+          tips: [
+            "Contractualise la disponibilité (heures de réponse, moments dédiés).",
+            "Pause de 90 secondes respiration avant toute relance impulsive.",
+            "Note tes scénarios d'abandon et confronte-les aux faits."
+          ]
+        },
+        {
+          id: "vigilant",
+          min: 29,
+          max: 36,
+          label: "Vigilance élevée",
+          summary: "Hypervigilance aux signaux de distance, validation externe fréquente, contrôle accru.",
+          consequences: [
+            "Messages ou vérifications répétées, monitoring numérique.",
+            "Difficulté à poser des limites personnelles par peur de perdre le lien.",
+            "Fatigue émotionnelle et tensions si l'autre prend de l'autonomie."
+          ],
+          tips: [
+            "Planifie des moments d'auto-apaisement avant toute vérification.",
+            "Élargis le cercle de soutien (amis, famille, pro) sur des demandes concrètes.",
+            "Clarifie tes limites et communique-les sans t'excuser."
+          ]
+        },
+        {
+          id: "hyper",
+          min: 37,
+          max: 48,
+          label: "Hyper-activation",
+          summary: "Ton système d'alarme fonctionne en continu : peur de rejet, contrôle, fusion ou sacrifice personnel.",
+          consequences: [
+            "Hyperactivation (relances, surveillance, annulation de projets).",
+            "Estime fortement dépendante des retours de l'autre.",
+            "Risque d'épuisement et de conflits répétés."
+          ],
+          tips: [
+            "Construis un trio d'appuis et répartis tes demandes (émotionnel, pratique, partage).",
+            "Utilise un script de demande rassurante sans contrôle (ex : « Je ressens du stress, peux-tu me répondre ce soir ? »).",
+            "Programme des rituels d'auto-apaisement quotidien (respiration, mouvement, écriture).",
+            "Envisage un accompagnement pro pour sécuriser l'attachement et revisiter les modèles internes."
+          ]
+        }
+      ];
+
+      const themes = {
+        anxiete: {
+          label: "Alarme d'abandon",
+          insights: [
+            "Surveillance des signaux faibles (silence, délai) et scénarios catastrophes.",
+            "Pics d'émotion rapides suivis de ruminations ou de demandes répétées."
+          ],
+          actions: [
+            "Mettre en place des délais de réponse clairs et partagés.",
+            "Respiration/grounding avant toute relance ou vérification.",
+            "Recadrer les pensées automatiques par un check factuel (evidence log)."
+          ]
+        },
+        controle: {
+          label: "Besoin de contrôle",
+          insights: [
+            "Monitorings numériques ou besoin de connaître l'agenda de l'autre pour se calmer.",
+            "Difficulté à tolérer l'incertitude entre deux contacts."
+          ],
+          actions: [
+            "Remplacer le contrôle par des rendez-vous de connexion planifiés.",
+            "Identifier un signe de sécurité interne (ancrage corporel, respiration).",
+            "Limiter les vérifications à des fenêtres définies (hygiene numérique)."
+          ]
+        },
+        estime: {
+          label: "Estime externalisée",
+          insights: [
+            "Estime personnelle dépendante des retours ou validations explicites.",
+            "Peur de déplaire, besoin de preuves récurrentes."],
+          actions: [
+            "Demander un feedback positif hebdomadaire à un proche choisi.",
+            "Lister tes apports (compétences, qualités) et les verbaliser une fois par jour.",
+            "Différencier: ce qui t'appartient vs ce qui appartient à l'autre dans une critique."
+          ]
+        },
+        proximite: {
+          label: "Recherche de proximité",
+          insights: [
+            "Apaisement principalement via la présence ou les signes explicites de lien.",
+            "Sacrifices ou ajustements fréquents pour maintenir la disponibilité."
+          ],
+          actions: [
+            "Ritualiser des moments de connexion courts mais réguliers.",
+            "Maintenir des activités personnelles non négociables (pilier d'autonomie).",
+            "Co-construire un langage de reassurance (gestes, mots, timing)."
+          ]
+        },
+        fusion: {
+          label: "Fusion / limites",
+          insights: [
+            "Limites floues, peur d'affirmer tes besoins, délégation de décisions.",
+            "Dépendance à une seule figure d'attachement."
+          ],
+          actions: [
+            "Énoncer une limite par jour (horaire, besoin) et la maintenir.",
+            "Diversifier les appuis pour réduire la charge sur une personne.",
+            "Chercher un feedback externe lorsque tu poses une limite pour renforcer ta légitimité."
+          ]
+        }
+      };
+
+      const startBtn = document.getElementById('startBtn');
+      const introCard = document.getElementById('introCard');
+      const quizCard = document.getElementById('quizCard');
+      const resultCard = document.getElementById('resultCard');
+      const questionNumber = document.getElementById('questionNumber');
+      const questionText = document.getElementById('questionText');
+      const questionHint = document.getElementById('questionHint');
+      const optionsContainer = document.getElementById('options');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const progressBar = document.getElementById('progressBar');
+      const progressLabel = document.getElementById('progressLabel');
+      const scoreValue = document.getElementById('scoreValue');
+      const scoreMax = document.getElementById('scoreMax');
+      const scoreBadge = document.getElementById('scoreBadge');
+      const rangeSummary = document.getElementById('rangeSummary');
+      const consequenceList = document.getElementById('consequenceList');
+      const tipList = document.getElementById('tipList');
+      const restartBtn = document.getElementById('restartBtn');
+      const pillRow = document.getElementById('pillRow');
+      const themeInsights = document.getElementById('themeInsights');
+
+      let currentIndex = 0;
+      let answers = Array(questions.length).fill(null);
+      scoreMax.textContent = questions.length * 4;
+
+      function startQuiz() {
+        introCard.hidden = true;
+        resultCard.hidden = true;
+        quizCard.hidden = false;
+        currentIndex = 0;
+        answers = Array(questions.length).fill(null);
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        const q = questions[currentIndex];
+        questionNumber.textContent = `Question ${currentIndex + 1}`;
+        questionText.textContent = q.text;
+        questionHint.textContent = q.hint;
+        progressLabel.textContent = `Question ${currentIndex + 1}/${questions.length}`;
+        const progress = ((currentIndex) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        optionsContainer.innerHTML = '';
+        for (let value = 1; value <= 4; value++) {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = `q${currentIndex}`;
+          input.value = value;
+          input.checked = answers[currentIndex] === value;
+          input.addEventListener('change', () => {
+            answers[currentIndex] = value;
+            nextBtn.disabled = false;
+          });
+          const span = document.createElement('span');
+          span.textContent = value;
+          label.appendChild(input);
+          label.appendChild(span);
+          optionsContainer.appendChild(label);
+        }
+
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.textContent = currentIndex === questions.length - 1 ? 'Voir le résultat' : 'Question suivante';
+        nextBtn.disabled = answers[currentIndex] === null;
+      }
+
+      function showResults() {
+        const total = answers.reduce((sum, v) => sum + (v || 0), 0);
+        const selectedRange = ranges.find(r => total >= r.min && total <= r.max) || ranges[ranges.length - 1];
+
+        scoreValue.textContent = total;
+        scoreBadge.textContent = selectedRange.label;
+        scoreBadge.className = `badge ${selectedRange.id}`;
+        rangeSummary.textContent = selectedRange.summary;
+
+        pillRow.innerHTML = '';
+        ranges.forEach(r => {
+          const pill = document.createElement('div');
+          pill.className = 'pill';
+          pill.textContent = `${r.min}-${r.max} · ${r.label}`;
+          if (selectedRange.id === r.id) pill.classList.add('active');
+          pillRow.appendChild(pill);
+        });
+
+        consequenceList.innerHTML = '';
+        selectedRange.consequences.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          consequenceList.appendChild(li);
+        });
+
+        tipList.innerHTML = '';
+        selectedRange.tips.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          tipList.appendChild(li);
+        });
+
+        // Insights par thème
+        const themeScores = {};
+        questions.forEach((q, idx) => {
+          const val = answers[idx] || 0;
+          themeScores[q.theme] = (themeScores[q.theme] || 0) + val;
+        });
+
+        const sortedThemes = Object.entries(themeScores)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 2);
+
+        themeInsights.innerHTML = '';
+        sortedThemes.forEach(([key, val]) => {
+          const data = themes[key];
+          if (!data) return;
+          const box = document.createElement('div');
+          box.className = 'insight-box';
+          const title = document.createElement('h4');
+          title.textContent = `${data.label} · ${val} pts`;
+          const insList = document.createElement('ul');
+          data.insights.forEach(text => {
+            const li = document.createElement('li');
+            li.textContent = text;
+            insList.appendChild(li);
+          });
+          const actTitle = document.createElement('p');
+          actTitle.className = 'micro';
+          actTitle.textContent = 'Actions suggérées :';
+          const actList = document.createElement('ul');
+          data.actions.forEach(text => {
+            const li = document.createElement('li');
+            li.textContent = text;
+            actList.appendChild(li);
+          });
+          box.appendChild(title);
+          box.appendChild(insList);
+          box.appendChild(actTitle);
+          box.appendChild(actList);
+          themeInsights.appendChild(box);
+        });
+
+        progressBar.style.width = '100%';
+        progressLabel.textContent = 'Terminé';
+        quizCard.hidden = true;
+        resultCard.hidden = false;
+      }
+
+      function goNext() {
+        if (answers[currentIndex] === null) return;
+        if (currentIndex === questions.length - 1) {
+          showResults();
+        } else {
+          currentIndex += 1;
+          renderQuestion();
+        }
+      }
+
+      function goPrev() {
+        if (currentIndex === 0) return;
+        currentIndex -= 1;
+        renderQuestion();
+      }
+
+      function restartQuiz() {
+        introCard.hidden = false;
+        quizCard.hidden = true;
+        resultCard.hidden = true;
+        currentIndex = 0;
+        answers = Array(questions.length).fill(null);
+      }
+
+      function handleKeydown(event) {
+        const isQuizVisible = !quizCard.hidden;
+        const isResultVisible = !resultCard.hidden;
+
+        if (isQuizVisible && ['1', '2', '3', '4'].includes(event.key)) {
+          const targetValue = event.key;
+          const input = optionsContainer.querySelector(`input[value=\"${targetValue}\"]`);
+          if (input) {
+            input.click();
+          }
+        }
+
+        if (event.key === 'Enter') {
+          if (isQuizVisible && !nextBtn.disabled) {
+            goNext();
+          } else if (isResultVisible) {
+            restartQuiz();
+          }
+        }
+      }
+
+      startBtn.addEventListener('click', startQuiz);
+      nextBtn.addEventListener('click', goNext);
+      prevBtn.addEventListener('click', goPrev);
+      restartBtn.addEventListener('click', restartQuiz);
+      document.addEventListener('keydown', handleKeydown);
+    </script>
+  </body>
+</html>

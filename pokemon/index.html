@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pokémon - Quiz & Test de Personnalité</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 640px;
+            width: 100%;
+            max-height: 100vh;
+            max-height: 100dvh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                margin-bottom: 30px;
+                font-size: 2em;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ---------- Home button ---------- */
+        .home-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: auto;
+            margin: 0;
+            padding: 8px 14px;
+            font-size: 0.85em;
+            background: #f0f0f5;
+            color: #667eea;
+            border-radius: 12px;
+            box-shadow: none;
+        }
+        .home-btn:hover { background: #e4e4f0; }
+
+        /* ---------- Home screen ---------- */
+        .home-screen { text-align: center; }
+
+        .home-subtitle {
+            color: #777;
+            margin-bottom: 28px;
+            font-size: 1em;
+        }
+
+        .mode-cards {
+            display: grid;
+            gap: 18px;
+        }
+        @media (min-width: 600px) {
+            .mode-cards { grid-template-columns: 1fr 1fr; }
+        }
+
+        .mode-card {
+            cursor: pointer;
+            border-radius: 20px;
+            padding: 28px 20px;
+            color: white;
+            text-align: center;
+            transition: transform 0.25s, box-shadow 0.25s;
+            border: none;
+            font-family: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .mode-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+        }
+        .mode-card .emoji { font-size: 2.6em; line-height: 1; }
+        .mode-card .mode-title { font-size: 1.25em; font-weight: 700; }
+        .mode-card .mode-desc { font-size: 0.9em; opacity: 0.92; font-weight: 400; }
+
+        .mode-card.quiz { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: #5a3210; }
+        .mode-card.perso { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #4a2c63; }
+
+        /* ---------- Shared buttons ---------- */
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 1em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.15s;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+        button:hover { background: #5568d3; }
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+
+        @media (min-width: 768px) {
+            button { padding: 15px; font-size: 1.1em; }
+        }
+
+        /* ================= QUIZ ================= */
+        .question-counter {
+            text-align: center;
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        @media (min-width: 768px) {
+            .question-counter { font-size: 1.2em; margin-bottom: 20px; }
+        }
+
+        .pokemon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            min-height: 120px;
+        }
+        @media (min-width: 768px) {
+            .pokemon-container { margin: 30px 0; min-height: 200px; }
+        }
+
+        .pokemon-img {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+            image-rendering: pixelated;
+            animation: fadeIn 0.5s ease-in;
+        }
+        @media (min-width: 768px) {
+            .pokemon-img { max-width: 400px; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideOut { to { opacity: 0; transform: translateX(-50px); } }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        .feedback.show { animation: bounceIn 0.5s ease-out; }
+        .pokemon-img.slide-out { animation: slideOut 0.3s ease-in forwards; }
+        .pokemon-img.slide-in { animation: slideIn 0.3s ease-out; }
+
+        .input-container { position: relative; margin: 15px 0; }
+        @media (min-width: 768px) { .input-container { margin: 30px 0; } }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        @media (min-width: 768px) { input { padding: 15px; font-size: 1.1em; } }
+        input:focus { border-color: #667eea; }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        .suggestions.active { display: block; }
+        .suggestion-item { padding: 12px 15px; cursor: pointer; transition: background-color 0.2s; }
+        .suggestion-item:hover,
+        .suggestion-item.selected { background-color: #667eea; color: white; }
+
+        .feedback {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            min-height: 25px;
+        }
+        @media (min-width: 768px) { .feedback { margin-top: 20px; font-size: 1.2em; min-height: 30px; } }
+        .feedback.correct { color: #28a745; }
+        .feedback.incorrect { color: #dc3545; }
+
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        @media (min-width: 768px) { .score { font-size: 1.5em; margin-top: 20px; } }
+
+        .final-screen { text-align: center; }
+        .final-screen h2 { color: #333; margin-bottom: 15px; font-size: 1.5em; }
+        @media (min-width: 768px) { .final-screen h2 { margin-bottom: 20px; font-size: 2em; } }
+        .final-score { font-size: 2em; color: #667eea; margin: 20px 0; font-weight: bold; }
+        @media (min-width: 768px) { .final-score { font-size: 3em; margin: 30px 0; } }
+
+        .difficulty-screen { text-align: center; }
+        .difficulty-screen h2 { color: #333; margin-bottom: 20px; font-size: 1.3em; }
+        @media (min-width: 768px) { .difficulty-screen h2 { margin-bottom: 30px; font-size: 1.8em; } }
+        .gen-actions { display: flex; gap: 16px; justify-content: center; margin-bottom: 16px; }
+        .gen-link {
+            width: auto; margin: 0; padding: 4px 6px; background: none; color: #667eea;
+            font-size: 0.9em; text-decoration: underline; border-radius: 0;
+        }
+        .gen-link:hover { background: none; color: #4453c4; }
+
+        .gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (min-width: 600px) { .gen-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+        .gen-item {
+            cursor: pointer; text-align: left; background: #f5f5fb;
+            border: 2px solid transparent; border-radius: 14px; padding: 14px;
+            font-family: inherit; color: #333; margin: 0;
+            transition: all 0.2s; display: flex; flex-direction: column; gap: 2px;
+        }
+        .gen-item:hover { background: #ece9fb; border-color: #a18cd1; }
+        .gen-item.selected {
+            background: linear-gradient(135deg, #c7b8ee, #f3c8e6);
+            border-color: #8a6fc4; color: #2f1f47;
+        }
+        .gen-item .gen-name { font-weight: 700; font-size: 1em; }
+        .gen-item .gen-range { font-size: 0.8em; opacity: 0.7; }
+
+        #gen-start {
+            background: #667eea; margin-top: 22px; font-weight: 700;
+        }
+        #gen-start:disabled { background: #ccc; }
+
+        /* ================= PERSONALITY TEST ================= */
+        .perso-progress {
+            height: 10px;
+            background: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .perso-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #a18cd1, #fbc2eb);
+            border-radius: 8px;
+            transition: width 0.4s ease;
+        }
+        .perso-counter {
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 18px;
+        }
+        .perso-hint { color: #a18cd1; font-style: italic; }
+        #perso-next {
+            background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+            color: #3a2350;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+        #perso-next:hover { filter: brightness(0.97); }
+        #perso-next:disabled { background: #e6e6ee; color: #aaa; filter: none; }
+        .perso-question {
+            text-align: center;
+            color: #333;
+            font-size: 1.25em;
+            font-weight: 700;
+            margin-bottom: 22px;
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.4s ease;
+        }
+        @media (min-width: 768px) { .perso-question { font-size: 1.45em; } }
+
+        /* text options */
+        .perso-options { display: flex; flex-direction: column; gap: 12px; animation: fadeIn 0.4s ease; }
+        .perso-option {
+            text-align: left;
+            background: #f5f5fb;
+            color: #333;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 16px 18px;
+            font-size: 1em;
+            font-weight: 500;
+            margin-top: 0;
+            transition: all 0.2s;
+        }
+        .perso-option:hover {
+            background: #ece9fb;
+            border-color: #a18cd1;
+            transform: translateX(4px);
+        }
+        .perso-option.selected {
+            background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+            color: #3a2350;
+            border-color: #8a6fc4;
+        }
+
+        /* image options */
+        .perso-image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            animation: fadeIn 0.4s ease;
+        }
+        .perso-image-option {
+            cursor: pointer;
+            background: #f5f5fb;
+            border: 3px solid transparent;
+            border-radius: 18px;
+            padding: 10px;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .perso-image-option:hover {
+            background: #ece9fb;
+            border-color: #a18cd1;
+            transform: translateY(-4px);
+        }
+        .perso-image-option.selected {
+            border-color: #8a6fc4;
+            background: linear-gradient(135deg, #efe7fb, #fde7f4);
+            box-shadow: 0 6px 18px rgba(138,111,196,0.4);
+        }
+        .perso-image-option img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            pointer-events: none;
+        }
+
+        /* result */
+        .perso-result { text-align: center; animation: fadeIn 0.6s ease; }
+        .perso-result .reveal-label {
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8em;
+            margin-bottom: 4px;
+        }
+        .perso-result .totem-name {
+            font-size: 2em;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        @media (min-width: 768px) { .perso-result .totem-name { font-size: 2.6em; } }
+        .perso-result .totem-title {
+            font-size: 1.1em;
+            color: #8a6fc4;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+        .totem-img-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 6px 0 18px;
+        }
+        .totem-img-wrap img {
+            width: 230px;
+            max-width: 70%;
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(138,111,196,0.45));
+            animation: totemPop 0.7s ease;
+        }
+        @keyframes totemPop {
+            0% { opacity: 0; transform: scale(0.5) rotate(-8deg); }
+            60% { opacity: 1; transform: scale(1.08) rotate(3deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        .totem-desc {
+            color: #555;
+            font-size: 1.02em;
+            line-height: 1.6;
+            background: #f7f6fc;
+            border-radius: 16px;
+            padding: 18px 20px;
+            text-align: left;
+            margin-bottom: 16px;
+        }
+        .totem-traits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .totem-trait {
+            background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+            color: #3a2350;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .result-actions { display: flex; flex-direction: column; gap: 10px; }
+        .btn-secondary { background: #f0f0f5; color: #667eea; }
+        .btn-secondary:hover { background: #e4e4f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="home-btn" class="home-btn hidden">← Accueil</button>
+
+        <!-- ============ HOME ============ -->
+        <div id="home-screen" class="home-screen">
+            <h1>⚡ Pokémon ⚡</h1>
+            <p class="home-subtitle">Choisis ton aventure</p>
+            <div class="mode-cards">
+                <button class="mode-card quiz" id="go-quiz">
+                    <span class="emoji">🎮</span>
+                    <span class="mode-title">Quiz</span>
+                    <span class="mode-desc">Reconnais les 151 Pokémon</span>
+                </button>
+                <button class="mode-card perso" id="go-perso">
+                    <span class="emoji">🔮</span>
+                    <span class="mode-title">Test de personnalité</span>
+                    <span class="mode-desc">Découvre ton Pokémon totem</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ QUIZ : choix des générations ============ -->
+        <div id="difficulty-screen" class="difficulty-screen hidden">
+            <h1>⚡ Quiz Pokémon ⚡</h1>
+            <h2>Choisis les générations à inclure</h2>
+            <div class="gen-actions">
+                <button type="button" class="gen-link" id="gen-all">Tout sélectionner</button>
+                <button type="button" class="gen-link" id="gen-none">Tout désélectionner</button>
+            </div>
+            <div class="gen-grid" id="gen-grid"></div>
+            <button id="gen-start" disabled>Commencer le quiz</button>
+        </div>
+
+        <!-- ============ QUIZ : jeu ============ -->
+        <div id="quiz-screen" class="hidden">
+            <div class="question-counter">
+                Question <span id="current-question">1</span> / 10
+            </div>
+            <div class="pokemon-container">
+                <img class="pokemon-img" id="pokemon-display" src="" alt="Pokémon">
+            </div>
+            <div class="input-container">
+                <input type="text" id="pokemon-input" placeholder="Quel est ce Pokémon ?" autocomplete="off">
+                <div class="suggestions" id="suggestions"></div>
+            </div>
+            <button id="submit-btn">Valider</button>
+            <div class="feedback" id="feedback"></div>
+            <div class="score">Score : <span id="current-score">0</span> / 10</div>
+        </div>
+
+        <!-- ============ QUIZ : fin ============ -->
+        <div id="final-screen" class="final-screen hidden">
+            <h2>Quiz terminé !</h2>
+            <div class="final-score" id="final-score">0 / 10</div>
+            <button id="restart-btn">Recommencer</button>
+        </div>
+
+        <!-- ============ PERSO : test ============ -->
+        <div id="perso-screen" class="hidden">
+            <h1>🔮 Quel est ton Pokémon totem ?</h1>
+            <div class="perso-progress"><div class="perso-progress-bar" id="perso-bar"></div></div>
+            <div class="perso-counter">Question <span id="perso-current">1</span> / 10 · <span class="perso-hint">plusieurs réponses possibles</span></div>
+            <div class="perso-question" id="perso-question"></div>
+            <div id="perso-answers"></div>
+            <button id="perso-next" disabled>Suivant</button>
+        </div>
+
+        <!-- ============ PERSO : résultat ============ -->
+        <div id="perso-result-screen" class="perso-result hidden">
+            <div class="reveal-label">Ton Pokémon totem est</div>
+            <div class="totem-name" id="totem-name"></div>
+            <div class="totem-title" id="totem-title"></div>
+            <div class="totem-img-wrap"><img id="totem-img" src="" alt="Pokémon totem"></div>
+            <div class="totem-traits" id="totem-traits"></div>
+            <div class="totem-desc" id="totem-desc"></div>
+            <div class="result-actions">
+                <button id="perso-restart">Refaire le test</button>
+                <button id="perso-try-quiz" class="btn-secondary">Tenter le Quiz à la place</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ================================================================
+           DONNÉES POKÉMON (Quiz)
+        ================================================================ */
+        const allPokemon = [
+            { name: "Bulbizarre", id: 1, gen: 1 },
+            { name: "Herbizarre", id: 2, gen: 1 },
+            { name: "Florizarre", id: 3, gen: 1 },
+            { name: "Salamèche", id: 4, gen: 1 },
+            { name: "Reptincel", id: 5, gen: 1 },
+            { name: "Dracaufeu", id: 6, gen: 1 },
+            { name: "Carapuce", id: 7, gen: 1 },
+            { name: "Carabaffe", id: 8, gen: 1 },
+            { name: "Tortank", id: 9, gen: 1 },
+            { name: "Chenipan", id: 10, gen: 1 },
+            { name: "Chrysacier", id: 11, gen: 1 },
+            { name: "Papilusion", id: 12, gen: 1 },
+            { name: "Aspicot", id: 13, gen: 1 },
+            { name: "Coconfort", id: 14, gen: 1 },
+            { name: "Dardargnan", id: 15, gen: 1 },
+            { name: "Roucool", id: 16, gen: 1 },
+            { name: "Roucoups", id: 17, gen: 1 },
+            { name: "Roucarnage", id: 18, gen: 1 },
+            { name: "Rattata", id: 19, gen: 1 },
+            { name: "Rattatac", id: 20, gen: 1 },
+            { name: "Piafabec", id: 21, gen: 1 },
+            { name: "Rapasdepic", id: 22, gen: 1 },
+            { name: "Abo", id: 23, gen: 1 },
+            { name: "Arbok", id: 24, gen: 1 },
+            { name: "Pikachu", id: 25, gen: 1 },
+            { name: "Raichu", id: 26, gen: 1 },
+            { name: "Sabelette", id: 27, gen: 1 },
+            { name: "Sablaireau", id: 28, gen: 1 },
+            { name: "Nidoran♀", id: 29, gen: 1 },
+            { name: "Nidorina", id: 30, gen: 1 },
+            { name: "Nidoqueen", id: 31, gen: 1 },
+            { name: "Nidoran♂", id: 32, gen: 1 },
+            { name: "Nidorino", id: 33, gen: 1 },
+            { name: "Nidoking", id: 34, gen: 1 },
+            { name: "Mélofée", id: 35, gen: 1 },
+            { name: "Mélodelfe", id: 36, gen: 1 },
+            { name: "Goupix", id: 37, gen: 1 },
+            { name: "Feunard", id: 38, gen: 1 },
+            { name: "Rondoudou", id: 39, gen: 1 },
+            { name: "Grodoudou", id: 40, gen: 1 },
+            { name: "Nosferapti", id: 41, gen: 1 },
+            { name: "Nosferalto", id: 42, gen: 1 },
+            { name: "Mystherbe", id: 43, gen: 1 },
+            { name: "Ortide", id: 44, gen: 1 },
+            { name: "Rafflesia", id: 45, gen: 1 },
+            { name: "Paras", id: 46, gen: 1 },
+            { name: "Parasect", id: 47, gen: 1 },
+            { name: "Mimitoss", id: 48, gen: 1 },
+            { name: "Aéromite", id: 49, gen: 1 },
+            { name: "Taupiqueur", id: 50, gen: 1 },
+            { name: "Triopikeur", id: 51, gen: 1 },
+            { name: "Miaouss", id: 52, gen: 1 },
+            { name: "Persian", id: 53, gen: 1 },
+            { name: "Psykokwak", id: 54, gen: 1 },
+            { name: "Akwakwak", id: 55, gen: 1 },
+            { name: "Férosinge", id: 56, gen: 1 },
+            { name: "Colossinge", id: 57, gen: 1 },
+            { name: "Caninos", id: 58, gen: 1 },
+            { name: "Arcanin", id: 59, gen: 1 },
+            { name: "Ptitard", id: 60, gen: 1 },
+            { name: "Têtarte", id: 61, gen: 1 },
+            { name: "Tartard", id: 62, gen: 1 },
+            { name: "Abra", id: 63, gen: 1 },
+            { name: "Kadabra", id: 64, gen: 1 },
+            { name: "Alakazam", id: 65, gen: 1 },
+            { name: "Machoc", id: 66, gen: 1 },
+            { name: "Machopeur", id: 67, gen: 1 },
+            { name: "Mackogneur", id: 68, gen: 1 },
+            { name: "Chétiflor", id: 69, gen: 1 },
+            { name: "Boustiflor", id: 70, gen: 1 },
+            { name: "Empiflor", id: 71, gen: 1 },
+            { name: "Tentacool", id: 72, gen: 1 },
+            { name: "Tentacruel", id: 73, gen: 1 },
+            { name: "Racaillou", id: 74, gen: 1 },
+            { name: "Gravalanch", id: 75, gen: 1 },
+            { name: "Grolem", id: 76, gen: 1 },
+            { name: "Ponyta", id: 77, gen: 1 },
+            { name: "Galopa", id: 78, gen: 1 },
+            { name: "Ramoloss", id: 79, gen: 1 },
+            { name: "Flagadoss", id: 80, gen: 1 },
+            { name: "Magnéti", id: 81, gen: 1 },
+            { name: "Magnéton", id: 82, gen: 1 },
+            { name: "Canarticho", id: 83, gen: 1 },
+            { name: "Doduo", id: 84, gen: 1 },
+            { name: "Dodrio", id: 85, gen: 1 },
+            { name: "Otaria", id: 86, gen: 1 },
+            { name: "Lamantine", id: 87, gen: 1 },
+            { name: "Tadmorv", id: 88, gen: 1 },
+            { name: "Grotadmorv", id: 89, gen: 1 },
+            { name: "Kokiyas", id: 90, gen: 1 },
+            { name: "Crustabri", id: 91, gen: 1 },
+            { name: "Fantominus", id: 92, gen: 1 },
+            { name: "Spectrum", id: 93, gen: 1 },
+            { name: "Ectoplasma", id: 94, gen: 1 },
+            { name: "Onix", id: 95, gen: 1 },
+            { name: "Soporifik", id: 96, gen: 1 },
+            { name: "Hypnomade", id: 97, gen: 1 },
+            { name: "Krabby", id: 98, gen: 1 },
+            { name: "Krabboss", id: 99, gen: 1 },
+            { name: "Voltorbe", id: 100, gen: 1 },
+            { name: "Électrode", id: 101, gen: 1 },
+            { name: "Noeunoeuf", id: 102, gen: 1 },
+            { name: "Noadkoko", id: 103, gen: 1 },
+            { name: "Osselait", id: 104, gen: 1 },
+            { name: "Ossatueur", id: 105, gen: 1 },
+            { name: "Kicklee", id: 106, gen: 1 },
+            { name: "Tygnon", id: 107, gen: 1 },
+            { name: "Excelangue", id: 108, gen: 1 },
+            { name: "Smogo", id: 109, gen: 1 },
+            { name: "Smogogo", id: 110, gen: 1 },
+            { name: "Rhinocorne", id: 111, gen: 1 },
+            { name: "Rhinoféros", id: 112, gen: 1 },
+            { name: "Leveinard", id: 113, gen: 1 },
+            { name: "Saquedeneu", id: 114, gen: 1 },
+            { name: "Kangourex", id: 115, gen: 1 },
+            { name: "Hypotrempe", id: 116, gen: 1 },
+            { name: "Hypocéan", id: 117, gen: 1 },
+            { name: "Poissirène", id: 118, gen: 1 },
+            { name: "Poissoroy", id: 119, gen: 1 },
+            { name: "Stari", id: 120, gen: 1 },
+            { name: "Staross", id: 121, gen: 1 },
+            { name: "M. Mime", id: 122, gen: 1 },
+            { name: "Insécateur", id: 123, gen: 1 },
+            { name: "Lippoutou", id: 124, gen: 1 },
+            { name: "Élektek", id: 125, gen: 1 },
+            { name: "Magmar", id: 126, gen: 1 },
+            { name: "Scarabrute", id: 127, gen: 1 },
+            { name: "Tauros", id: 128, gen: 1 },
+            { name: "Magicarpe", id: 129, gen: 1 },
+            { name: "Léviator", id: 130, gen: 1 },
+            { name: "Lokhlass", id: 131, gen: 1 },
+            { name: "Métamorph", id: 132, gen: 1 },
+            { name: "Évoli", id: 133, gen: 1 },
+            { name: "Aquali", id: 134, gen: 1 },
+            { name: "Voltali", id: 135, gen: 1 },
+            { name: "Pyroli", id: 136, gen: 1 },
+            { name: "Porygon", id: 137, gen: 1 },
+            { name: "Amonita", id: 138, gen: 1 },
+            { name: "Amonistar", id: 139, gen: 1 },
+            { name: "Kabuto", id: 140, gen: 1 },
+            { name: "Kabutops", id: 141, gen: 1 },
+            { name: "Ptéra", id: 142, gen: 1 },
+            { name: "Ronflex", id: 143, gen: 1 },
+            { name: "Artikodin", id: 144, gen: 1 },
+            { name: "Électhor", id: 145, gen: 1 },
+            { name: "Sulfura", id: 146, gen: 1 },
+            { name: "Minidraco", id: 147, gen: 1 },
+            { name: "Draco", id: 148, gen: 1 },
+            { name: "Dracolosse", id: 149, gen: 1 },
+            { name: "Mewtwo", id: 150, gen: 1 },
+            { name: "Mew", id: 151, gen: 1 },
+            { name: "Germignon", id: 152, gen: 2 },
+            { name: "Macronium", id: 153, gen: 2 },
+            { name: "Méganium", id: 154, gen: 2 },
+            { name: "Héricendre", id: 155, gen: 2 },
+            { name: "Feurisson", id: 156, gen: 2 },
+            { name: "Typhlosion", id: 157, gen: 2 },
+            { name: "Kaiminus", id: 158, gen: 2 },
+            { name: "Crocrodil", id: 159, gen: 2 },
+            { name: "Aligatueur", id: 160, gen: 2 },
+            { name: "Fouinette", id: 161, gen: 2 },
+            { name: "Fouinar", id: 162, gen: 2 },
+            { name: "Hoothoot", id: 163, gen: 2 },
+            { name: "Noarfang", id: 164, gen: 2 },
+            { name: "Coxy", id: 165, gen: 2 },
+            { name: "Coxyclaque", id: 166, gen: 2 },
+            { name: "Mimigal", id: 167, gen: 2 },
+            { name: "Migalos", id: 168, gen: 2 },
+            { name: "Nostenfer", id: 169, gen: 2 },
+            { name: "Loupio", id: 170, gen: 2 },
+            { name: "Lanturn", id: 171, gen: 2 },
+            { name: "Pichu", id: 172, gen: 2 },
+            { name: "Mélo", id: 173, gen: 2 },
+            { name: "Toudoudou", id: 174, gen: 2 },
+            { name: "Togepi", id: 175, gen: 2 },
+            { name: "Togetic", id: 176, gen: 2 },
+            { name: "Natu", id: 177, gen: 2 },
+            { name: "Xatu", id: 178, gen: 2 },
+            { name: "Wattouat", id: 179, gen: 2 },
+            { name: "Lainergie", id: 180, gen: 2 },
+            { name: "Pharamp", id: 181, gen: 2 },
+            { name: "Joliflor", id: 182, gen: 2 },
+            { name: "Marill", id: 183, gen: 2 },
+            { name: "Azumarill", id: 184, gen: 2 },
+            { name: "Simularbre", id: 185, gen: 2 },
+            { name: "Tarpaud", id: 186, gen: 2 },
+            { name: "Granivol", id: 187, gen: 2 },
+            { name: "Floravol", id: 188, gen: 2 },
+            { name: "Cotovol", id: 189, gen: 2 },
+            { name: "Capumain", id: 190, gen: 2 },
+            { name: "Tournegrin", id: 191, gen: 2 },
+            { name: "Héliatronc", id: 192, gen: 2 },
+            { name: "Yanma", id: 193, gen: 2 },
+            { name: "Axoloto", id: 194, gen: 2 },
+            { name: "Maraiste", id: 195, gen: 2 },
+            { name: "Mentali", id: 196, gen: 2 },
+            { name: "Noctali", id: 197, gen: 2 },
+            { name: "Cornèbre", id: 198, gen: 2 },
+            { name: "Roigada", id: 199, gen: 2 },
+            { name: "Feuforêve", id: 200, gen: 2 },
+            { name: "Zarbi", id: 201, gen: 2 },
+            { name: "Qulbutoké", id: 202, gen: 2 },
+            { name: "Girafarig", id: 203, gen: 2 },
+            { name: "Pomdepik", id: 204, gen: 2 },
+            { name: "Foretress", id: 205, gen: 2 },
+            { name: "Insolourdo", id: 206, gen: 2 },
+            { name: "Scorplane", id: 207, gen: 2 },
+            { name: "Steelix", id: 208, gen: 2 },
+            { name: "Snubbull", id: 209, gen: 2 },
+            { name: "Granbull", id: 210, gen: 2 },
+            { name: "Qwilfish", id: 211, gen: 2 },
+            { name: "Cizayox", id: 212, gen: 2 },
+            { name: "Caratroc", id: 213, gen: 2 },
+            { name: "Scarhino", id: 214, gen: 2 },
+            { name: "Farfuret", id: 215, gen: 2 },
+            { name: "Teddiursa", id: 216, gen: 2 },
+            { name: "Ursaring", id: 217, gen: 2 },
+            { name: "Limagma", id: 218, gen: 2 },
+            { name: "Volcaropod", id: 219, gen: 2 },
+            { name: "Marcacrin", id: 220, gen: 2 },
+            { name: "Cochignon", id: 221, gen: 2 },
+            { name: "Corayon", id: 222, gen: 2 },
+            { name: "Rémoraid", id: 223, gen: 2 },
+            { name: "Octillery", id: 224, gen: 2 },
+            { name: "Cadoizo", id: 225, gen: 2 },
+            { name: "Démanta", id: 226, gen: 2 },
+            { name: "Airmure", id: 227, gen: 2 },
+            { name: "Malosse", id: 228, gen: 2 },
+            { name: "Démolosse", id: 229, gen: 2 },
+            { name: "Hyporoi", id: 230, gen: 2 },
+            { name: "Phanpy", id: 231, gen: 2 },
+            { name: "Donphan", id: 232, gen: 2 },
+            { name: "Porygon2", id: 233, gen: 2 },
+            { name: "Cerfrousse", id: 234, gen: 2 },
+            { name: "Queulorior", id: 235, gen: 2 },
+            { name: "Debugant", id: 236, gen: 2 },
+            { name: "Kapoera", id: 237, gen: 2 },
+            { name: "Lippouti", id: 238, gen: 2 },
+            { name: "Élekid", id: 239, gen: 2 },
+            { name: "Magby", id: 240, gen: 2 },
+            { name: "Écrémeuh", id: 241, gen: 2 },
+            { name: "Leuphorie", id: 242, gen: 2 },
+            { name: "Raikou", id: 243, gen: 2 },
+            { name: "Entei", id: 244, gen: 2 },
+            { name: "Suicune", id: 245, gen: 2 },
+            { name: "Embrylex", id: 246, gen: 2 },
+            { name: "Ymphect", id: 247, gen: 2 },
+            { name: "Tyranocif", id: 248, gen: 2 },
+            { name: "Lugia", id: 249, gen: 2 },
+            { name: "Ho-Oh", id: 250, gen: 2 },
+            { name: "Celebi", id: 251, gen: 2 },
+            { name: "Arcko", id: 252, gen: 3 },
+            { name: "Massko", id: 253, gen: 3 },
+            { name: "Jungko", id: 254, gen: 3 },
+            { name: "Poussifeu", id: 255, gen: 3 },
+            { name: "Galifeu", id: 256, gen: 3 },
+            { name: "Braségali", id: 257, gen: 3 },
+            { name: "Gobou", id: 258, gen: 3 },
+            { name: "Flobio", id: 259, gen: 3 },
+            { name: "Laggron", id: 260, gen: 3 },
+            { name: "Medhyèna", id: 261, gen: 3 },
+            { name: "Grahyèna", id: 262, gen: 3 },
+            { name: "Zigzaton", id: 263, gen: 3 },
+            { name: "Linéon", id: 264, gen: 3 },
+            { name: "Chenipotte", id: 265, gen: 3 },
+            { name: "Armulys", id: 266, gen: 3 },
+            { name: "Charmillon", id: 267, gen: 3 },
+            { name: "Blindalys", id: 268, gen: 3 },
+            { name: "Papinox", id: 269, gen: 3 },
+            { name: "Nénupiot", id: 270, gen: 3 },
+            { name: "Lombre", id: 271, gen: 3 },
+            { name: "Ludicolo", id: 272, gen: 3 },
+            { name: "Grainipiot", id: 273, gen: 3 },
+            { name: "Pifeuil", id: 274, gen: 3 },
+            { name: "Tengalice", id: 275, gen: 3 },
+            { name: "Nirondelle", id: 276, gen: 3 },
+            { name: "Hélédelle", id: 277, gen: 3 },
+            { name: "Goélise", id: 278, gen: 3 },
+            { name: "Bekipan", id: 279, gen: 3 },
+            { name: "Tarsal", id: 280, gen: 3 },
+            { name: "Kirlia", id: 281, gen: 3 },
+            { name: "Gardevoir", id: 282, gen: 3 },
+            { name: "Arakdo", id: 283, gen: 3 },
+            { name: "Maskadra", id: 284, gen: 3 },
+            { name: "Balignon", id: 285, gen: 3 },
+            { name: "Chapignon", id: 286, gen: 3 },
+            { name: "Parecool", id: 287, gen: 3 },
+            { name: "Vigoroth", id: 288, gen: 3 },
+            { name: "Monaflèmit", id: 289, gen: 3 },
+            { name: "Ningale", id: 290, gen: 3 },
+            { name: "Ninjask", id: 291, gen: 3 },
+            { name: "Munja", id: 292, gen: 3 },
+            { name: "Chuchmur", id: 293, gen: 3 },
+            { name: "Ramboum", id: 294, gen: 3 },
+            { name: "Brouhabam", id: 295, gen: 3 },
+            { name: "Makuhita", id: 296, gen: 3 },
+            { name: "Hariyama", id: 297, gen: 3 },
+            { name: "Azurill", id: 298, gen: 3 },
+            { name: "Tarinor", id: 299, gen: 3 },
+            { name: "Skitty", id: 300, gen: 3 },
+            { name: "Delcatty", id: 301, gen: 3 },
+            { name: "Ténéfix", id: 302, gen: 3 },
+            { name: "Mysdibule", id: 303, gen: 3 },
+            { name: "Galekid", id: 304, gen: 3 },
+            { name: "Galegon", id: 305, gen: 3 },
+            { name: "Galeking", id: 306, gen: 3 },
+            { name: "Méditikka", id: 307, gen: 3 },
+            { name: "Charmina", id: 308, gen: 3 },
+            { name: "Dynavolt", id: 309, gen: 3 },
+            { name: "Élecsprint", id: 310, gen: 3 },
+            { name: "Posipi", id: 311, gen: 3 },
+            { name: "Négapi", id: 312, gen: 3 },
+            { name: "Muciole", id: 313, gen: 3 },
+            { name: "Lumivole", id: 314, gen: 3 },
+            { name: "Rosélia", id: 315, gen: 3 },
+            { name: "Gloupti", id: 316, gen: 3 },
+            { name: "Avaltout", id: 317, gen: 3 },
+            { name: "Carvanha", id: 318, gen: 3 },
+            { name: "Sharpedo", id: 319, gen: 3 },
+            { name: "Wailmer", id: 320, gen: 3 },
+            { name: "Wailord", id: 321, gen: 3 },
+            { name: "Chamallot", id: 322, gen: 3 },
+            { name: "Camérupt", id: 323, gen: 3 },
+            { name: "Chartor", id: 324, gen: 3 },
+            { name: "Spoink", id: 325, gen: 3 },
+            { name: "Groret", id: 326, gen: 3 },
+            { name: "Spinda", id: 327, gen: 3 },
+            { name: "Kraknoix", id: 328, gen: 3 },
+            { name: "Vibraninf", id: 329, gen: 3 },
+            { name: "Libégon", id: 330, gen: 3 },
+            { name: "Cacnea", id: 331, gen: 3 },
+            { name: "Cacturne", id: 332, gen: 3 },
+            { name: "Tylton", id: 333, gen: 3 },
+            { name: "Altaria", id: 334, gen: 3 },
+            { name: "Mangriff", id: 335, gen: 3 },
+            { name: "Séviper", id: 336, gen: 3 },
+            { name: "Séléroc", id: 337, gen: 3 },
+            { name: "Solaroc", id: 338, gen: 3 },
+            { name: "Barloche", id: 339, gen: 3 },
+            { name: "Barbicha", id: 340, gen: 3 },
+            { name: "Écrapince", id: 341, gen: 3 },
+            { name: "Colhomard", id: 342, gen: 3 },
+            { name: "Balbuto", id: 343, gen: 3 },
+            { name: "Kaorine", id: 344, gen: 3 },
+            { name: "Lilia", id: 345, gen: 3 },
+            { name: "Vacilys", id: 346, gen: 3 },
+            { name: "Anorith", id: 347, gen: 3 },
+            { name: "Armaldo", id: 348, gen: 3 },
+            { name: "Barpau", id: 349, gen: 3 },
+            { name: "Milobellus", id: 350, gen: 3 },
+            { name: "Morphéo", id: 351, gen: 3 },
+            { name: "Kecleon", id: 352, gen: 3 },
+            { name: "Polichombr", id: 353, gen: 3 },
+            { name: "Branette", id: 354, gen: 3 },
+            { name: "Skelénox", id: 355, gen: 3 },
+            { name: "Téraclope", id: 356, gen: 3 },
+            { name: "Tropius", id: 357, gen: 3 },
+            { name: "Éoko", id: 358, gen: 3 },
+            { name: "Absol", id: 359, gen: 3 },
+            { name: "Okéoké", id: 360, gen: 3 },
+            { name: "Stalgamin", id: 361, gen: 3 },
+            { name: "Oniglali", id: 362, gen: 3 },
+            { name: "Obalie", id: 363, gen: 3 },
+            { name: "Phogleur", id: 364, gen: 3 },
+            { name: "Kaimorse", id: 365, gen: 3 },
+            { name: "Coquiperl", id: 366, gen: 3 },
+            { name: "Serpang", id: 367, gen: 3 },
+            { name: "Rosabyss", id: 368, gen: 3 },
+            { name: "Relicanth", id: 369, gen: 3 },
+            { name: "Lovdisc", id: 370, gen: 3 },
+            { name: "Draby", id: 371, gen: 3 },
+            { name: "Drackhaus", id: 372, gen: 3 },
+            { name: "Drattak", id: 373, gen: 3 },
+            { name: "Terhal", id: 374, gen: 3 },
+            { name: "Métang", id: 375, gen: 3 },
+            { name: "Métalosse", id: 376, gen: 3 },
+            { name: "Regirock", id: 377, gen: 3 },
+            { name: "Regice", id: 378, gen: 3 },
+            { name: "Registeel", id: 379, gen: 3 },
+            { name: "Latias", id: 380, gen: 3 },
+            { name: "Latios", id: 381, gen: 3 },
+            { name: "Kyogre", id: 382, gen: 3 },
+            { name: "Groudon", id: 383, gen: 3 },
+            { name: "Rayquaza", id: 384, gen: 3 },
+            { name: "Jirachi", id: 385, gen: 3 },
+            { name: "Deoxys", id: 386, gen: 3 },
+            { name: "Tortipouss", id: 387, gen: 4 },
+            { name: "Boskara", id: 388, gen: 4 },
+            { name: "Torterra", id: 389, gen: 4 },
+            { name: "Ouisticram", id: 390, gen: 4 },
+            { name: "Chimpenfeu", id: 391, gen: 4 },
+            { name: "Simiabraz", id: 392, gen: 4 },
+            { name: "Tiplouf", id: 393, gen: 4 },
+            { name: "Prinplouf", id: 394, gen: 4 },
+            { name: "Pingoléon", id: 395, gen: 4 },
+            { name: "Étourmi", id: 396, gen: 4 },
+            { name: "Étourvol", id: 397, gen: 4 },
+            { name: "Étouraptor", id: 398, gen: 4 },
+            { name: "Keunotor", id: 399, gen: 4 },
+            { name: "Castorno", id: 400, gen: 4 },
+            { name: "Crikzik", id: 401, gen: 4 },
+            { name: "Mélokrik", id: 402, gen: 4 },
+            { name: "Lixy", id: 403, gen: 4 },
+            { name: "Luxio", id: 404, gen: 4 },
+            { name: "Luxray", id: 405, gen: 4 },
+            { name: "Rozbouton", id: 406, gen: 4 },
+            { name: "Roserade", id: 407, gen: 4 },
+            { name: "Kranidos", id: 408, gen: 4 },
+            { name: "Charkos", id: 409, gen: 4 },
+            { name: "Dinoclier", id: 410, gen: 4 },
+            { name: "Bastiodon", id: 411, gen: 4 },
+            { name: "Cheniti", id: 412, gen: 4 },
+            { name: "Cheniselle", id: 413, gen: 4 },
+            { name: "Papilord", id: 414, gen: 4 },
+            { name: "Apitrini", id: 415, gen: 4 },
+            { name: "Apireine", id: 416, gen: 4 },
+            { name: "Pachirisu", id: 417, gen: 4 },
+            { name: "Mustébouée", id: 418, gen: 4 },
+            { name: "Mustéflott", id: 419, gen: 4 },
+            { name: "Ceribou", id: 420, gen: 4 },
+            { name: "Ceriflor", id: 421, gen: 4 },
+            { name: "Sancoki", id: 422, gen: 4 },
+            { name: "Tritosor", id: 423, gen: 4 },
+            { name: "Capidextre", id: 424, gen: 4 },
+            { name: "Baudrive", id: 425, gen: 4 },
+            { name: "Grodrive", id: 426, gen: 4 },
+            { name: "Laporeille", id: 427, gen: 4 },
+            { name: "Lockpin", id: 428, gen: 4 },
+            { name: "Magirêve", id: 429, gen: 4 },
+            { name: "Corboss", id: 430, gen: 4 },
+            { name: "Chaglam", id: 431, gen: 4 },
+            { name: "Chaffreux", id: 432, gen: 4 },
+            { name: "Korillon", id: 433, gen: 4 },
+            { name: "Moufouette", id: 434, gen: 4 },
+            { name: "Moufflair", id: 435, gen: 4 },
+            { name: "Archéomire", id: 436, gen: 4 },
+            { name: "Archéodong", id: 437, gen: 4 },
+            { name: "Manzaï", id: 438, gen: 4 },
+            { name: "Mime Jr.", id: 439, gen: 4 },
+            { name: "Ptiravi", id: 440, gen: 4 },
+            { name: "Pijako", id: 441, gen: 4 },
+            { name: "Spiritomb", id: 442, gen: 4 },
+            { name: "Griknot", id: 443, gen: 4 },
+            { name: "Carmache", id: 444, gen: 4 },
+            { name: "Carchacrok", id: 445, gen: 4 },
+            { name: "Goinfrex", id: 446, gen: 4 },
+            { name: "Riolu", id: 447, gen: 4 },
+            { name: "Lucario", id: 448, gen: 4 },
+            { name: "Hippopotas", id: 449, gen: 4 },
+            { name: "Hippodocus", id: 450, gen: 4 },
+            { name: "Rapion", id: 451, gen: 4 },
+            { name: "Drascore", id: 452, gen: 4 },
+            { name: "Cradopaud", id: 453, gen: 4 },
+            { name: "Coatox", id: 454, gen: 4 },
+            { name: "Vortente", id: 455, gen: 4 },
+            { name: "Écayon", id: 456, gen: 4 },
+            { name: "Luminéon", id: 457, gen: 4 },
+            { name: "Babimanta", id: 458, gen: 4 },
+            { name: "Blizzi", id: 459, gen: 4 },
+            { name: "Blizzaroi", id: 460, gen: 4 },
+            { name: "Dimoret", id: 461, gen: 4 },
+            { name: "Magnézone", id: 462, gen: 4 },
+            { name: "Coudlangue", id: 463, gen: 4 },
+            { name: "Rhinastoc", id: 464, gen: 4 },
+            { name: "Bouldeneu", id: 465, gen: 4 },
+            { name: "Élekable", id: 466, gen: 4 },
+            { name: "Maganon", id: 467, gen: 4 },
+            { name: "Togekiss", id: 468, gen: 4 },
+            { name: "Yanmega", id: 469, gen: 4 },
+            { name: "Phyllali", id: 470, gen: 4 },
+            { name: "Givrali", id: 471, gen: 4 },
+            { name: "Scorvol", id: 472, gen: 4 },
+            { name: "Mammochon", id: 473, gen: 4 },
+            { name: "Porygon-Z", id: 474, gen: 4 },
+            { name: "Gallame", id: 475, gen: 4 },
+            { name: "Tarinorme", id: 476, gen: 4 },
+            { name: "Noctunoir", id: 477, gen: 4 },
+            { name: "Momartik", id: 478, gen: 4 },
+            { name: "Motisma", id: 479, gen: 4 },
+            { name: "Créhelf", id: 480, gen: 4 },
+            { name: "Créfollet", id: 481, gen: 4 },
+            { name: "Créfadet", id: 482, gen: 4 },
+            { name: "Dialga", id: 483, gen: 4 },
+            { name: "Palkia", id: 484, gen: 4 },
+            { name: "Heatran", id: 485, gen: 4 },
+            { name: "Regigigas", id: 486, gen: 4 },
+            { name: "Giratina", id: 487, gen: 4 },
+            { name: "Cresselia", id: 488, gen: 4 },
+            { name: "Phione", id: 489, gen: 4 },
+            { name: "Manaphy", id: 490, gen: 4 },
+            { name: "Darkrai", id: 491, gen: 4 },
+            { name: "Shaymin", id: 492, gen: 4 },
+            { name: "Arceus", id: 493, gen: 4 },
+            { name: "Victini", id: 494, gen: 5 },
+            { name: "Vipélierre", id: 495, gen: 5 },
+            { name: "Lianaja", id: 496, gen: 5 },
+            { name: "Majaspic", id: 497, gen: 5 },
+            { name: "Gruikui", id: 498, gen: 5 },
+            { name: "Grotichon", id: 499, gen: 5 },
+            { name: "Roitiflam", id: 500, gen: 5 },
+            { name: "Moustillon", id: 501, gen: 5 },
+            { name: "Mateloutre", id: 502, gen: 5 },
+            { name: "Clamiral", id: 503, gen: 5 },
+            { name: "Ratentif", id: 504, gen: 5 },
+            { name: "Miradar", id: 505, gen: 5 },
+            { name: "Ponchiot", id: 506, gen: 5 },
+            { name: "Ponchien", id: 507, gen: 5 },
+            { name: "Mastouffe", id: 508, gen: 5 },
+            { name: "Chacripan", id: 509, gen: 5 },
+            { name: "Léopardus", id: 510, gen: 5 },
+            { name: "Feuillajou", id: 511, gen: 5 },
+            { name: "Feuiloutan", id: 512, gen: 5 },
+            { name: "Flamajou", id: 513, gen: 5 },
+            { name: "Flamoutan", id: 514, gen: 5 },
+            { name: "Flotajou", id: 515, gen: 5 },
+            { name: "Flotoutan", id: 516, gen: 5 },
+            { name: "Munna", id: 517, gen: 5 },
+            { name: "Mushana", id: 518, gen: 5 },
+            { name: "Poichigeon", id: 519, gen: 5 },
+            { name: "Colombeau", id: 520, gen: 5 },
+            { name: "Déflaisan", id: 521, gen: 5 },
+            { name: "Zébibron", id: 522, gen: 5 },
+            { name: "Zéblitz", id: 523, gen: 5 },
+            { name: "Nodulithe", id: 524, gen: 5 },
+            { name: "Géolithe", id: 525, gen: 5 },
+            { name: "Gigalithe", id: 526, gen: 5 },
+            { name: "Chovsourir", id: 527, gen: 5 },
+            { name: "Rhinolove", id: 528, gen: 5 },
+            { name: "Rototaupe", id: 529, gen: 5 },
+            { name: "Minotaupe", id: 530, gen: 5 },
+            { name: "Nanméouïe", id: 531, gen: 5 },
+            { name: "Charpenti", id: 532, gen: 5 },
+            { name: "Ouvrifier", id: 533, gen: 5 },
+            { name: "Bétochef", id: 534, gen: 5 },
+            { name: "Tritonde", id: 535, gen: 5 },
+            { name: "Batracné", id: 536, gen: 5 },
+            { name: "Crapustule", id: 537, gen: 5 },
+            { name: "Judokrak", id: 538, gen: 5 },
+            { name: "Karaclée", id: 539, gen: 5 },
+            { name: "Larveyette", id: 540, gen: 5 },
+            { name: "Couverdure", id: 541, gen: 5 },
+            { name: "Manternel", id: 542, gen: 5 },
+            { name: "Venipatte", id: 543, gen: 5 },
+            { name: "Scobolide", id: 544, gen: 5 },
+            { name: "Brutapode", id: 545, gen: 5 },
+            { name: "Doudouvet", id: 546, gen: 5 },
+            { name: "Farfaduvet", id: 547, gen: 5 },
+            { name: "Chlorobule", id: 548, gen: 5 },
+            { name: "Fragilady", id: 549, gen: 5 },
+            { name: "Bargantua", id: 550, gen: 5 },
+            { name: "Mascaïman", id: 551, gen: 5 },
+            { name: "Escroco", id: 552, gen: 5 },
+            { name: "Crocorible", id: 553, gen: 5 },
+            { name: "Darumarond", id: 554, gen: 5 },
+            { name: "Darumacho", id: 555, gen: 5 },
+            { name: "Maracachi", id: 556, gen: 5 },
+            { name: "Crabicoque", id: 557, gen: 5 },
+            { name: "Crabaraque", id: 558, gen: 5 },
+            { name: "Baggiguane", id: 559, gen: 5 },
+            { name: "Baggaïd", id: 560, gen: 5 },
+            { name: "Cryptéro", id: 561, gen: 5 },
+            { name: "Tutafeh", id: 562, gen: 5 },
+            { name: "Tutankafer", id: 563, gen: 5 },
+            { name: "Carapagos", id: 564, gen: 5 },
+            { name: "Mégapagos", id: 565, gen: 5 },
+            { name: "Arkéapti", id: 566, gen: 5 },
+            { name: "Aéroptéryx", id: 567, gen: 5 },
+            { name: "Miamiasme", id: 568, gen: 5 },
+            { name: "Miasmax", id: 569, gen: 5 },
+            { name: "Zorua", id: 570, gen: 5 },
+            { name: "Zoroark", id: 571, gen: 5 },
+            { name: "Chinchidou", id: 572, gen: 5 },
+            { name: "Pashmilla", id: 573, gen: 5 },
+            { name: "Scrutella", id: 574, gen: 5 },
+            { name: "Mesmérella", id: 575, gen: 5 },
+            { name: "Sidérella", id: 576, gen: 5 },
+            { name: "Nucléos", id: 577, gen: 5 },
+            { name: "Méios", id: 578, gen: 5 },
+            { name: "Symbios", id: 579, gen: 5 },
+            { name: "Couaneton", id: 580, gen: 5 },
+            { name: "Lakmécygne", id: 581, gen: 5 },
+            { name: "Sorbébé", id: 582, gen: 5 },
+            { name: "Sorboul", id: 583, gen: 5 },
+            { name: "Sorbouboul", id: 584, gen: 5 },
+            { name: "Vivaldaim", id: 585, gen: 5 },
+            { name: "Haydaim", id: 586, gen: 5 },
+            { name: "Emolga", id: 587, gen: 5 },
+            { name: "Carabing", id: 588, gen: 5 },
+            { name: "Lançargot", id: 589, gen: 5 },
+            { name: "Trompignon", id: 590, gen: 5 },
+            { name: "Gaulet", id: 591, gen: 5 },
+            { name: "Viskuse", id: 592, gen: 5 },
+            { name: "Moyade", id: 593, gen: 5 },
+            { name: "Mamanbo", id: 594, gen: 5 },
+            { name: "Statitik", id: 595, gen: 5 },
+            { name: "Mygavolt", id: 596, gen: 5 },
+            { name: "Grindur", id: 597, gen: 5 },
+            { name: "Noacier", id: 598, gen: 5 },
+            { name: "Tic", id: 599, gen: 5 },
+            { name: "Clic", id: 600, gen: 5 },
+            { name: "Cliticlic", id: 601, gen: 5 },
+            { name: "Anchwatt", id: 602, gen: 5 },
+            { name: "Lampéroie", id: 603, gen: 5 },
+            { name: "Ohmassacre", id: 604, gen: 5 },
+            { name: "Lewsor", id: 605, gen: 5 },
+            { name: "Neitram", id: 606, gen: 5 },
+            { name: "Funécire", id: 607, gen: 5 },
+            { name: "Mélancolux", id: 608, gen: 5 },
+            { name: "Lugulabre", id: 609, gen: 5 },
+            { name: "Coupenotte", id: 610, gen: 5 },
+            { name: "Incisache", id: 611, gen: 5 },
+            { name: "Tranchodon", id: 612, gen: 5 },
+            { name: "Polarhume", id: 613, gen: 5 },
+            { name: "Polagriffe", id: 614, gen: 5 },
+            { name: "Hexagel", id: 615, gen: 5 },
+            { name: "Escargaume", id: 616, gen: 5 },
+            { name: "Limaspeed", id: 617, gen: 5 },
+            { name: "Limonde", id: 618, gen: 5 },
+            { name: "Kungfouine", id: 619, gen: 5 },
+            { name: "Shaofouine", id: 620, gen: 5 },
+            { name: "Drakkarmin", id: 621, gen: 5 },
+            { name: "Gringolem", id: 622, gen: 5 },
+            { name: "Golemastoc", id: 623, gen: 5 },
+            { name: "Scalpion", id: 624, gen: 5 },
+            { name: "Scalproie", id: 625, gen: 5 },
+            { name: "Frison", id: 626, gen: 5 },
+            { name: "Furaiglon", id: 627, gen: 5 },
+            { name: "Gueriaigle", id: 628, gen: 5 },
+            { name: "Vostourno", id: 629, gen: 5 },
+            { name: "Vaututrice", id: 630, gen: 5 },
+            { name: "Aflamanoir", id: 631, gen: 5 },
+            { name: "Fermite", id: 632, gen: 5 },
+            { name: "Solochi", id: 633, gen: 5 },
+            { name: "Diamat", id: 634, gen: 5 },
+            { name: "Trioxhydre", id: 635, gen: 5 },
+            { name: "Pyronille", id: 636, gen: 5 },
+            { name: "Pyrax", id: 637, gen: 5 },
+            { name: "Cobaltium", id: 638, gen: 5 },
+            { name: "Terrakium", id: 639, gen: 5 },
+            { name: "Viridium", id: 640, gen: 5 },
+            { name: "Boréas", id: 641, gen: 5 },
+            { name: "Fulguris", id: 642, gen: 5 },
+            { name: "Reshiram", id: 643, gen: 5 },
+            { name: "Zekrom", id: 644, gen: 5 },
+            { name: "Démétéros", id: 645, gen: 5 },
+            { name: "Kyurem", id: 646, gen: 5 },
+            { name: "Keldeo", id: 647, gen: 5 },
+            { name: "Meloetta", id: 648, gen: 5 },
+            { name: "Genesect", id: 649, gen: 5 },
+            { name: "Marisson", id: 650, gen: 6 },
+            { name: "Boguérisse", id: 651, gen: 6 },
+            { name: "Blindépique", id: 652, gen: 6 },
+            { name: "Feunnec", id: 653, gen: 6 },
+            { name: "Roussil", id: 654, gen: 6 },
+            { name: "Goupelin", id: 655, gen: 6 },
+            { name: "Grenousse", id: 656, gen: 6 },
+            { name: "Croâporal", id: 657, gen: 6 },
+            { name: "Amphinobi", id: 658, gen: 6 },
+            { name: "Sapereau", id: 659, gen: 6 },
+            { name: "Excavarenne", id: 660, gen: 6 },
+            { name: "Passerouge", id: 661, gen: 6 },
+            { name: "Braisillon", id: 662, gen: 6 },
+            { name: "Flambusard", id: 663, gen: 6 },
+            { name: "Lépidonille", id: 664, gen: 6 },
+            { name: "Pérégrain", id: 665, gen: 6 },
+            { name: "Prismillon", id: 666, gen: 6 },
+            { name: "Hélionceau", id: 667, gen: 6 },
+            { name: "Némélios", id: 668, gen: 6 },
+            { name: "Flabébé", id: 669, gen: 6 },
+            { name: "Floette", id: 670, gen: 6 },
+            { name: "Florges", id: 671, gen: 6 },
+            { name: "Cabriolaine", id: 672, gen: 6 },
+            { name: "Chevroum", id: 673, gen: 6 },
+            { name: "Pandespiègle", id: 674, gen: 6 },
+            { name: "Pandarbare", id: 675, gen: 6 },
+            { name: "Couafarel", id: 676, gen: 6 },
+            { name: "Psystigri", id: 677, gen: 6 },
+            { name: "Mistigrix", id: 678, gen: 6 },
+            { name: "Monorpale", id: 679, gen: 6 },
+            { name: "Dimoclès", id: 680, gen: 6 },
+            { name: "Exagide", id: 681, gen: 6 },
+            { name: "Fluvetin", id: 682, gen: 6 },
+            { name: "Cocotine", id: 683, gen: 6 },
+            { name: "Sucroquin", id: 684, gen: 6 },
+            { name: "Cupcanaille", id: 685, gen: 6 },
+            { name: "Sepiatop", id: 686, gen: 6 },
+            { name: "Sepiatroce", id: 687, gen: 6 },
+            { name: "Opermine", id: 688, gen: 6 },
+            { name: "Golgopathe", id: 689, gen: 6 },
+            { name: "Venalgue", id: 690, gen: 6 },
+            { name: "Kravarech", id: 691, gen: 6 },
+            { name: "Flingouste", id: 692, gen: 6 },
+            { name: "Gamblast", id: 693, gen: 6 },
+            { name: "Galvaran", id: 694, gen: 6 },
+            { name: "Iguolta", id: 695, gen: 6 },
+            { name: "Ptyranidur", id: 696, gen: 6 },
+            { name: "Rexillius", id: 697, gen: 6 },
+            { name: "Amagara", id: 698, gen: 6 },
+            { name: "Dragmara", id: 699, gen: 6 },
+            { name: "Nymphali", id: 700, gen: 6 },
+            { name: "Brutalibré", id: 701, gen: 6 },
+            { name: "Dedenne", id: 702, gen: 6 },
+            { name: "Strassie", id: 703, gen: 6 },
+            { name: "Mucuscule", id: 704, gen: 6 },
+            { name: "Colimucus", id: 705, gen: 6 },
+            { name: "Muplodocus", id: 706, gen: 6 },
+            { name: "Trousselin", id: 707, gen: 6 },
+            { name: "Brocélôme", id: 708, gen: 6 },
+            { name: "Desséliande", id: 709, gen: 6 },
+            { name: "Pitrouille", id: 710, gen: 6 },
+            { name: "Banshitrouye", id: 711, gen: 6 },
+            { name: "Grelaçon", id: 712, gen: 6 },
+            { name: "Séracrawl", id: 713, gen: 6 },
+            { name: "Sonistrelle", id: 714, gen: 6 },
+            { name: "Bruyverne", id: 715, gen: 6 },
+            { name: "Xerneas", id: 716, gen: 6 },
+            { name: "Yveltal", id: 717, gen: 6 },
+            { name: "Zygarde", id: 718, gen: 6 },
+            { name: "Diancie", id: 719, gen: 6 },
+            { name: "Hoopa", id: 720, gen: 6 },
+            { name: "Volcanion", id: 721, gen: 6 },
+            { name: "Brindibou", id: 722, gen: 7 },
+            { name: "Efflèche", id: 723, gen: 7 },
+            { name: "Archéduc", id: 724, gen: 7 },
+            { name: "Flamiaou", id: 725, gen: 7 },
+            { name: "Matoufeu", id: 726, gen: 7 },
+            { name: "Félinferno", id: 727, gen: 7 },
+            { name: "Otaquin", id: 728, gen: 7 },
+            { name: "Otarlette", id: 729, gen: 7 },
+            { name: "Oratoria", id: 730, gen: 7 },
+            { name: "Picassaut", id: 731, gen: 7 },
+            { name: "Piclairon", id: 732, gen: 7 },
+            { name: "Bazoucan", id: 733, gen: 7 },
+            { name: "Manglouton", id: 734, gen: 7 },
+            { name: "Argouste", id: 735, gen: 7 },
+            { name: "Larvibule", id: 736, gen: 7 },
+            { name: "Chrysapile", id: 737, gen: 7 },
+            { name: "Lucanon", id: 738, gen: 7 },
+            { name: "Crabagarre", id: 739, gen: 7 },
+            { name: "Crabominable", id: 740, gen: 7 },
+            { name: "Plumeline", id: 741, gen: 7 },
+            { name: "Bombydou", id: 742, gen: 7 },
+            { name: "Rubombelle", id: 743, gen: 7 },
+            { name: "Rocabot", id: 744, gen: 7 },
+            { name: "Lougaroc", id: 745, gen: 7 },
+            { name: "Froussardine", id: 746, gen: 7 },
+            { name: "Vorastérie", id: 747, gen: 7 },
+            { name: "Prédastérie", id: 748, gen: 7 },
+            { name: "Tiboudet", id: 749, gen: 7 },
+            { name: "Bourrinos", id: 750, gen: 7 },
+            { name: "Araqua", id: 751, gen: 7 },
+            { name: "Tarenbulle", id: 752, gen: 7 },
+            { name: "Mimantis", id: 753, gen: 7 },
+            { name: "Floramantis", id: 754, gen: 7 },
+            { name: "Spododo", id: 755, gen: 7 },
+            { name: "Lampignon", id: 756, gen: 7 },
+            { name: "Tritox", id: 757, gen: 7 },
+            { name: "Malamandre", id: 758, gen: 7 },
+            { name: "Nounourson", id: 759, gen: 7 },
+            { name: "Chelours", id: 760, gen: 7 },
+            { name: "Croquine", id: 761, gen: 7 },
+            { name: "Candine", id: 762, gen: 7 },
+            { name: "Sucreine", id: 763, gen: 7 },
+            { name: "Guérilande", id: 764, gen: 7 },
+            { name: "Gouroutan", id: 765, gen: 7 },
+            { name: "Quartermac", id: 766, gen: 7 },
+            { name: "Sovkipou", id: 767, gen: 7 },
+            { name: "Sarmuraï", id: 768, gen: 7 },
+            { name: "Bacabouh", id: 769, gen: 7 },
+            { name: "Trépassable", id: 770, gen: 7 },
+            { name: "Concombaffe", id: 771, gen: 7 },
+            { name: "Type:0", id: 772, gen: 7 },
+            { name: "Silvallié", id: 773, gen: 7 },
+            { name: "Météno", id: 774, gen: 7 },
+            { name: "Dodoala", id: 775, gen: 7 },
+            { name: "Boumata", id: 776, gen: 7 },
+            { name: "Togedemaru", id: 777, gen: 7 },
+            { name: "Mimiqui", id: 778, gen: 7 },
+            { name: "Denticrisse", id: 779, gen: 7 },
+            { name: "Draïeul", id: 780, gen: 7 },
+            { name: "Sinistrail", id: 781, gen: 7 },
+            { name: "Bébécaille", id: 782, gen: 7 },
+            { name: "Écaïd", id: 783, gen: 7 },
+            { name: "Ékaïser", id: 784, gen: 7 },
+            { name: "Tokorico", id: 785, gen: 7 },
+            { name: "Tokopiyon", id: 786, gen: 7 },
+            { name: "Tokotoro", id: 787, gen: 7 },
+            { name: "Tokopisco", id: 788, gen: 7 },
+            { name: "Cosmog", id: 789, gen: 7 },
+            { name: "Cosmovum", id: 790, gen: 7 },
+            { name: "Solgaleo", id: 791, gen: 7 },
+            { name: "Lunala", id: 792, gen: 7 },
+            { name: "Zéroïd", id: 793, gen: 7 },
+            { name: "Mouscoto", id: 794, gen: 7 },
+            { name: "Cancrelove", id: 795, gen: 7 },
+            { name: "Câblifère", id: 796, gen: 7 },
+            { name: "Bamboiselle", id: 797, gen: 7 },
+            { name: "Katagami", id: 798, gen: 7 },
+            { name: "Engloutyran", id: 799, gen: 7 },
+            { name: "Necrozma", id: 800, gen: 7 },
+            { name: "Magearna", id: 801, gen: 7 },
+            { name: "Marshadow", id: 802, gen: 7 },
+            { name: "Vémini", id: 803, gen: 7 },
+            { name: "Mandrillon", id: 804, gen: 7 },
+            { name: "Ama-Ama", id: 805, gen: 7 },
+            { name: "Pierroteknik", id: 806, gen: 7 },
+            { name: "Zeraora", id: 807, gen: 7 },
+            { name: "Meltan", id: 808, gen: 7 },
+            { name: "Melmetal", id: 809, gen: 7 },
+            { name: "Ouistempo", id: 810, gen: 8 },
+            { name: "Badabouin", id: 811, gen: 8 },
+            { name: "Gorythmic", id: 812, gen: 8 },
+            { name: "Flambino", id: 813, gen: 8 },
+            { name: "Lapyro", id: 814, gen: 8 },
+            { name: "Pyrobut", id: 815, gen: 8 },
+            { name: "Larméléon", id: 816, gen: 8 },
+            { name: "Arrozard", id: 817, gen: 8 },
+            { name: "Lézargus", id: 818, gen: 8 },
+            { name: "Rongourmand", id: 819, gen: 8 },
+            { name: "Rongrigou", id: 820, gen: 8 },
+            { name: "Minisange", id: 821, gen: 8 },
+            { name: "Bleuseille", id: 822, gen: 8 },
+            { name: "Corvaillus", id: 823, gen: 8 },
+            { name: "Larvadar", id: 824, gen: 8 },
+            { name: "Coléodôme", id: 825, gen: 8 },
+            { name: "Astronelle", id: 826, gen: 8 },
+            { name: "Goupilou", id: 827, gen: 8 },
+            { name: "Roublenard", id: 828, gen: 8 },
+            { name: "Tournicoton", id: 829, gen: 8 },
+            { name: "Blancoton", id: 830, gen: 8 },
+            { name: "Moumouton", id: 831, gen: 8 },
+            { name: "Moumouflon", id: 832, gen: 8 },
+            { name: "Khélocrok", id: 833, gen: 8 },
+            { name: "Torgamord", id: 834, gen: 8 },
+            { name: "Voltoutou", id: 835, gen: 8 },
+            { name: "Fulgudog", id: 836, gen: 8 },
+            { name: "Charbi", id: 837, gen: 8 },
+            { name: "Wagomine", id: 838, gen: 8 },
+            { name: "Monthracite", id: 839, gen: 8 },
+            { name: "Verpom", id: 840, gen: 8 },
+            { name: "Pomdrapi", id: 841, gen: 8 },
+            { name: "Dratatin", id: 842, gen: 8 },
+            { name: "Dunaja", id: 843, gen: 8 },
+            { name: "Dunaconda", id: 844, gen: 8 },
+            { name: "Nigosier", id: 845, gen: 8 },
+            { name: "Embrochet", id: 846, gen: 8 },
+            { name: "Hastacuda", id: 847, gen: 8 },
+            { name: "Toxizap", id: 848, gen: 8 },
+            { name: "Salarsen", id: 849, gen: 8 },
+            { name: "Grillepattes", id: 850, gen: 8 },
+            { name: "Scolocendre", id: 851, gen: 8 },
+            { name: "Poulpaf", id: 852, gen: 8 },
+            { name: "Krakos", id: 853, gen: 8 },
+            { name: "Théffroi", id: 854, gen: 8 },
+            { name: "Polthégeist", id: 855, gen: 8 },
+            { name: "Bibichut", id: 856, gen: 8 },
+            { name: "Chapotus", id: 857, gen: 8 },
+            { name: "Sorcilence", id: 858, gen: 8 },
+            { name: "Grimalin", id: 859, gen: 8 },
+            { name: "Fourbelin", id: 860, gen: 8 },
+            { name: "Angoliath", id: 861, gen: 8 },
+            { name: "Ixon", id: 862, gen: 8 },
+            { name: "Berserkatt", id: 863, gen: 8 },
+            { name: "Corayôme", id: 864, gen: 8 },
+            { name: "Palarticho", id: 865, gen: 8 },
+            { name: "M. Glaquette", id: 866, gen: 8 },
+            { name: "Tutétékri", id: 867, gen: 8 },
+            { name: "Crèmy", id: 868, gen: 8 },
+            { name: "Charmilly", id: 869, gen: 8 },
+            { name: "Hexadron", id: 870, gen: 8 },
+            { name: "Wattapik", id: 871, gen: 8 },
+            { name: "Frissonille", id: 872, gen: 8 },
+            { name: "Beldeneige", id: 873, gen: 8 },
+            { name: "Dolman", id: 874, gen: 8 },
+            { name: "Bekaglaçon", id: 875, gen: 8 },
+            { name: "Wimessir", id: 876, gen: 8 },
+            { name: "Morpeko", id: 877, gen: 8 },
+            { name: "Charibari", id: 878, gen: 8 },
+            { name: "Pachyradjah", id: 879, gen: 8 },
+            { name: "Galvagon", id: 880, gen: 8 },
+            { name: "Galvagla", id: 881, gen: 8 },
+            { name: "Hydragon", id: 882, gen: 8 },
+            { name: "Hydragla", id: 883, gen: 8 },
+            { name: "Duralugon", id: 884, gen: 8 },
+            { name: "Fantyrm", id: 885, gen: 8 },
+            { name: "Dispareptil", id: 886, gen: 8 },
+            { name: "Lanssorien", id: 887, gen: 8 },
+            { name: "Zacian", id: 888, gen: 8 },
+            { name: "Zamazenta", id: 889, gen: 8 },
+            { name: "Éthernatos", id: 890, gen: 8 },
+            { name: "Wushours", id: 891, gen: 8 },
+            { name: "Shifours", id: 892, gen: 8 },
+            { name: "Zarude", id: 893, gen: 8 },
+            { name: "Regieleki", id: 894, gen: 8 },
+            { name: "Regidrago", id: 895, gen: 8 },
+            { name: "Blizzeval", id: 896, gen: 8 },
+            { name: "Spectreval", id: 897, gen: 8 },
+            { name: "Sylveroy", id: 898, gen: 8 },
+            { name: "Cerbyllin", id: 899, gen: 8 },
+            { name: "Hachécateur", id: 900, gen: 8 },
+            { name: "Ursaking", id: 901, gen: 8 },
+            { name: "Paragruel", id: 902, gen: 8 },
+            { name: "Farfurex", id: 903, gen: 8 },
+            { name: "Qwilpik", id: 904, gen: 8 },
+            { name: "Amovénus", id: 905, gen: 8 },
+            { name: "Poussacha", id: 906, gen: 9 },
+            { name: "Matourgeon", id: 907, gen: 9 },
+            { name: "Miascarade", id: 908, gen: 9 },
+            { name: "Chochodile", id: 909, gen: 9 },
+            { name: "Crocogril", id: 910, gen: 9 },
+            { name: "Flâmigator", id: 911, gen: 9 },
+            { name: "Coiffeton", id: 912, gen: 9 },
+            { name: "Canarbello", id: 913, gen: 9 },
+            { name: "Palmaval", id: 914, gen: 9 },
+            { name: "Gourmelet", id: 915, gen: 9 },
+            { name: "Fragroin", id: 916, gen: 9 },
+            { name: "Tissenboule", id: 917, gen: 9 },
+            { name: "Filentrappe", id: 918, gen: 9 },
+            { name: "Lilliterelle", id: 919, gen: 9 },
+            { name: "Gambex", id: 920, gen: 9 },
+            { name: "Pohm", id: 921, gen: 9 },
+            { name: "Pohmotte", id: 922, gen: 9 },
+            { name: "Pohmarmotte", id: 923, gen: 9 },
+            { name: "Compagnol", id: 924, gen: 9 },
+            { name: "Famignol", id: 925, gen: 9 },
+            { name: "Pâtachiot", id: 926, gen: 9 },
+            { name: "Briochien", id: 927, gen: 9 },
+            { name: "Olivini", id: 928, gen: 9 },
+            { name: "Olivado", id: 929, gen: 9 },
+            { name: "Arboliva", id: 930, gen: 9 },
+            { name: "Tapatoès", id: 931, gen: 9 },
+            { name: "Selutin", id: 932, gen: 9 },
+            { name: "Amassel", id: 933, gen: 9 },
+            { name: "Gigansel", id: 934, gen: 9 },
+            { name: "Charbambin", id: 935, gen: 9 },
+            { name: "Carmadura", id: 936, gen: 9 },
+            { name: "Malvalame", id: 937, gen: 9 },
+            { name: "Têtampoule", id: 938, gen: 9 },
+            { name: "Ampibidou", id: 939, gen: 9 },
+            { name: "Zapétrel", id: 940, gen: 9 },
+            { name: "Fulgulairo", id: 941, gen: 9 },
+            { name: "Grondogue", id: 942, gen: 9 },
+            { name: "Dogrino", id: 943, gen: 9 },
+            { name: "Gribouraigne", id: 944, gen: 9 },
+            { name: "Tag-Tag", id: 945, gen: 9 },
+            { name: "Virovent", id: 946, gen: 9 },
+            { name: "Virevorreur", id: 947, gen: 9 },
+            { name: "Terracool", id: 948, gen: 9 },
+            { name: "Terracruel", id: 949, gen: 9 },
+            { name: "Craparoi", id: 950, gen: 9 },
+            { name: "Pimito", id: 951, gen: 9 },
+            { name: "Scovilain", id: 952, gen: 9 },
+            { name: "Léboulérou", id: 953, gen: 9 },
+            { name: "Bérasca", id: 954, gen: 9 },
+            { name: "Flotillon", id: 955, gen: 9 },
+            { name: "Cléopsytra", id: 956, gen: 9 },
+            { name: "Forgerette", id: 957, gen: 9 },
+            { name: "Forgella", id: 958, gen: 9 },
+            { name: "Forgelina", id: 959, gen: 9 },
+            { name: "Taupikeau", id: 960, gen: 9 },
+            { name: "Triopikeau", id: 961, gen: 9 },
+            { name: "Lestombaile", id: 962, gen: 9 },
+            { name: "Dofin", id: 963, gen: 9 },
+            { name: "Superdofin", id: 964, gen: 9 },
+            { name: "Vrombi", id: 965, gen: 9 },
+            { name: "Vrombotor", id: 966, gen: 9 },
+            { name: "Motorizard", id: 967, gen: 9 },
+            { name: "Ferdeter", id: 968, gen: 9 },
+            { name: "Germéclat", id: 969, gen: 9 },
+            { name: "Floréclat", id: 970, gen: 9 },
+            { name: "Toutombe", id: 971, gen: 9 },
+            { name: "Tomberro", id: 972, gen: 9 },
+            { name: "Flamenroule", id: 973, gen: 9 },
+            { name: "Piétacé", id: 974, gen: 9 },
+            { name: "Balbalèze", id: 975, gen: 9 },
+            { name: "Délestin", id: 976, gen: 9 },
+            { name: "Oyacata", id: 977, gen: 9 },
+            { name: "Nigirigon", id: 978, gen: 9 },
+            { name: "Courrousinge", id: 979, gen: 9 },
+            { name: "Terraiste", id: 980, gen: 9 },
+            { name: "Farigiraf", id: 981, gen: 9 },
+            { name: "Deusolourdo", id: 982, gen: 9 },
+            { name: "Scalpereur", id: 983, gen: 9 },
+            { name: "Fort-Ivoire", id: 984, gen: 9 },
+            { name: "Hurle-Queue", id: 985, gen: 9 },
+            { name: "Fongus-Furie", id: 986, gen: 9 },
+            { name: "Flotte-Mèche", id: 987, gen: 9 },
+            { name: "Rampe-Ailes", id: 988, gen: 9 },
+            { name: "Pelage-Sablé", id: 989, gen: 9 },
+            { name: "Roue-de-Fer", id: 990, gen: 9 },
+            { name: "Hotte-de-Fer", id: 991, gen: 9 },
+            { name: "Paume-de-Fer", id: 992, gen: 9 },
+            { name: "Têtes-de-Fer", id: 993, gen: 9 },
+            { name: "Mite-de-Fer", id: 994, gen: 9 },
+            { name: "Épine-de-Fer", id: 995, gen: 9 },
+            { name: "Frigodo", id: 996, gen: 9 },
+            { name: "Cryodo", id: 997, gen: 9 },
+            { name: "Glaivodo", id: 998, gen: 9 },
+            { name: "Mordudor", id: 999, gen: 9 },
+            { name: "Gromago", id: 1000, gen: 9 },
+            { name: "Chongjian", id: 1001, gen: 9 },
+            { name: "Baojian", id: 1002, gen: 9 },
+            { name: "Dinglu", id: 1003, gen: 9 },
+            { name: "Yuyu", id: 1004, gen: 9 },
+            { name: "Rugit-Lune", id: 1005, gen: 9 },
+            { name: "Garde-de-Fer", id: 1006, gen: 9 },
+            { name: "Koraidon", id: 1007, gen: 9 },
+            { name: "Miraidon", id: 1008, gen: 9 },
+            { name: "Serpente-Eau", id: 1009, gen: 9 },
+            { name: "Vert-de-Fer", id: 1010, gen: 9 },
+            { name: "Pomdramour", id: 1011, gen: 9 },
+            { name: "Poltchageist", id: 1012, gen: 9 },
+            { name: "Théffroyable", id: 1013, gen: 9 },
+            { name: "Félicanis", id: 1014, gen: 9 },
+            { name: "Fortusimia", id: 1015, gen: 9 },
+            { name: "Favianos", id: 1016, gen: 9 },
+            { name: "Ogerpon", id: 1017, gen: 9 },
+            { name: "Pondralugon", id: 1018, gen: 9 },
+            { name: "Pomdorochi", id: 1019, gen: 9 },
+            { name: "Feu-Perçant", id: 1020, gen: 9 },
+            { name: "Ire-Foudre", id: 1021, gen: 9 },
+            { name: "Roc-de-Fer", id: 1022, gen: 9 },
+            { name: "Chef-de-Fer", id: 1023, gen: 9 },
+            { name: "Terapagos", id: 1024, gen: 9 },
+            { name: "Pêchaminus", id: 1025, gen: 9 }
+        ];
+
+        const officialArt = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+        const pixelSprite = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+
+        /* ================================================================
+           NAVIGATION ENTRE ÉCRANS
+        ================================================================ */
+        const screens = {
+            home: document.getElementById('home-screen'),
+            difficulty: document.getElementById('difficulty-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            final: document.getElementById('final-screen'),
+            perso: document.getElementById('perso-screen'),
+            persoResult: document.getElementById('perso-result-screen')
+        };
+        const homeBtn = document.getElementById('home-btn');
+
+        function showScreen(name) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[name].classList.add('hidden');
+            screens[name].classList.remove('hidden');
+            homeBtn.classList.toggle('hidden', name === 'home');
+            screens.home.parentElement.scrollTop = 0;
+        }
+
+        document.getElementById('go-quiz').addEventListener('click', () => showScreen('difficulty'));
+        document.getElementById('go-perso').addEventListener('click', startPersoTest);
+        homeBtn.addEventListener('click', () => showScreen('home'));
+
+        /* ================================================================
+           QUIZ (logique existante)
+        ================================================================ */
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedPokemon = [];
+        let currentPokemon = null;
+        let selectedSuggestionIndex = -1;
+        let pokemon = [];
+
+        // Générations disponibles (national dex)
+        const GENERATIONS = [
+            { gen: 1, label: "Gén. 1", range: "1–151" },
+            { gen: 2, label: "Gén. 2", range: "152–251" },
+            { gen: 3, label: "Gén. 3", range: "252–386" },
+            { gen: 4, label: "Gén. 4", range: "387–493" },
+            { gen: 5, label: "Gén. 5", range: "494–649" },
+            { gen: 6, label: "Gén. 6", range: "650–721" },
+            { gen: 7, label: "Gén. 7", range: "722–809" },
+            { gen: 8, label: "Gén. 8", range: "810–905" },
+            { gen: 9, label: "Gén. 9", range: "906–1025" }
+        ];
+        const selectedGens = new Set([1]); // gen 1 cochée par défaut
+
+        const elements = {
+            pokemonDisplay: document.getElementById('pokemon-display'),
+            input: document.getElementById('pokemon-input'),
+            suggestions: document.getElementById('suggestions'),
+            submitBtn: document.getElementById('submit-btn'),
+            feedback: document.getElementById('feedback'),
+            currentQuestionSpan: document.getElementById('current-question'),
+            currentScoreSpan: document.getElementById('current-score'),
+            finalScore: document.getElementById('final-score'),
+            restartBtn: document.getElementById('restart-btn')
+        };
+
+        // ----- Multiselect des générations -----
+        const genGrid = document.getElementById('gen-grid');
+        const genStartBtn = document.getElementById('gen-start');
+
+        function renderGenGrid() {
+            genGrid.innerHTML = '';
+            GENERATIONS.forEach(g => {
+                const count = allPokemon.filter(p => p.gen === g.gen).length;
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'gen-item' + (selectedGens.has(g.gen) ? ' selected' : '');
+                item.innerHTML = `<span class="gen-name">${g.label}</span><span class="gen-range">${g.range} · ${count} Pokémon</span>`;
+                item.addEventListener('click', () => {
+                    if (selectedGens.has(g.gen)) selectedGens.delete(g.gen);
+                    else selectedGens.add(g.gen);
+                    item.classList.toggle('selected');
+                    updateGenStart();
+                });
+                genGrid.appendChild(item);
+            });
+            updateGenStart();
+        }
+
+        function updateGenStart() {
+            const total = allPokemon.filter(p => selectedGens.has(p.gen)).length;
+            genStartBtn.disabled = total < 10;
+            genStartBtn.textContent = selectedGens.size === 0
+                ? "Choisis au moins une génération"
+                : `Commencer le quiz (${total} Pokémon)`;
+        }
+
+        document.getElementById('gen-all').addEventListener('click', () => {
+            GENERATIONS.forEach(g => selectedGens.add(g.gen));
+            renderGenGrid();
+        });
+        document.getElementById('gen-none').addEventListener('click', () => {
+            selectedGens.clear();
+            renderGenGrid();
+        });
+        genStartBtn.addEventListener('click', startQuiz);
+        renderGenGrid();
+
+        function startQuiz() {
+            pokemon = allPokemon.filter(p => selectedGens.has(p.gen));
+            if (pokemon.length < 10) return;
+            showScreen('quiz');
+            initQuiz();
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function initQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedPokemon = shuffleArray(pokemon).slice(0, 10);
+            elements.currentScoreSpan.textContent = '0';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= 10) { showFinalScreen(); return; }
+            currentPokemon = selectedPokemon[currentQuestion];
+            elements.pokemonDisplay.classList.remove('slide-out', 'slide-in');
+            void elements.pokemonDisplay.offsetWidth;
+            elements.pokemonDisplay.classList.add('slide-in');
+            elements.pokemonDisplay.src = pixelSprite(currentPokemon.id);
+            elements.currentQuestionSpan.textContent = currentQuestion + 1;
+            elements.input.value = '';
+            elements.feedback.textContent = '';
+            elements.feedback.className = 'feedback';
+            elements.input.focus();
+            elements.suggestions.classList.remove('active');
+            selectedSuggestionIndex = -1;
+        }
+
+        function normalizeString(str) {
+            return str.toLowerCase()
+                .normalize("NFD")
+                .replace(/[̀-ͯ]/g, "")
+                .replace(/[^a-z0-9\s]/g, "")
+                .trim();
+        }
+
+        function showSuggestions(value) {
+            if (!value) { elements.suggestions.classList.remove('active'); return; }
+            const normalizedValue = normalizeString(value);
+            const matches = pokemon.filter(p => normalizeString(p.name).includes(normalizedValue)).slice(0, 5);
+            if (matches.length === 0) { elements.suggestions.classList.remove('active'); return; }
+            elements.suggestions.innerHTML = matches.map((p, index) =>
+                `<div class="suggestion-item" data-pokemon="${p.name}" data-index="${index}">${p.name}</div>`
+            ).join('');
+            elements.suggestions.classList.add('active');
+            selectedSuggestionIndex = -1;
+        }
+
+        function selectSuggestion(pokemonName) {
+            elements.input.value = pokemonName;
+            elements.suggestions.classList.remove('active');
+            selectedSuggestionIndex = -1;
+        }
+
+        elements.input.addEventListener('input', (e) => showSuggestions(e.target.value));
+
+        elements.input.addEventListener('keydown', (e) => {
+            const suggestionItems = elements.suggestions.querySelectorAll('.suggestion-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (suggestionItems.length > 0) {
+                    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, suggestionItems.length - 1);
+                    updateSuggestionSelection(suggestionItems);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (suggestionItems.length > 0) {
+                    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, 0);
+                    updateSuggestionSelection(suggestionItems);
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && suggestionItems[selectedSuggestionIndex]) {
+                    selectSuggestion(suggestionItems[selectedSuggestionIndex].dataset.pokemon);
+                } else {
+                    submitAnswer();
+                }
+            } else if (e.key === 'Escape') {
+                elements.suggestions.classList.remove('active');
+                selectedSuggestionIndex = -1;
+            }
+        });
+
+        function updateSuggestionSelection(suggestionItems) {
+            suggestionItems.forEach((item, index) => {
+                if (index === selectedSuggestionIndex) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        elements.suggestions.addEventListener('click', (e) => {
+            if (e.target.classList.contains('suggestion-item')) {
+                selectSuggestion(e.target.dataset.pokemon);
+            }
+        });
+
+        elements.submitBtn.addEventListener('click', submitAnswer);
+
+        function submitAnswer() {
+            const answer = elements.input.value.trim();
+            if (!answer) return;
+            const isCorrect = normalizeString(answer) === normalizeString(currentPokemon.name);
+            if (isCorrect) {
+                score++;
+                elements.feedback.textContent = '✓ Correct !';
+                elements.feedback.className = 'feedback correct show';
+            } else {
+                elements.feedback.textContent = `✗ Faux ! C'était ${currentPokemon.name}`;
+                elements.feedback.className = 'feedback incorrect show';
+            }
+            elements.currentScoreSpan.textContent = score;
+            elements.submitBtn.disabled = true;
+            elements.input.disabled = true;
+            elements.pokemonDisplay.classList.add('slide-out');
+            setTimeout(() => {
+                currentQuestion++;
+                elements.submitBtn.disabled = false;
+                elements.input.disabled = false;
+                showQuestion();
+            }, 800);
+        }
+
+        function showFinalScreen() {
+            showScreen('final');
+            elements.finalScore.textContent = `${score} / 10`;
+        }
+
+        elements.restartBtn.addEventListener('click', () => showScreen('difficulty'));
+
+        /* ================================================================
+           TEST DE PERSONNALITÉ
+           Traits : energie, calme, social, independance, intelligence,
+                    creativite, courage, mystere, nature, loyaute
+        ================================================================ */
+        const persoQuestions = [
+            {
+                q: "Qu'est-ce qui te fait vibrer le plus dans la vie ?",
+                type: "text",
+                options: [
+                    { label: "L'aventure, l'adrénaline, repousser mes limites", traits: { energie: 2, courage: 2 } },
+                    { label: "La sérénité, la nature, les instants simples", traits: { nature: 2, calme: 2 } },
+                    { label: "Les gens que j'aime, les rires partagés", traits: { social: 2, loyaute: 2 } },
+                    { label: "Comprendre, créer, imaginer", traits: { intelligence: 2, creativite: 2 } }
+                ]
+            },
+            {
+                q: "Sans réfléchir, lequel t'attire le plus ?",
+                type: "image",
+                options: [
+                    { id: 6, traits: { courage: 2, energie: 1 } },
+                    { id: 94, traits: { mystere: 2, creativite: 1 } },
+                    { id: 133, traits: { social: 2, creativite: 1 } },
+                    { id: 131, traits: { calme: 2, nature: 1 } }
+                ]
+            },
+            {
+                q: "Tes amis te décrivent comme...",
+                type: "text",
+                options: [
+                    { label: "Le roc fiable sur qui on peut toujours compter", traits: { loyaute: 2, calme: 1 } },
+                    { label: "L'étincelle qui met l'ambiance partout", traits: { social: 2, energie: 1 } },
+                    { label: "Le stratège qui a toujours un plan", traits: { intelligence: 2 } },
+                    { label: "L'électron libre, imprévisible et libre", traits: { independance: 2, creativite: 1 } }
+                ]
+            },
+            {
+                q: "Face à un défi qui te dépasse, ta réaction ?",
+                type: "text",
+                options: [
+                    { label: "Je fonce, on verra bien !", traits: { courage: 2, energie: 1 } },
+                    { label: "J'analyse calmement avant d'agir", traits: { intelligence: 2, calme: 1 } },
+                    { label: "J'en parle à mes proches pour avancer ensemble", traits: { social: 1, loyaute: 2 } },
+                    { label: "Je trouve une solution créative et inattendue", traits: { creativite: 2, independance: 1 } }
+                ]
+            },
+            {
+                q: "Lequel choisirais-tu comme partenaire de combat ?",
+                type: "image",
+                options: [
+                    { id: 68, traits: { courage: 2, loyaute: 1 } },
+                    { id: 65, traits: { intelligence: 2, mystere: 1 } },
+                    { id: 59, traits: { loyaute: 2, energie: 1 } },
+                    { id: 123, traits: { independance: 2, courage: 1 } }
+                ]
+            },
+            {
+                q: "Ton week-end parfait ressemble à...",
+                type: "text",
+                options: [
+                    { label: "Une rando ou un coin de nature au calme", traits: { nature: 2, calme: 1 } },
+                    { label: "Une grosse fête avec plein de monde", traits: { social: 2, energie: 1 } },
+                    { label: "Seul(e) avec un bon livre ou un bon jeu", traits: { independance: 2, intelligence: 1 } },
+                    { label: "Un projet créatif perso qui me passionne", traits: { creativite: 2, independance: 1 } }
+                ]
+            },
+            {
+                q: "Quelle est ta plus grande force ?",
+                type: "text",
+                options: [
+                    { label: "Ma détermination sans faille", traits: { courage: 2, energie: 1 } },
+                    { label: "Mon calme en toute situation", traits: { calme: 2, mystere: 1 } },
+                    { label: "Ma loyauté envers les miens", traits: { loyaute: 2, social: 1 } },
+                    { label: "Mon imagination débordante", traits: { creativite: 2, intelligence: 1 } }
+                ]
+            },
+            {
+                q: "Lequel adopterais-tu sans hésiter ?",
+                type: "image",
+                options: [
+                    { id: 25, traits: { social: 2, energie: 1 } },
+                    { id: 39, traits: { social: 1, creativite: 2 } },
+                    { id: 143, traits: { calme: 2, independance: 1 } },
+                    { id: 54, traits: { creativite: 1, independance: 1, calme: 1 } }
+                ]
+            },
+            {
+                q: "Au fond, comment vois-tu le monde ?",
+                type: "text",
+                options: [
+                    { label: "Plein d'aventures à vivre", traits: { energie: 2, courage: 1 } },
+                    { label: "Un mystère fascinant à explorer", traits: { mystere: 2, intelligence: 1 } },
+                    { label: "Un endroit précieux à protéger et chérir", traits: { nature: 2, loyaute: 1 } },
+                    { label: "Une page blanche à réinventer", traits: { creativite: 2, independance: 1 } }
+                ]
+            },
+            {
+                q: "Tout au fond de toi, tu rêves de...",
+                type: "text",
+                options: [
+                    { label: "Devenir le/la meilleur(e) et marquer les esprits", traits: { courage: 2, energie: 1, independance: 1 } },
+                    { label: "Trouver une vraie paix intérieure", traits: { calme: 2, nature: 1 } },
+                    { label: "Être entouré(e) d'amour et d'amitié", traits: { social: 2, loyaute: 2 } },
+                    { label: "Percer les grands secrets de l'univers", traits: { mystere: 2, intelligence: 2 } }
+                ]
+            }
+        ];
+
+        const totems = [
+            { id: 25, name: "Pikachu", title: "L'âme électrique", traits: { social: 3, energie: 3, loyaute: 2 },
+              desc: "Tu es une boule d'énergie irrésistible. Là où tu passes, l'ambiance suit, et les gens se sentent bien autour de toi. Fidèle et attachant, tu donnes de l'éclat au quotidien des autres sans même t'en rendre compte." },
+            { id: 6, name: "Dracaufeu", title: "Le feu qui ose", traits: { courage: 3, energie: 3, independance: 1 },
+              desc: "Ambitieux et flamboyant, tu n'as pas peur de viser haut. Tu déploies tes ailes quand les autres hésitent encore. Ta fougue impressionne, et ta confiance entraîne ceux qui t'entourent vers le sommet." },
+            { id: 1, name: "Bulbizarre", title: "La force tranquille", traits: { nature: 3, calme: 2, loyaute: 2 },
+              desc: "Doux, posé et profondément ancré, tu avances à ton rythme sans jamais perdre le nord. On se sent en sécurité avec toi. Tu grandis lentement mais sûrement, fidèle à tes racines et à ceux que tu aimes." },
+            { id: 7, name: "Carapuce", title: "Le cool malicieux", traits: { social: 2, calme: 2, creativite: 2, courage: 1 },
+              desc: "Décontracté en apparence, plein de surprises au fond. Tu gardes ton sang-froid dans la tempête tout en gardant ton humour. Sous ta carapace se cache une vraie créativité et un cœur fidèle." },
+            { id: 133, name: "Évoli", title: "Le cœur aux mille possibles", traits: { social: 2, creativite: 3, loyaute: 2 },
+              desc: "Tu es pure potentialité : adaptable, curieux, capable de te réinventer selon les chemins que tu choisis. Attachant et ouvert, tu inspires l'affection. Ton avenir n'est pas écrit, et c'est exactement ce qui te rend unique." },
+            { id: 143, name: "Ronflex", title: "Le zen absolu", traits: { calme: 3, independance: 3 },
+              desc: "Rien ne t'ébranle. Tu connais la valeur du repos, du plaisir simple et du lâcher-prise. Indépendant et imperturbable, tu vis selon tes propres règles — et quand tu te mobilises vraiment, on remarque ta force tranquille." },
+            { id: 150, name: "Mewtwo", title: "L'esprit insondable", traits: { intelligence: 3, mystere: 3, independance: 2 },
+              desc: "Brillant, intense et profondément indépendant, tu vois plus loin que les autres. Tu questionnes tout, tu cherches ta propre vérité. Ton mystère intrigue, et ta puissance intérieure force le respect." },
+            { id: 151, name: "Mew", title: "L'esprit libre et joueur", traits: { creativite: 3, mystere: 2, nature: 2, social: 1 },
+              desc: "Insaisissable et plein de magie, tu mêles curiosité enfantine et profondeur insoupçonnée. Tu touches à tout, tu rêves grand, tu vois la beauté partout. Rare et précieux, tu portes en toi un peu de tous les possibles." },
+            { id: 94, name: "Ectoplasma", title: "L'espiègle de l'ombre", traits: { mystere: 3, creativite: 2, social: 1 },
+              desc: "Malicieux, imprévisible et terriblement charismatique, tu adores surprendre. Derrière ton humour taquin se cache un esprit vif et une vraie profondeur. Tu brilles dans l'ombre et tu aimes garder une part de mystère." },
+            { id: 130, name: "Léviator", title: "La tempête qui gronde", traits: { courage: 3, energie: 2, independance: 2 },
+              desc: "On t'a peut-être sous-estimé, mais tu as forgé ta force dans l'épreuve. Aujourd'hui, ta détermination est une déferlante. Indépendant et puissant, tu ne plies devant personne quand il s'agit de défendre ce qui compte." },
+            { id: 65, name: "Alakazam", title: "Le génie stratège", traits: { intelligence: 3, mystere: 2, calme: 1 },
+              desc: "Ton esprit est ta plus grande arme. Tu analyses, anticipes, comprends ce qui échappe aux autres. Calme et cérébral, tu résous les problèmes avec une longueur d'avance. Le savoir est ton terrain de jeu." },
+            { id: 68, name: "Mackogneur", title: "Le pilier loyal", traits: { courage: 3, loyaute: 2, energie: 1 },
+              desc: "Solide comme le roc, tu protèges les tiens avec une force et une fidélité sans faille. Tu n'as pas peur de l'effort ni des coups durs. Quand on a besoin d'un appui, c'est vers toi qu'on se tourne." },
+            { id: 39, name: "Rondoudou", title: "L'artiste sensible", traits: { social: 3, creativite: 2, calme: 1 },
+              desc: "Doux, expressif et attachant, tu touches les gens en plein cœur. Tu as ce don de capter l'attention et d'apaiser les autres. Sensible et créatif, tu transformes tes émotions en quelque chose de beau." },
+            { id: 54, name: "Psykokwak", title: "Le génie qui s'ignore", traits: { creativite: 2, independance: 2, calme: 1, intelligence: 1 },
+              desc: "En apparence à côté de la plaque, mais en réalité plein de ressources cachées. Quand la pression monte, tu révèles un potentiel insoupçonné. Authentique et attachant, tu n'as pas besoin de frimer pour être génial." },
+            { id: 95, name: "Onix", title: "Le roc indomptable", traits: { independance: 3, calme: 2, courage: 1 },
+              desc: "Imposant et inébranlable, tu traces ta route avec une volonté de fer. Tu n'as besoin de personne pour tenir debout, mais ta présence rassure. Patient et solide, rien ne t'érode vraiment." },
+            { id: 131, name: "Lokhlass", title: "L'âme bienveillante", traits: { calme: 3, nature: 2, loyaute: 2 },
+              desc: "Doux géant au cœur immense, tu accompagnes les autres avec une tendresse rare. Apaisant et fidèle, tu portes ceux qui sont perdus jusqu'à l'autre rive. Ta bonté est ta plus grande force." },
+            { id: 4, name: "Salamèche", title: "La flamme naissante", traits: { energie: 2, courage: 2, social: 1 },
+              desc: "Plein de fougue et d'envie, tu portes en toi une flamme qui ne demande qu'à grandir. Courageux et déterminé, tu avances avec passion. Ton enthousiasme est contagieux, et ton potentiel ne fait que commencer." },
+            { id: 38, name: "Feunard", title: "L'élégance mystérieuse", traits: { mystere: 3, intelligence: 2, independance: 1 },
+              desc: "Raffiné, fascinant et un brin insaisissable, tu dégages une aura à part. Intelligent et indépendant, tu choisis avec soin qui mérite ta confiance. Derrière ta grâce se cache une profondeur que peu soupçonnent." },
+            { id: 9, name: "Tortank", title: "Le protecteur", traits: { calme: 2, loyaute: 3, courage: 2 },
+              desc: "Solide et rassurant, tu es le bouclier de ceux que tu aimes. Tu gardes ton calme sous le feu et tu frappes fort quand il le faut. Loyal jusqu'au bout, tu inspires une confiance totale." },
+            { id: 3, name: "Florizarre", title: "Le sage de la nature", traits: { nature: 3, calme: 3 },
+              desc: "Serein, équilibré et profondément connecté à l'essentiel, tu rayonnes d'une sagesse paisible. Tu offres ta force aux autres sans bruit. Ancré et généreux, tu es un refuge de calme dans un monde agité." },
+            { id: 59, name: "Arcanin", title: "Le noble fidèle", traits: { loyaute: 3, courage: 2, energie: 2 },
+              desc: "Loyal, courageux et plein de panache, tu inspires l'admiration et la confiance. Tu cours vers le danger pour protéger les tiens. Noble dans l'âme, tu allies force, fidélité et un cœur ardent." },
+            { id: 123, name: "Insécateur", title: "Le solitaire affûté", traits: { courage: 3, independance: 3, energie: 1 },
+              desc: "Rapide, précis et indépendant, tu trances dans le vif sans détour. Tu préfères agir que parler, et ton efficacité impressionne. Discipliné et déterminé, tu suis ta propre voie avec une intensité tranchante." },
+            { id: 132, name: "Métamorph", title: "Le caméléon créatif", traits: { creativite: 3, social: 2, independance: 1 },
+              desc: "Adaptable à l'infini, tu te fonds dans tous les univers et tu te réinventes sans cesse. Curieux et ingénieux, tu surprends par ta capacité à devenir ce que la situation demande. Ta plus grande force, c'est ta polyvalence." },
+            { id: 146, name: "Sulfura", title: "Le brasier légendaire", traits: { energie: 3, courage: 3, mystere: 1 },
+              desc: "Une passion ardente t'anime, un feu qui ne s'éteint jamais. Audacieux et flamboyant, tu vis chaque instant avec intensité. Rare et magnétique, tu illumines tout sur ton passage et tu n'as peur d'aucune épreuve." },
+            { id: 144, name: "Artikodin", title: "La grâce glacée", traits: { calme: 3, mystere: 2, independance: 1 },
+              desc: "Posé, élégant et insaisissable, tu dégages une sérénité presque irréelle. Tu gardes la tête froide quand tout s'emballe. Indépendant et profond, ta tranquillité cache une majesté que peu osent approcher." }
+        ];
+
+        const traitLabels = {
+            energie: "Énergie", calme: "Sérénité", social: "Sociabilité",
+            independance: "Indépendance", intelligence: "Intelligence", creativite: "Créativité",
+            courage: "Courage", mystere: "Mystère", nature: "Nature", loyaute: "Loyauté"
+        };
+
+        let persoIndex = 0;
+        let persoScores = {};
+
+        const persoEls = {
+            bar: document.getElementById('perso-bar'),
+            current: document.getElementById('perso-current'),
+            question: document.getElementById('perso-question'),
+            answers: document.getElementById('perso-answers')
+        };
+        const persoNext = document.getElementById('perso-next');
+        persoNext.addEventListener('click', validatePersoQuestion);
+
+        function startPersoTest() {
+            persoIndex = 0;
+            persoScores = {};
+            Object.keys(traitLabels).forEach(t => persoScores[t] = 0);
+            showScreen('perso');
+            renderPersoQuestion();
+        }
+
+        // Options cochées pour la question en cours (Set d'index)
+        let persoSelected = new Set();
+
+        function renderPersoQuestion() {
+            const data = persoQuestions[persoIndex];
+            persoSelected = new Set();
+            persoEls.current.textContent = persoIndex + 1;
+            persoEls.bar.style.width = `${(persoIndex / persoQuestions.length) * 100}%`;
+            persoEls.question.textContent = data.q;
+            persoEls.answers.innerHTML = '';
+            persoNext.textContent = persoIndex === persoQuestions.length - 1 ? "Voir mon totem" : "Suivant";
+            persoNext.disabled = true;
+
+            if (data.type === 'text') {
+                const wrap = document.createElement('div');
+                wrap.className = 'perso-options';
+                data.options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'perso-option';
+                    btn.textContent = opt.label;
+                    btn.addEventListener('click', () => togglePersoOption(i, btn));
+                    wrap.appendChild(btn);
+                });
+                persoEls.answers.appendChild(wrap);
+            } else {
+                const grid = document.createElement('div');
+                grid.className = 'perso-image-grid';
+                data.options.forEach((opt, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'perso-image-option';
+                    const img = document.createElement('img');
+                    img.src = officialArt(opt.id);
+                    img.alt = "Pokémon";
+                    img.loading = "lazy";
+                    card.appendChild(img);
+                    card.addEventListener('click', () => togglePersoOption(i, card));
+                    grid.appendChild(card);
+                });
+                persoEls.answers.appendChild(grid);
+            }
+        }
+
+        function togglePersoOption(i, el) {
+            if (persoSelected.has(i)) {
+                persoSelected.delete(i);
+                el.classList.remove('selected');
+            } else {
+                persoSelected.add(i);
+                el.classList.add('selected');
+            }
+            persoNext.disabled = persoSelected.size === 0;
+        }
+
+        function validatePersoQuestion() {
+            if (persoSelected.size === 0) return;
+            const data = persoQuestions[persoIndex];
+            persoSelected.forEach(i => {
+                Object.entries(data.options[i].traits).forEach(([t, v]) => {
+                    persoScores[t] = (persoScores[t] || 0) + v;
+                });
+            });
+            persoEls.bar.style.width = `${((persoIndex + 1) / persoQuestions.length) * 100}%`;
+            persoIndex++;
+            if (persoIndex >= persoQuestions.length) {
+                showPersoResult();
+            } else {
+                renderPersoQuestion();
+            }
+        }
+
+        function showPersoResult() {
+            // Meilleur match par produit scalaire entre les scores utilisateur et le profil de chaque totem
+            let best = null;
+            let bestScore = -1;
+            const ranked = totems.map(t => {
+                let dot = 0;
+                Object.entries(t.traits).forEach(([trait, weight]) => {
+                    dot += (persoScores[trait] || 0) * weight;
+                });
+                return { totem: t, dot };
+            });
+            // tri décroissant + petite préférence aléatoire en cas d'égalité parfaite
+            ranked.sort((a, b) => b.dot - a.dot);
+            const top = ranked.filter(r => r.dot === ranked[0].dot);
+            best = top[Math.floor(Math.random() * top.length)].totem;
+
+            // Top 3 traits de l'utilisateur pour les badges
+            const userTopTraits = Object.entries(persoScores)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3)
+                .filter(([, v]) => v > 0)
+                .map(([t]) => traitLabels[t]);
+
+            document.getElementById('totem-name').textContent = best.name;
+            document.getElementById('totem-title').textContent = best.title;
+            document.getElementById('totem-img').src = officialArt(best.id);
+            document.getElementById('totem-desc').textContent = best.desc;
+            const traitsWrap = document.getElementById('totem-traits');
+            traitsWrap.innerHTML = userTopTraits
+                .map(label => `<span class="totem-trait">${label}</span>`)
+                .join('');
+
+            showScreen('persoResult');
+        }
+
+        document.getElementById('perso-restart').addEventListener('click', startPersoTest);
+        document.getElementById('perso-try-quiz').addEventListener('click', () => showScreen('difficulty'));
+    </script>
+</body>
+</html>
