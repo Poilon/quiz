@@ -1,0 +1,978 @@
+{
+  "updated": "2026-11-08",
+  "source": "https://brawlpro.app/fr/brawlers/",
+  "brawlers": [
+    {
+      "id": "16000027",
+      "name": "A.R.K.A.D.",
+      "alias": "8-Bit",
+      "class": "Dégâts bruts",
+      "rarity": "Super rare",
+      "image": "assets/16000027.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000027.webp"
+    },
+    {
+      "id": "16000095",
+      "name": "Alli",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000095.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000095.webp"
+    },
+    {
+      "id": "16000040",
+      "name": "Ambre",
+      "alias": "Amber",
+      "class": "Contrôle",
+      "rarity": "Légendaire",
+      "image": "assets/16000040.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000040.webp"
+    },
+    {
+      "id": "16000079",
+      "name": "Angelo",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000079.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000079.webp"
+    },
+    {
+      "id": "16000051",
+      "name": "Ash",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Épique",
+      "image": "assets/16000051.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000051.webp"
+    },
+    {
+      "id": "16000006",
+      "name": "Bartaba",
+      "alias": "Barley",
+      "class": "Artillerie",
+      "rarity": "Rare",
+      "image": "assets/16000006.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000006.webp"
+    },
+    {
+      "id": "16000029",
+      "name": "Béa",
+      "alias": "Bea",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000029.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000029.webp"
+    },
+    {
+      "id": "16000046",
+      "name": "Belle",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000046.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000046.webp"
+    },
+    {
+      "id": "16000082",
+      "name": "Berry",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Épique",
+      "image": "assets/16000082.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000082.webp"
+    },
+    {
+      "id": "16000026",
+      "name": "Billie",
+      "alias": "Bibi",
+      "class": "Tank",
+      "rarity": "Épique",
+      "image": "assets/16000026.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000026.webp"
+    },
+    {
+      "id": "16000014",
+      "name": "Bo",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Épique",
+      "image": "assets/16000014.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000014.webp"
+    },
+    {
+      "id": "16000106",
+      "name": "Bolt",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Épique",
+      "image": "assets/16000106.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000106.webp"
+    },
+    {
+      "id": "16000058",
+      "name": "Bonnie",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000058.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000058.webp"
+    },
+    {
+      "id": "16000003",
+      "name": "Brock",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Rare",
+      "image": "assets/16000003.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000003.webp"
+    },
+    {
+      "id": "16000002",
+      "name": "Bull",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Rare",
+      "image": "assets/16000002.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000002.webp"
+    },
+    {
+      "id": "16000062",
+      "name": "Buster",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Mythique",
+      "image": "assets/16000062.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000062.webp"
+    },
+    {
+      "id": "16000049",
+      "name": "Buzz",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000049.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000049.webp"
+    },
+    {
+      "id": "16000042",
+      "name": "Byron",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000042.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000042.webp"
+    },
+    {
+      "id": "16000025",
+      "name": "Carl",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Super rare",
+      "image": "assets/16000025.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000025.webp"
+    },
+    {
+      "id": "16000074",
+      "name": "Charlie",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000074.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000074.webp"
+    },
+    {
+      "id": "16000063",
+      "name": "Chester",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Légendaire",
+      "image": "assets/16000063.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000063.webp"
+    },
+    {
+      "id": "16000073",
+      "name": "Chuck",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000073.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000073.webp"
+    },
+    {
+      "id": "16000083",
+      "name": "Clancy",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000083.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000083.webp"
+    },
+    {
+      "id": "16000039",
+      "name": "Colette",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Épique",
+      "image": "assets/16000039.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000039.webp"
+    },
+    {
+      "id": "16000001",
+      "name": "Colt",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Rare",
+      "image": "assets/16000001.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000001.webp"
+    },
+    {
+      "id": "16000070",
+      "name": "Cordelius",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Légendaire",
+      "image": "assets/16000070.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000070.webp"
+    },
+    {
+      "id": "16000109",
+      "name": "Cosmo",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000109.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000109.webp"
+    },
+    {
+      "id": "16000012",
+      "name": "Corbac",
+      "alias": "Crow",
+      "class": "Assassin",
+      "rarity": "Légendaire",
+      "image": "assets/16000012.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000012.webp"
+    },
+    {
+      "id": "16000104",
+      "name": "Damian",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Mythique",
+      "image": "assets/16000104.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000104.webp"
+    },
+    {
+      "id": "16000018",
+      "name": "Darryl",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Super rare",
+      "image": "assets/16000018.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000018.webp"
+    },
+    {
+      "id": "16000071",
+      "name": "Doug",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000071.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000071.webp"
+    },
+    {
+      "id": "16000080",
+      "name": "Draco",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Légendaire",
+      "image": "assets/16000080.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000080.webp"
+    },
+    {
+      "id": "16000009",
+      "name": "Dynamike",
+      "alias": "",
+      "class": "Artillerie",
+      "rarity": "Super rare",
+      "image": "assets/16000009.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000009.webp"
+    },
+    {
+      "id": "16000043",
+      "name": "Edgar",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Épique",
+      "image": "assets/16000043.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000043.webp"
+    },
+    {
+      "id": "16000010",
+      "name": "El Costo",
+      "alias": "El Primo",
+      "class": "Tank",
+      "rarity": "Rare",
+      "image": "assets/16000010.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000010.webp"
+    },
+    {
+      "id": "16000030",
+      "name": "Eliz@",
+      "alias": "Emz",
+      "class": "Contrôle",
+      "rarity": "Épique",
+      "image": "assets/16000030.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000030.webp"
+    },
+    {
+      "id": "16000056",
+      "name": "Eve",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000056.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000056.webp"
+    },
+    {
+      "id": "16000054",
+      "name": "Fang",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000054.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000054.webp"
+    },
+    {
+      "id": "16000092",
+      "name": "Finx",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000092.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000092.webp"
+    },
+    {
+      "id": "16000020",
+      "name": "Frank",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Épique",
+      "image": "assets/16000020.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000020.webp"
+    },
+    {
+      "id": "16000035",
+      "name": "Gaël",
+      "alias": "Gale",
+      "class": "Contrôle",
+      "rarity": "Épique",
+      "image": "assets/16000035.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000035.webp"
+    },
+    {
+      "id": "16000021",
+      "name": "D’jinn",
+      "alias": "Gene",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000021.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000021.webp"
+    },
+    {
+      "id": "16000100",
+      "name": "Gigi",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000100.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000100.webp"
+    },
+    {
+      "id": "16000101",
+      "name": "Glowy",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000101.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000101.webp"
+    },
+    {
+      "id": "16000064",
+      "name": "Gray",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000064.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000064.webp"
+    },
+    {
+      "id": "16000050",
+      "name": "Griff",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Épique",
+      "image": "assets/16000050.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000050.webp"
+    },
+    {
+      "id": "16000048",
+      "name": "Grom",
+      "alias": "",
+      "class": "Artillerie",
+      "rarity": "Épique",
+      "image": "assets/16000048.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000048.webp"
+    },
+    {
+      "id": "16000061",
+      "name": "Gus",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Super rare",
+      "image": "assets/16000061.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000061.webp"
+    },
+    {
+      "id": "16000069",
+      "name": "Hank",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Épique",
+      "image": "assets/16000069.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000069.webp"
+    },
+    {
+      "id": "16000034",
+      "name": "Jacky",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Super rare",
+      "image": "assets/16000034.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000034.webp"
+    },
+    {
+      "id": "16000093",
+      "name": "Jae-Yong",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000093.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000093.webp"
+    },
+    {
+      "id": "16000057",
+      "name": "Janet",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Mythique",
+      "image": "assets/16000057.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000057.webp"
+    },
+    {
+      "id": "16000007",
+      "name": "Jessie",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Super rare",
+      "image": "assets/16000007.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000007.webp"
+    },
+    {
+      "id": "16000087",
+      "name": "Juju",
+      "alias": "",
+      "class": "Artillerie",
+      "rarity": "Mythique",
+      "image": "assets/16000087.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000087.webp"
+    },
+    {
+      "id": "16000094",
+      "name": "Kaze",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Ultra",
+      "image": "assets/16000094.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000094.webp"
+    },
+    {
+      "id": "16000085",
+      "name": "Kenji",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Légendaire",
+      "image": "assets/16000085.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000085.webp"
+    },
+    {
+      "id": "16000076",
+      "name": "Kit",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Légendaire",
+      "image": "assets/16000076.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000076.webp"
+    },
+    {
+      "id": "16000077",
+      "name": "Larry & Lawrie",
+      "alias": "",
+      "class": "Artillerie",
+      "rarity": "Épique",
+      "image": "assets/16000077.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/s2/16000077.webp"
+    },
+    {
+      "id": "16000023",
+      "name": "Léon",
+      "alias": "Leon",
+      "class": "Assassin",
+      "rarity": "Légendaire",
+      "image": "assets/16000023.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000023.webp"
+    },
+    {
+      "id": "16000081",
+      "name": "Lily",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000081.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000081.webp"
+    },
+    {
+      "id": "16000053",
+      "name": "Lola",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Épique",
+      "image": "assets/16000053.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000053.webp"
+    },
+    {
+      "id": "16000041",
+      "name": "Lou",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000041.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000041.webp"
+    },
+    {
+      "id": "16000091",
+      "name": "Lumi",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000091.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000091.webp"
+    },
+    {
+      "id": "16000068",
+      "name": "Maisie",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000068.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000068.webp"
+    },
+    {
+      "id": "16000065",
+      "name": "Mandy",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000065.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000065.webp"
+    },
+    {
+      "id": "16000032",
+      "name": "Max",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000032.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000032.webp"
+    },
+    {
+      "id": "16000089",
+      "name": "Meeple",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Épique",
+      "image": "assets/16000089.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000089.webp"
+    },
+    {
+      "id": "16000052",
+      "name": "Meg",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Légendaire",
+      "image": "assets/16000052.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000052.webp"
+    },
+    {
+      "id": "16000078",
+      "name": "Melody",
+      "alias": "Melodie",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000078.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000078.webp"
+    },
+    {
+      "id": "16000075",
+      "name": "Mico",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000075.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000075.webp"
+    },
+    {
+      "id": "16000097",
+      "name": "Mina",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000097.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000097.webp"
+    },
+    {
+      "id": "16000084",
+      "name": "Moe",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000084.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000084.webp"
+    },
+    {
+      "id": "16000011",
+      "name": "Mortis",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000011.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000011.webp"
+    },
+    {
+      "id": "16000031",
+      "name": "Monsieur M.",
+      "alias": "Mr. P",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000031.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/s2/16000031.webp"
+    },
+    {
+      "id": "16000103",
+      "name": "Najia",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000103.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000103.webp"
+    },
+    {
+      "id": "16000036",
+      "name": "Nani",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000036.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000036.webp"
+    },
+    {
+      "id": "16000008",
+      "name": "Nita",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Rare",
+      "image": "assets/16000008.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000008.webp"
+    },
+    {
+      "id": "16000107",
+      "name": "Nori",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Légendaire",
+      "image": "assets/16000107.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000107.webp"
+    },
+    {
+      "id": "16000090",
+      "name": "Ollie",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Mythique",
+      "image": "assets/16000090.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000090.webp"
+    },
+    {
+      "id": "16000059",
+      "name": "Otis",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000059.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000059.webp"
+    },
+    {
+      "id": "16000016",
+      "name": "Pam",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Épique",
+      "image": "assets/16000016.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000016.webp"
+    },
+    {
+      "id": "16000072",
+      "name": "Pearl",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Épique",
+      "image": "assets/16000072.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000072.webp"
+    },
+    {
+      "id": "16000019",
+      "name": "Penny",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Super rare",
+      "image": "assets/16000019.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000019.webp"
+    },
+    {
+      "id": "16000099",
+      "name": "Pierce",
+      "alias": "",
+      "class": "Tir d'élite",
+      "rarity": "Légendaire",
+      "image": "assets/16000099.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000099.webp"
+    },
+    {
+      "id": "16000015",
+      "name": "Polly",
+      "alias": "Piper",
+      "class": "Tir d'élite",
+      "rarity": "Épique",
+      "image": "assets/16000015.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000015.webp"
+    },
+    {
+      "id": "16000013",
+      "name": "Poco",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Rare",
+      "image": "assets/16000013.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000013.webp"
+    },
+    {
+      "id": "16000066",
+      "name": "R-T",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000066.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000066.webp"
+    },
+    {
+      "id": "16000004",
+      "name": "Ricochet",
+      "alias": "Rico",
+      "class": "Dégâts bruts",
+      "rarity": "Super rare",
+      "image": "assets/16000004.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000004.webp"
+    },
+    {
+      "id": "16000024",
+      "name": "Rosa",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Rare",
+      "image": "assets/16000024.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000024.webp"
+    },
+    {
+      "id": "16000044",
+      "name": "Médor",
+      "alias": "Ruffs",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000044.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000044.webp"
+    },
+    {
+      "id": "16000060",
+      "name": "Sam",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Épique",
+      "image": "assets/16000060.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000060.webp"
+    },
+    {
+      "id": "16000028",
+      "name": "Émeri",
+      "alias": "Sandy",
+      "class": "Contrôle",
+      "rarity": "Légendaire",
+      "image": "assets/16000028.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000028.webp"
+    },
+    {
+      "id": "16000086",
+      "name": "Shade",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Épique",
+      "image": "assets/16000086.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000086.webp"
+    },
+    {
+      "id": "16000000",
+      "name": "Shelly",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Commun",
+      "image": "assets/16000000.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000000.webp"
+    },
+    {
+      "id": "16000102",
+      "name": "Sirius",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Ultra",
+      "image": "assets/16000102.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000102.webp"
+    },
+    {
+      "id": "16000005",
+      "name": "Spike",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Légendaire",
+      "image": "assets/16000005.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000005.webp"
+    },
+    {
+      "id": "16000037",
+      "name": "Wally",
+      "alias": "Sprout",
+      "class": "Artillerie",
+      "rarity": "Mythique",
+      "image": "assets/16000037.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000037.webp"
+    },
+    {
+      "id": "16000047",
+      "name": "Squeak",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000047.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000047.webp"
+    },
+    {
+      "id": "16000105",
+      "name": "Starr Nova",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Mythique",
+      "image": "assets/16000105.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000105.webp"
+    },
+    {
+      "id": "16000045",
+      "name": "Stu",
+      "alias": "",
+      "class": "Assassin",
+      "rarity": "Épique",
+      "image": "assets/16000045.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000045.webp"
+    },
+    {
+      "id": "16000038",
+      "name": "Surge",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Légendaire",
+      "image": "assets/16000038.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000038.webp"
+    },
+    {
+      "id": "16000017",
+      "name": "Tara",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000017.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000017.webp"
+    },
+    {
+      "id": "16000022",
+      "name": "Tick",
+      "alias": "",
+      "class": "Artillerie",
+      "rarity": "Super rare",
+      "image": "assets/16000022.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000022.webp"
+    },
+    {
+      "id": "16000096",
+      "name": "Trunk",
+      "alias": "",
+      "class": "Tank",
+      "rarity": "Épique",
+      "image": "assets/16000096.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000096.webp"
+    },
+    {
+      "id": "16000110",
+      "name": "Vince",
+      "alias": "",
+      "class": "Dégâts bruts",
+      "rarity": "Mythique",
+      "image": "assets/16000110.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000110.webp"
+    },
+    {
+      "id": "16000108",
+      "name": "Wendy",
+      "alias": "",
+      "class": "Soutien",
+      "rarity": "Mythique",
+      "image": "assets/16000108.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000108.webp"
+    },
+    {
+      "id": "16000067",
+      "name": "Willow",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000067.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000067.webp"
+    },
+    {
+      "id": "16000098",
+      "name": "Ziggy",
+      "alias": "",
+      "class": "Contrôle",
+      "rarity": "Mythique",
+      "image": "assets/16000098.webp",
+      "sourceImage": "https://brawlpro.app/img/brawlers/art/s/16000098.webp"
+    }
+  ]
+}

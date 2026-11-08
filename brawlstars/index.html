@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quiz Brawl Stars · 108 brawlers & rangs classés</title>
+    <meta
+      name="description"
+      content="Reconnais les 108 brawlers de Brawl Stars, teste tes connaissances sur leurs classes, leurs raretés et les rangs classés. Quiz gratuit en français."
+    />
+    <meta name="theme-color" content="#211344" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="topbar">
+        <a href="../">← Tous les quiz</a
+        ><span>POILON<span class="brand-dot">.</span> PLAY</span>
+      </header>
+      <main>
+        <section id="home" aria-labelledby="home-title">
+          <div class="hero">
+            <div class="hero-copy">
+              <p class="eyebrow">LE QUIZ DES FANS</p>
+              <h1 id="home-title">
+                BRAWL<span
+                  >STARS<span class="title-star" aria-hidden="true"
+                    >✦</span
+                  ></span
+                >
+              </h1>
+              <p class="intro">
+                108 brawlers. Une montée en classé.<br />À toi de montrer ce que
+                tu sais.
+              </p>
+              <div class="hero-tags">
+                <span>108 brawlers</span><span>8 rangs</span
+                ><span>100 % gratuit</span>
+              </div>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+              <div class="orbit"></div>
+              <img
+                class="hero-brawler hero-left"
+                src="assets/16000000.webp"
+                alt=""
+              /><img
+                class="hero-brawler hero-right"
+                src="assets/16000005.webp"
+                alt=""
+              /><span class="art-sticker">À TOI DE JOUER !</span>
+            </div>
+          </div>
+          <form id="setup" class="panel">
+            <fieldset>
+              <legend><span class="step">01</span> Choisis ton terrain</legend>
+              <div class="mode-grid">
+                <label class="mode-card"
+                  ><input
+                    type="radio"
+                    name="mode"
+                    value="brawlers"
+                    checked
+                  /><span class="mode-icon" aria-hidden="true">✦</span
+                  ><strong>Brawlers</strong
+                  ><span>Les 108 sont dans l’arène.</span></label
+                >
+                <label class="mode-card"
+                  ><input type="radio" name="mode" value="ranked" /><span
+                    class="mode-icon"
+                    aria-hidden="true"
+                    >♜</span
+                  ><strong>Classé</strong
+                  ><span>De Bronze jusqu’à Pro.</span></label
+                >
+                <label class="mode-card"
+                  ><input type="radio" name="mode" value="mixed" /><span
+                    class="mode-icon"
+                    aria-hidden="true"
+                    >ϟ</span
+                  ><strong>Le grand mix</strong
+                  ><span>Brawlers et rangs réunis.</span></label
+                >
+              </div>
+            </fieldset>
+            <div class="settings-row">
+              <fieldset id="format-setting">
+                <legend><span class="step">02</span> Ton défi</legend>
+                <div class="segmented">
+                  <label
+                    ><input
+                      type="radio"
+                      name="format"
+                      value="portrait"
+                      checked
+                    /><span>Reconnaissance</span></label
+                  ><label
+                    ><input type="radio" name="format" value="knowledge" /><span
+                      >Classes & raretés</span
+                    ></label
+                  >
+                </div>
+              </fieldset>
+              <div class="length-setting">
+                <label for="length"
+                  ><span class="step">03</span> Taille de la partie</label
+                ><select id="length" name="length">
+                  <option value="10">10 questions · express</option>
+                  <option value="20">20 questions · défi</option>
+                  <option value="all">Tout le parcours</option>
+                </select>
+              </div>
+            </div>
+            <div class="start-row">
+              <p id="session-info" aria-live="polite">
+                Chargement des brawlers…
+              </p>
+              <button id="start" class="button primary" type="submit" disabled>
+                C’est parti <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <p id="load-error" role="alert" hidden></p>
+          </form>
+          <details class="revision">
+            <summary>
+              Le coin révision <span>Les 108 brawlers & les rangs</span>
+            </summary>
+            <h2>La montée en classé</h2>
+            <p>Du rang le plus bas au plus haut :</p>
+            <ol id="rank-ladder" class="rank-ladder"></ol>
+            <h2>Tous les brawlers</h2>
+            <label class="search-label" for="search"
+              >Chercher un nom, une classe ou une rareté</label
+            ><input
+              id="search"
+              type="search"
+              placeholder="Corbac, Léon, tank…"
+              autocomplete="off"
+            />
+            <p id="roster-count" aria-live="polite"></p>
+            <div id="roster" class="roster"></div>
+          </details>
+        </section>
+        <section id="game" hidden aria-labelledby="question-title">
+          <div class="game-top">
+            <button id="quit" class="text-button" type="button">
+              ← Quitter la partie</button
+            ><span id="game-mode" class="pill"></span>
+          </div>
+          <div class="stats">
+            <span id="progress-label"></span><span id="score"></span>
+          </div>
+          <progress
+            id="progress"
+            value="0"
+            max="10"
+            aria-label="Questions terminées"
+          ></progress>
+          <div class="panel question-panel">
+            <p id="question-category" class="eyebrow"></p>
+            <div id="portrait-frame" class="portrait-frame" hidden>
+              <img
+                id="portrait"
+                alt="Brawler mystère à reconnaître"
+                width="250"
+                height="220"
+              />
+              <p id="image-error" hidden>
+                Le visuel n’a pas pu être chargé. Tu peux passer cette question.
+              </p>
+            </div>
+            <h2 id="question-title" tabindex="-1"></h2>
+            <p id="question-hint" class="muted"></p>
+            <div id="answers" class="answers"></div>
+            <div id="feedback" class="feedback" role="status" hidden></div>
+            <div class="question-actions">
+              <button id="skip" class="text-button" type="button">
+                Je ne sais pas</button
+              ><button id="next" class="button primary" type="button" hidden>
+                Question suivante →
+              </button>
+            </div>
+          </div>
+          <p class="keyboard-hint">
+            Au clavier : 1, 2, 3 ou 4 pour répondre · Entrée pour continuer
+          </p>
+        </section>
+        <section
+          id="results"
+          class="panel results"
+          hidden
+          aria-labelledby="results-title"
+        >
+          <p class="eyebrow">FIN DE PARTIE</p>
+          <div class="result-star" aria-hidden="true">★</div>
+          <h2 id="results-title" tabindex="-1"></h2>
+          <p id="result-score" class="result-score"></p>
+          <p id="result-message"></p>
+          <p id="record" class="muted"></p>
+          <div id="breakdown" class="breakdown"></div>
+          <div class="result-actions">
+            <button id="replay" class="button primary" type="button">
+              Rejouer ↻</button
+            ><button id="retry" class="button secondary" type="button" hidden>
+              Revoir mes erreurs</button
+            ><button id="menu" class="text-button" type="button">
+              Changer de mode
+            </button>
+          </div>
+          <details id="review">
+            <summary>Voir le corrigé de ma partie</summary>
+            <ol id="review-list"></ol>
+          </details>
+        </section>
+        <noscript
+          ><p class="panel">
+            Active JavaScript pour jouer à ce quiz.
+          </p></noscript
+        >
+      </main>
+      <footer>
+        <p>
+          Sans compte, sans publicité. Ton meilleur score reste dans ce
+          navigateur.
+        </p>
+        <p>
+          Quiz de fans, non officiel et non approuvé par Supercell. Brawl Stars
+          et ses personnages appartiennent à Supercell.
+          <a href="https://supercell.com/en/fan-content-policy/fr/"
+            >Politique de contenu de fans</a
+          >.
+        </p>
+        <p>
+          Données et visuels :
+          <a href="https://brawlpro.app/fr/brawlers/">BrawlPro / BrawlAPI</a> ·
+          Noms français :
+          <a href="https://brawls.wiki/fr/brawlers/">Brawls Wiki</a> · Rangs :
+          <a
+            href="https://supercell.com/en/games/brawlstars/blog/news/ranked-is-dead-and-ranked-is-back/"
+            >Supercell</a
+          >. Liste vérifiée le 8 novembre 2026.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
